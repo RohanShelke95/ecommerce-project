@@ -20,6 +20,7 @@ const OrderCard = ({ item, order }) => {
               className="w-[4rem] h-[4rem] sm:w-[5rem] sm:h-[5rem] object-cover object-top rounded flex-shrink-0 border"
               src={item?.product?.imageUrl}
               alt={item?.product?.title}
+              referrerPolicy="no-referrer"
             />
             <div className="ml-3 sm:ml-5 min-w-0">
               <p className="mb-1 text-sm sm:text-base font-semibold text-gray-900 truncate">

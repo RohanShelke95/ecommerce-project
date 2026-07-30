@@ -16,6 +16,7 @@ const HomeCarousel = () => {
       alt=""
       onDragStart={handleDragStart}
       role="presentation"
+      referrerPolicy="no-referrer"
     />
   ));
   return (
