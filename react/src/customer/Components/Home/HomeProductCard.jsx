@@ -64,6 +64,7 @@ const HomeProductCard = ({ product }) => {
           className="object-cover object-top w-full h-full"
           src={product?.image || product?.imageUrl}
           alt={product?.title}
+          referrerPolicy="no-referrer"
         />
       </div>
 

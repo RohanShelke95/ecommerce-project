@@ -147,6 +147,7 @@ export default function ProductDetails() {
                 src={activeImage || customersProduct.product?.imageUrl}
                 alt={customersProduct.product?.title}
                 className="h-full w-full object-cover object-center"
+                referrerPolicy="no-referrer"
               />
             </div>
             {allImages.length > 1 && (
@@ -157,7 +158,7 @@ export default function ProductDetails() {
                     className={`cursor-pointer overflow-hidden rounded-lg border-2 ${activeImage === img ? 'border-indigo-600' : 'border-transparent'} w-[5rem] h-[5rem] hover:opacity-80 transition-all`}
                     onClick={() => setActiveImage(img)}
                   >
-                    <img src={img} className="h-full w-full object-cover object-center" alt={`product-thumbnail-${index}`} />
+                    <img src={img} className="h-full w-full object-cover object-center" alt={`product-thumbnail-${index}`} referrerPolicy="no-referrer" />
                   </div>
                 ))}
               </div>

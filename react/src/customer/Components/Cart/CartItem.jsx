@@ -29,6 +29,7 @@ const CartItem = ({ item, showButton }) => {
             className="w-full h-full object-cover object-top rounded"
             src={item?.product?.imageUrl}
             alt={item?.product?.title}
+            referrerPolicy="no-referrer"
           />
         </div>
 

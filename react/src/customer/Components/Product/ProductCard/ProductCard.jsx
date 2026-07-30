@@ -57,7 +57,7 @@ const ProductCard = ({ product }) => {
       </div>
     <div className='h-[14rem] sm:h-[20rem] bg-gray-100 flex items-center justify-center'>
         {imageUrl ? (
-          <img className='h-full w-full object-cover object-left-top' src={imageUrl} alt={title} />
+          <img className='h-full w-full object-cover object-left-top' src={imageUrl} alt={title} referrerPolicy="no-referrer" />
         ) : (
           <div className='text-gray-400'>No Image</div>
         )}
