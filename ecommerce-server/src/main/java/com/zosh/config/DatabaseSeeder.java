@@ -118,107 +118,107 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         // Seed Men's Kurtas
         createProductIfNotExist("Men Printed Pure Cotton Straight Kurta", "Majestic Man", "Green", 1499, 499, 66,
-                "https://rukminim1.flixcart.com/image/612/612/l5h2xe80/kurta/x/6/n/xl-kast-tile-green-majestic-man-original-imagg4z33hu4kzpv.jpeg?q=70",
+                "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=600&q=80",
                 mensKurta, new String[] { "S", "M", "L", "XL", "XXL" });
         createProductIfNotExist("Men Embroidered Jacquard Straight Kurta", "SG LEMAN", "Yellow", 2499, 799, 68,
-                "https://rukminim1.flixcart.com/image/612/612/xif0q/kurta/l/f/r/xl-k-spl668-yellow-sg-leman-original-imagznqcrahgq9rf.jpeg?q=70",
+                "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&q=80",
                 mensKurta, new String[] { "S", "M", "L", "XL", "XXL" });
         createProductIfNotExist("Embroidered Cotton Kurta", "Manyavar", "Blue", 2999, 2499, 16,
-                "https://rukminim2.flixcart.com/image/612/612/xif0q/kurta/g/6/k/m-sk-kurta-112-blue-sk-avish-original-imags3atfyhgzghy.jpeg?q=70",
+                "https://images.unsplash.com/photo-1583391733958-d25e07fac662?w=600&q=80",
                 mensKurta, new String[] { "S", "M", "L", "XL", "XXL", "XXXL" });
         createProductIfNotExist("White Pure Cotton Kurta", "Peter England", "White", 1299, 999, 23,
-                "https://rukminim2.flixcart.com/image/612/612/xif0q/kurta/w/h/i/m-kurta-white-sk-avish-original-imags3atfyhgzghy.jpeg?q=70",
+                "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80",
                 mensKurta, new String[] { "S", "M", "L", "XL", "XXL" });
 
         // Seed Men's Jeans
         createProductIfNotExist("Men Slim Fit Blue Jeans", "Levis", "Blue", 3999, 2799, 30,
-                "https://rukminim1.flixcart.com/image/612/612/xif0q/jean/e/z/3/32-m-725360725360-levis-original-imagz8q6q6q6q6q6.jpeg?q=70",
+                "https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=80",
                 menJeans, new String[] { "28", "30", "32", "34", "36", "38" });
         createProductIfNotExist("Men Regular Fit Black Jeans", "Wrangler", "Black", 3499, 2449, 30,
-                "https://rukminim1.flixcart.com/image/612/612/xif0q/jean/b/l/k/32-m-wrangler-black-original-imagz8q6q6q6q6q6.jpeg?q=70",
+                "https://images.unsplash.com/photo-1584370848010-d7fe6bc767ec?w=600&q=80",
                 menJeans, new String[] { "28", "30", "32", "34", "36" });
         createProductIfNotExist("Men Stretchable Grey Jeans", "Pepe Jeans", "Grey", 2999, 2099, 30,
-                "https://rukminim1.flixcart.com/image/612/612/xif0q/jean/g/r/y/32-m-pepe-grey-original-imagz8q6q6q6q6q6.jpeg?q=70",
+                "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&q=80",
                 menJeans, new String[] { "30", "32", "34", "36", "38" });
 
         // Seed Women's Dresses
         createProductIfNotExist("Floral Maxi Dress", "Zara", "Pink", 4999, 3499, 30,
-                "https://rukminim2.flixcart.com/image/612/612/xif0q/dress/p/n/k/s-zara-pink-maxi-original-imags5fhzfhzfhzf.jpeg?q=70",
+                "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&q=80",
                 womenDress, new String[] { "S", "M", "L", "XL" });
         createProductIfNotExist("A-Line Party Dress", "H&M", "Black", 2999, 1999, 33,
-                "https://rukminim2.flixcart.com/image/612/612/xif0q/dress/b/l/k/s-hm-black-aline-original-imags5fhzfhzfhzf.jpeg?q=70",
+                "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=600&q=80",
                 womenDress, new String[] { "S", "M", "L", "XL", "XXL" });
         createProductIfNotExist("Women's Casual Summer Dress", "ONLY", "Blue", 3499, 2449, 30,
-                "https://rukminim1.flixcart.com/image/612/612/xif0q/dress/7/h/r/xl-odr102893-blue-only-original-imagzge4czcruj2f.jpeg?q=70",
+                "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600&q=80",
                 womenDress, new String[] { "S", "M", "L", "XL" });
 
         // Seed Women's Jeans
         createProductIfNotExist("Women High Rise Skinny Jeans", "H&M", "Blue", 3499, 2449, 30,
-                "https://rukminim1.flixcart.com/image/612/612/xif0q/jean/b/l/u/28-s-hm-women-blue-original-imagz8q6q6q6q6q6.jpeg?q=70",
+                "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&q=80",
                 womenJeans, new String[] { "28", "30", "32", "34", "36" });
         createProductIfNotExist("Women Straight Fit Black Jeans", "Zara", "Black", 3999, 2799, 30,
-                "https://rukminim1.flixcart.com/image/612/612/xif0q/jean/b/l/a/28-s-zara-women-black-original-imagz8q6q6q6q6q6.jpeg?q=70",
+                "https://images.unsplash.com/photo-1555689502-c4b22d76c56f?w=600&q=80",
                 womenJeans, new String[] { "28", "30", "32", "34" });
 
         // Seed Sarees
         createProductIfNotExist("Kanjivaram Silk Saree", "Kalyan", "Red", 9999, 7999, 20,
-                "https://rukminim2.flixcart.com/image/612/612/xif0q/saree/r/e/d/kanjivaram-silk-original-imags5fhzfhzfhzf.jpeg?q=70",
+                "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80",
                 saree, new String[] { "Free Size" });
         createProductIfNotExist("Cotton Handloom Saree", "FabIndia", "Yellow", 3599, 2899, 19,
-                "https://rukminim2.flixcart.com/image/612/612/xif0q/saree/y/e/l/cotton-handloom-original-imags5fhzfhzfhzf.jpeg?q=70",
+                "https://images.unsplash.com/photo-1583391733958-d25e07fac662?w=600&q=80",
                 saree, new String[] { "Free Size" });
         createProductIfNotExist("Banarasi Silk Saree", "Kalapushpi", "Maroon", 5999, 4499, 25,
-                "https://rukminim1.flixcart.com/image/612/612/xif0q/sari/5/z/k/free-banarasi-saree-kalapushpi-unstitched-original-imagm5vz25z6fmuj.jpeg?q=70",
+                "https://images.unsplash.com/photo-1589465885857-44edb59bbff2?w=600&q=80",
                 saree, new String[] { "Free Size" });
 
         // Seed Men's Oxfords
         createProductIfNotExist("Men's Premium Black Leather Oxfords", "Louis Philippe", "Black", 6999, 4899, 30,
-                "https://assets.myntassets.com/h_1440,q_90,w_1080/v1/assets/images/19818816/2022/9/5/1f31fdf7-b08e-49b0-911b-689b940db95e1662369680373-Louis-Philippe-Men-Formal-Shoes-4561662369680066-1.jpg",
+                "https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=600&q=80",
                 menOxfords, new String[] { "6", "7", "8", "9", "10", "11" });
         createProductIfNotExist("Classic Tan Leather Derby Oxfords", "Bata", "Tan", 3999, 2799, 30,
-                "https://assets.myntassets.com/h_1440,q_90,w_1080/v1/assets/images/15418192/2021/9/13/2e38c9c6-8d69-42b7-862d-0b730f7c22991631526462744BataMenTanDerbyFormalShoes1.jpg",
+                "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&q=80",
                 menOxfords, new String[] { "6", "7", "8", "9", "10", "11" });
 
         // Seed Men's Loafers
         createProductIfNotExist("Men's Classic Brown Suede Loafers", "Hush Puppies", "Brown", 4999, 3499, 30,
-                "https://assets.myntassets.com/h_1440,q_90,w_1080/v1/assets/images/13600570/2021/3/10/f1fe6863-7182-45e0-b6f7-b6f125a2df6a1615367623348-Hush-Puppies-Men-Teal-Solid-Suede-Loafers-8911615367622998-1.jpg",
+                "https://images.unsplash.com/photo-1559544498-8547b7aa44d9?w=600&q=80",
                 menLoafers, new String[] { "6", "7", "8", "9", "10", "11" });
         createProductIfNotExist("Premium Tan Leather Slip-On Loafers", "Clarks", "Tan", 5999, 4199, 30,
-                "https://assets.myntassets.com/h_1440,q_90,w_1080/v1/assets/images/22753654/2023/4/12/36cc1725-d91d-44a6-ba92-7f7229e612801681283870826RedTapeMenBrownLoafers1.jpg",
+                "https://images.unsplash.com/photo-1449505278894-297fdb3edbc1?w=600&q=80",
                 menLoafers, new String[] { "6", "7", "8", "9", "10", "11" });
 
         // Seed Men's Boots
         createProductIfNotExist("Men's Robust Khaki Chelsea Boots", "Woodland", "Khaki", 7999, 5599, 30,
-                "https://assets.myntassets.com/h_1440,q_90,w_1080/v1/assets/images/22328120/2023/3/13/46e4b859-f81d-4de6-976e-b6a15e612fbd1678712399933WoodlandMenKhakiLeatherChelseaBoots1.jpg",
+                "https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=600&q=80",
                 menBoots, new String[] { "6", "7", "8", "9", "10", "11" });
         createProductIfNotExist("Robust Camel Leather Hiking Boots", "Woodland", "Camel", 8999, 6299, 30,
-                "https://assets.myntassets.com/h_1440,q_90,w_1080/v1/assets/images/12836262/2020/12/3/f919d3ee-180b-465f-ae98-5c1cfca9574d1606990597371-Woodland-Men-Camel-Leather-Flat-Boots-5641606990595995-1.jpg",
+                "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=600&q=80",
                 menBoots, new String[] { "6", "7", "8", "9", "10", "11" });
 
         // Seed Women's Heels
         createProductIfNotExist("Women's Elegant Red Stiletto Heels", "Catwalk", "Red", 3999, 2799, 30,
-                "https://assets.myntassets.com/h_1440,q_90,w_1080/v1/assets/images/19875630/2022/9/9/2e90f230-b353-48b2-b13c-0e782ea2bebe1662707204938Heels1.jpg",
+                "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&q=80",
                 womenHeels, new String[] { "6", "7", "8", "9", "10", "11" });
         createProductIfNotExist("Classic Black Block Heels", "Catwalk", "Black", 2999, 2099, 30,
-                "https://assets.myntassets.com/h_1440,q_90,w_1080/v1/assets/images/17154238/2022/3/29/7ffc0c67-64ce-4277-a739-e938f328ce781648550186987-Catwalk-Women-Heels-4721648550186542-1.jpg",
+                "https://images.unsplash.com/photo-1562183241-b937e95585b6?w=600&q=80",
                 womenHeels, new String[] { "6", "7", "8", "9", "10", "11" });
 
         // Seed Women's Flats
         createProductIfNotExist("Women's Casual Pink Ballet Flats", "Inc.5", "Pink", 2499, 1749, 30,
-                "https://assets.myntassets.com/h_1440,q_90,w_1080/v1/assets/images/22369812/2023/3/16/be6517a6-68fb-476c-94d3-0599c9c84e1b1678955210744Inc5WomenPinkFlats1.jpg",
+                "https://images.unsplash.com/photo-1579549301053-912b9d997d6f?w=600&q=80",
                 womenFlats, new String[] { "6", "7", "8", "9", "10", "11" });
         createProductIfNotExist("Ethnic Embroidered Juttis Flats", "Bata", "Gold", 1999, 1399, 30,
-                "https://assets.myntassets.com/h_1440,q_90,w_1080/v1/assets/images/23472098/2023/5/30/cd61b9cf-2b0e-436f-b02f-b4b105ea36be1685419842525BataWomenGoldTexturedJuttis1.jpg",
+                "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=80",
                 womenFlats, new String[] { "6", "7", "8", "9", "10", "11" });
 
         // Seed Women's Sneakers
         createProductIfNotExist("Women's Lightweight White Walking Sneakers", "Puma", "White", 4500, 3150, 30,
-                "https://assets.myntassets.com/h_1440,q_90,w_1080/v1/assets/images/24683058/2023/8/28/be5ad497-6a10-449e-b9ef-d4d12f1dbf701693213074811PumaWomenWhiteSneakers1.jpg",
+                "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&q=80",
                 womenSneakers, new String[] { "6", "7", "8", "9", "10", "11" });
 
         // Seed Women's Boots
         createProductIfNotExist("Women's Stylish Black Ankle Boots", "Carlton London", "Black", 5999, 4199, 30,
-                "https://assets.myntassets.com/h_1440,q_90,w_1080/v1/assets/images/15729188/2021/10/5/3de9ea9f-cd0d-40de-985c-06d20366ebbb1633425942478CarltonLondonWomenBlackBoots1.jpg",
+                "https://images.unsplash.com/photo-1591871987515-37351664e43e?w=600&q=80",
                 womenBoots, new String[] { "6", "7", "8", "9", "10", "11" });
     }
 
