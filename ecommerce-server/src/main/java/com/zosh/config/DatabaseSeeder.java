@@ -330,6 +330,10 @@ public class DatabaseSeeder implements CommandLineRunner {
                 p.setSizes(buildSizes(sizeNames, p.getQuantity() > 0 ? p.getQuantity() : 50));
                 updated = true;
             }
+            if (p.getImageUrl() == null || !p.getImageUrl().equals(imageUrl)) {
+                p.setImageUrl(imageUrl);
+                updated = true;
+            }
             if (updated) {
                 productRepository.save(p);
                 System.out.println("Repaired seeded product: " + title);
