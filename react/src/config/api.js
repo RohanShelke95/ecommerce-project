@@ -1,6 +1,6 @@
 
 import axios from 'axios';
-const DEPLOYED = process.env.REACT_APP_API_URL || 'https://e-commerce-server-production-0873.up.railway.app';
+const DEPLOYED = process.env.REACT_APP_API_URL || 'https://ecommerce-project-olf9.onrender.com';
 const LOCALHOST = 'http://localhost:5454';
 
 export const API_BASE_URL = process.env.NODE_ENV === 'production' ? DEPLOYED : LOCALHOST;
