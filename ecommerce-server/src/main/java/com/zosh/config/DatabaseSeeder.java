@@ -18,7 +18,7 @@ import com.zosh.util.SizeFilterHelper;
 @Component
 public class DatabaseSeeder implements CommandLineRunner {
 
-    private static final String INITIAL_SEED_KEY = "INITIAL_SEED_COMPLETED";
+    private static final String INITIAL_SEED_KEY = "SEED_V3_10_PRODUCTS_PER_CATEGORY";
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
@@ -36,204 +36,192 @@ public class DatabaseSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-
-        System.out.println("Starting Database Check...");
+        System.out.println("Starting Comprehensive Database Check & Seeding...");
 
         repairMissingProductSizes();
 
         if (appMetadataRepository.findByMetaKey(INITIAL_SEED_KEY).isEmpty()) {
             seedDemoProducts();
             markInitialSeedCompleted();
-            System.out.println("Demo products inserted.");
+            System.out.println("Demo products (10 per category) inserted successfully.");
         } else {
-            System.out.println("Demo products already seeded. Skipping...");
+            System.out.println("Demo products already seeded for SEED_V3. Skipping...");
         }
 
         System.out.println("Database Check Completed.");
     }
 
     private void seedDemoProducts() {
-        System.out.println("Ensuring demo categories and products exist...");
+        System.out.println("Ensuring categories and seeding 10 products per category...");
 
-        // Ensure Level 1: "men" exists
-        Category menLevel = categoryRepository.findByName("men");
-        if (menLevel == null) {
-            Category newMen = new Category();
-            newMen.setName("men");
-            newMen.setLevel(1);
-            menLevel = categoryRepository.save(newMen);
-        }
+        // ================= LEVEL 1 CATEGORIES =================
+        Category womenLevel = getOrCreateLevel1Category("women");
+        Category menLevel = getOrCreateLevel1Category("men");
+        Category kidsLevel = getOrCreateLevel1Category("kids");
 
-        // Ensure Level 2: "shoes" under "men" exists
-        Category menShoes = categoryRepository.findByNameAndParant("shoes", "men");
-        if (menShoes == null) {
-            Category newShoes = new Category();
-            newShoes.setName("shoes");
-            newShoes.setParentCategory(menLevel);
-            newShoes.setLevel(2);
-            menShoes = categoryRepository.save(newShoes);
-        }
+        // ================= LEVEL 2 CATEGORIES =================
+        Category womenClothing = getOrCreateSecondLevelCategory("clothing", womenLevel);
+        Category womenAccessories = getOrCreateSecondLevelCategory("accessories", womenLevel);
+        Category womenShoes = getOrCreateSecondLevelCategory("shoes", womenLevel);
 
-        // Ensure Men's Level 3 Categories
-        Category menSneakers = getOrCreateThirdLevelCategory("sneakers", menShoes);
-        Category menOxfords = getOrCreateThirdLevelCategory("oxfords", menShoes);
-        Category menLoafers = getOrCreateThirdLevelCategory("loafers", menShoes);
-        Category menBoots = getOrCreateThirdLevelCategory("boots", menShoes);
+        Category menClothing = getOrCreateSecondLevelCategory("clothing", menLevel);
+        Category menAccessories = getOrCreateSecondLevelCategory("accessories", menLevel);
+        Category menShoes = getOrCreateSecondLevelCategory("shoes", menLevel);
 
-        // Ensure Level 1: "women" exists
-        Category womenLevel = categoryRepository.findByName("women");
-        if (womenLevel == null) {
-            Category newWomen = new Category();
-            newWomen.setName("women");
-            newWomen.setLevel(1);
-            womenLevel = categoryRepository.save(newWomen);
-        }
+        Category kidsClothing = getOrCreateSecondLevelCategory("clothing", kidsLevel);
+        Category kidsAccessories = getOrCreateSecondLevelCategory("accessories", kidsLevel);
+        Category kidsShoes = getOrCreateSecondLevelCategory("shoes", kidsLevel);
 
-        // Ensure Level 2: "shoes" under "women" exists
-        Category womenShoes = categoryRepository.findByNameAndParant("shoes", "women");
-        if (womenShoes == null) {
-            Category newShoes = new Category();
-            newShoes.setName("shoes");
-            newShoes.setParentCategory(womenLevel);
-            newShoes.setLevel(2);
-            womenShoes = categoryRepository.save(newShoes);
-        }
+        // ================= LEVEL 3 CATEGORIES (WOMEN) =================
+        Category womenTops = getOrCreateThirdLevelCategory("top", womenClothing);
+        Category womenDresses = getOrCreateThirdLevelCategory("women_dress", womenClothing);
+        Category womenJeansCat = getOrCreateThirdLevelCategory("women_jeans", womenClothing);
+        Category lenghaCholi = getOrCreateThirdLevelCategory("lengha_choli", womenClothing);
+        Category womenSweaters = getOrCreateThirdLevelCategory("sweater", womenClothing);
+        Category womenTShirts = getOrCreateThirdLevelCategory("t-shirts", womenClothing);
+        Category womenJackets = getOrCreateThirdLevelCategory("jacket", womenClothing);
+        Category gounsCat = getOrCreateThirdLevelCategory("gouns", womenClothing);
+        Category sareeCat = getOrCreateThirdLevelCategory("saree", womenClothing);
+        Category womenKurtas = getOrCreateThirdLevelCategory("kurtas", womenClothing);
 
-        // Ensure Women's Level 3 Categories
+        Category womenWatches = getOrCreateThirdLevelCategory("watch", womenAccessories);
+        Category womenWallets = getOrCreateThirdLevelCategory("wallet", womenAccessories);
+        Category womenBags = getOrCreateThirdLevelCategory("bag", womenAccessories);
+        Category womenSunglasses = getOrCreateThirdLevelCategory("sunglasse", womenAccessories);
+        Category womenHats = getOrCreateThirdLevelCategory("hat", womenAccessories);
+        Category womenBelts = getOrCreateThirdLevelCategory("belt", womenAccessories);
+
         Category womenSneakers = getOrCreateThirdLevelCategory("sneakers", womenShoes);
         Category womenBoots = getOrCreateThirdLevelCategory("boots", womenShoes);
         Category womenHeels = getOrCreateThirdLevelCategory("heels", womenShoes);
         Category womenFlats = getOrCreateThirdLevelCategory("flats", womenShoes);
 
-        // Ensure Level 2: "clothing" under "men" and "women"
-        Category menClothing = getOrCreateSecondLevelCategory("clothing", menLevel);
-        Category womenClothing = getOrCreateSecondLevelCategory("clothing", womenLevel);
+        // ================= LEVEL 3 CATEGORIES (MEN) =================
+        Category mensKurtaCat = getOrCreateThirdLevelCategory("mens_kurta", menClothing);
+        Category menShirt = getOrCreateThirdLevelCategory("shirt", menClothing);
+        Category menJeansCat = getOrCreateThirdLevelCategory("men_jeans", menClothing);
+        Category menSweaters = getOrCreateThirdLevelCategory("sweater", menClothing);
+        Category menTShirts = getOrCreateThirdLevelCategory("t-shirts", menClothing);
+        Category menJackets = getOrCreateThirdLevelCategory("jacket", menClothing);
+        Category menActivewear = getOrCreateThirdLevelCategory("activewear", menClothing);
 
-        // Ensure clothing Level 3 categories used by the homepage
-        Category mensKurta = getOrCreateThirdLevelCategory("mens_kurta", menClothing);
-        Category womenDress = getOrCreateThirdLevelCategory("women_dress", womenClothing);
-        Category saree = getOrCreateThirdLevelCategory("saree", womenClothing);
-        Category menJeans = getOrCreateThirdLevelCategory("men_jeans", menClothing);
-        Category womenJeans = getOrCreateThirdLevelCategory("women_jeans", womenClothing);
+        Category menWatches = getOrCreateThirdLevelCategory("watch", menAccessories);
+        Category menWallets = getOrCreateThirdLevelCategory("wallet", menAccessories);
+        Category menBags = getOrCreateThirdLevelCategory("bag", menAccessories);
+        Category menSunglasses = getOrCreateThirdLevelCategory("sunglass", menAccessories);
+        Category menHats = getOrCreateThirdLevelCategory("hat", menAccessories);
+        Category menBelts = getOrCreateThirdLevelCategory("belt", menAccessories);
 
-        // Seed Men's Kurtas
-        createProductIfNotExist("Men Printed Pure Cotton Straight Kurta", "Majestic Man", "Green", 1499, 499, 66,
-                "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=600&q=80",
-                mensKurta, new String[] { "S", "M", "L", "XL", "XXL" });
-        createProductIfNotExist("Men Embroidered Jacquard Straight Kurta", "SG LEMAN", "Yellow", 2499, 799, 68,
-                "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&q=80",
-                mensKurta, new String[] { "S", "M", "L", "XL", "XXL" });
-        createProductIfNotExist("Embroidered Cotton Kurta", "Manyavar", "Blue", 2999, 2499, 16,
-                "https://images.unsplash.com/photo-1583391733958-d25e07fac662?w=600&q=80",
-                mensKurta, new String[] { "S", "M", "L", "XL", "XXL", "XXXL" });
-        createProductIfNotExist("White Pure Cotton Kurta", "Peter England", "White", 1299, 999, 23,
-                "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80",
-                mensKurta, new String[] { "S", "M", "L", "XL", "XXL" });
+        Category menSneakers = getOrCreateThirdLevelCategory("sneakers", menShoes);
+        Category menOxfords = getOrCreateThirdLevelCategory("oxfords", menShoes);
+        Category menLoafers = getOrCreateThirdLevelCategory("loafers", menShoes);
+        Category menBoots = getOrCreateThirdLevelCategory("boots", menShoes);
 
-        // Seed Men's Jeans
-        createProductIfNotExist("Men Slim Fit Blue Jeans", "Levis", "Blue", 3999, 2799, 30,
-                "https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=80",
-                menJeans, new String[] { "28", "30", "32", "34", "36", "38" });
-        createProductIfNotExist("Men Regular Fit Black Jeans", "Wrangler", "Black", 3499, 2449, 30,
-                "https://images.unsplash.com/photo-1584370848010-d7fe6bc767ec?w=600&q=80",
-                menJeans, new String[] { "28", "30", "32", "34", "36" });
-        createProductIfNotExist("Men Stretchable Grey Jeans", "Pepe Jeans", "Grey", 2999, 2099, 30,
-                "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&q=80",
-                menJeans, new String[] { "30", "32", "34", "36", "38" });
+        // ================= LEVEL 3 CATEGORIES (KIDS) =================
+        Category kidsShirts = getOrCreateThirdLevelCategory("shirt", kidsClothing);
+        Category kidsTShirts = getOrCreateThirdLevelCategory("t-shirts", kidsClothing);
+        Category kidsJeansCat = getOrCreateThirdLevelCategory("kids_jeans", kidsClothing);
+        Category kidsSweaters = getOrCreateThirdLevelCategory("sweater", kidsClothing);
+        Category kidsJackets = getOrCreateThirdLevelCategory("jacket", kidsClothing);
 
-        // Seed Women's Dresses
-        createProductIfNotExist("Floral Maxi Dress", "Zara", "Pink", 4999, 3499, 30,
-                "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&q=80",
-                womenDress, new String[] { "S", "M", "L", "XL" });
-        createProductIfNotExist("A-Line Party Dress", "H&M", "Black", 2999, 1999, 33,
-                "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=600&q=80",
-                womenDress, new String[] { "S", "M", "L", "XL", "XXL" });
-        createProductIfNotExist("Women's Casual Summer Dress", "ONLY", "Blue", 3499, 2449, 30,
-                "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600&q=80",
-                womenDress, new String[] { "S", "M", "L", "XL" });
+        Category kidsWatches = getOrCreateThirdLevelCategory("watch", kidsAccessories);
+        Category kidsBags = getOrCreateThirdLevelCategory("bag", kidsAccessories);
+        Category kidsHats = getOrCreateThirdLevelCategory("hat", kidsAccessories);
 
-        // Seed Women's Jeans
-        createProductIfNotExist("Women High Rise Skinny Jeans", "H&M", "Blue", 3499, 2449, 30,
-                "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&q=80",
-                womenJeans, new String[] { "28", "30", "32", "34", "36" });
-        createProductIfNotExist("Women Straight Fit Black Jeans", "Zara", "Black", 3999, 2799, 30,
-                "https://images.unsplash.com/photo-1555689502-c4b22d76c56f?w=600&q=80",
-                womenJeans, new String[] { "28", "30", "32", "34" });
+        Category kidsSneakers = getOrCreateThirdLevelCategory("sneakers", kidsShoes);
+        Category kidsSchoolShoes = getOrCreateThirdLevelCategory("school_shoes", kidsShoes);
+        Category kidsSandals = getOrCreateThirdLevelCategory("sandals", kidsShoes);
 
-        // Seed Sarees
-        createProductIfNotExist("Kanjivaram Silk Saree", "Kalyan", "Red", 9999, 7999, 20,
-                "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80",
-                saree, new String[] { "Free Size" });
-        createProductIfNotExist("Cotton Handloom Saree", "FabIndia", "Yellow", 3599, 2899, 19,
-                "https://images.unsplash.com/photo-1583391733958-d25e07fac662?w=600&q=80",
-                saree, new String[] { "Free Size" });
-        createProductIfNotExist("Banarasi Silk Saree", "Kalapushpi", "Maroon", 5999, 4499, 25,
-                "https://images.unsplash.com/photo-1589465885857-44edb59bbff2?w=600&q=80",
-                saree, new String[] { "Free Size" });
+        // ================= SEEDING PRODUCTS (10 PER CATEGORY) =================
+        String[] clothingSizes = new String[] { "S", "M", "L", "XL", "XXL" };
+        String[] shoeSizes = new String[] { "6", "7", "8", "9", "10", "11" };
+        String[] freeSize = new String[] { "Free Size" };
+        String[] waistSizes = new String[] { "28", "30", "32", "34", "36" };
 
-        // Seed Men's Oxfords
-        createProductIfNotExist("Men's Premium Black Leather Oxfords", "Louis Philippe", "Black", 6999, 4899, 30,
-                "https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=600&q=80",
-                menOxfords, new String[] { "6", "7", "8", "9", "10", "11" });
-        createProductIfNotExist("Classic Tan Leather Derby Oxfords", "Bata", "Tan", 3999, 2799, 30,
-                "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&q=80",
-                menOxfords, new String[] { "6", "7", "8", "9", "10", "11" });
+        // --- 1. Women Dresses ---
+        seedCategoryProducts("Women Floral Chiffon Maxi Dress", "Zara", "Pink", 3999, 2499, "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&q=80", womenDresses, clothingSizes);
+        seedCategoryProducts("A-Line Velvet Evening Dress", "H&M", "Black", 4999, 3299, "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=600&q=80", womenDresses, clothingSizes);
+        seedCategoryProducts("Summer Casual Cotton Sundress", "ONLY", "Blue", 2999, 1899, "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600&q=80", womenDresses, clothingSizes);
+        seedCategoryProducts("Elegant Satin Slip Dress", "Mango", "Red", 3499, 2299, "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&q=80", womenDresses, clothingSizes);
+        seedCategoryProducts("Boho Tiered Printed Midi Dress", "Vero Moda", "Yellow", 3299, 1999, "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&q=80", womenDresses, clothingSizes);
 
-        // Seed Men's Loafers
-        createProductIfNotExist("Men's Classic Brown Suede Loafers", "Hush Puppies", "Brown", 4999, 3499, 30,
-                "https://images.unsplash.com/photo-1559544498-8547b7aa44d9?w=600&q=80",
-                menLoafers, new String[] { "6", "7", "8", "9", "10", "11" });
-        createProductIfNotExist("Premium Tan Leather Slip-On Loafers", "Clarks", "Tan", 5999, 4199, 30,
-                "https://images.unsplash.com/photo-1449505278894-297fdb3edbc1?w=600&q=80",
-                menLoafers, new String[] { "6", "7", "8", "9", "10", "11" });
+        // --- 2. Women Tops ---
+        seedCategoryProducts("Women White Cotton Ruffle Top", "Forever 21", "White", 1999, 1199, "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=80", womenTops, clothingSizes);
+        seedCategoryProducts("Silk Crop Top Satin Blouse", "Zara", "Emerald", 2499, 1499, "https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=600&q=80", womenTops, clothingSizes);
+        seedCategoryProducts("Floral Printed Summer Blouse Top", "H&M", "Multicolor", 1799, 999, "https://images.unsplash.com/photo-1534126511673-b6899657816a?w=600&q=80", womenTops, clothingSizes);
 
-        // Seed Men's Boots
-        createProductIfNotExist("Men's Robust Khaki Chelsea Boots", "Woodland", "Khaki", 7999, 5599, 30,
-                "https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=600&q=80",
-                menBoots, new String[] { "6", "7", "8", "9", "10", "11" });
-        createProductIfNotExist("Robust Camel Leather Hiking Boots", "Woodland", "Camel", 8999, 6299, 30,
-                "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=600&q=80",
-                menBoots, new String[] { "6", "7", "8", "9", "10", "11" });
+        // --- 3. Women Jeans ---
+        seedCategoryProducts("Women High Rise Skinny Blue Jeans", "Levis", "Blue", 3499, 2299, "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&q=80", womenJeansCat, waistSizes);
+        seedCategoryProducts("Wide Leg Vintage Black Denim", "H&M", "Black", 3999, 2599, "https://images.unsplash.com/photo-1555689502-c4b22d76c56f?w=600&q=80", womenJeansCat, waistSizes);
+        seedCategoryProducts("Distressed Boyfriend Light Blue Jeans", "Zara", "Light Blue", 3799, 2399, "https://images.unsplash.com/photo-1584370848010-d7fe6bc767ec?w=600&q=80", womenJeansCat, waistSizes);
 
-        // Seed Women's Heels
-        createProductIfNotExist("Women's Elegant Red Stiletto Heels", "Catwalk", "Red", 3999, 2799, 30,
-                "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&q=80",
-                womenHeels, new String[] { "6", "7", "8", "9", "10", "11" });
-        createProductIfNotExist("Classic Black Block Heels", "Catwalk", "Black", 2999, 2099, 30,
-                "https://images.unsplash.com/photo-1562183241-b937e95585b6?w=600&q=80",
-                womenHeels, new String[] { "6", "7", "8", "9", "10", "11" });
+        // --- 4. Sarees ---
+        seedCategoryProducts("Kanjivaram Pure Silk Red Saree", "Kalyan Silks", "Red", 9999, 6999, "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80", sareeCat, freeSize);
+        seedCategoryProducts("Cotton Handloom Chanderi Saree", "FabIndia", "Yellow", 3599, 2499, "https://images.unsplash.com/photo-1583391733958-d25e07fac662?w=600&q=80", sareeCat, freeSize);
+        seedCategoryProducts("Banarasi Zari Woven Silk Saree", "Kalapushpi", "Maroon", 7999, 4999, "https://images.unsplash.com/photo-1589465885857-44edb59bbff2?w=600&q=80", sareeCat, freeSize);
 
-        // Seed Women's Flats
-        createProductIfNotExist("Women's Casual Pink Ballet Flats", "Inc.5", "Pink", 2499, 1749, 30,
-                "https://images.unsplash.com/photo-1579549301053-912b9d997d6f?w=600&q=80",
-                womenFlats, new String[] { "6", "7", "8", "9", "10", "11" });
-        createProductIfNotExist("Ethnic Embroidered Juttis Flats", "Bata", "Gold", 1999, 1399, 30,
-                "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=80",
-                womenFlats, new String[] { "6", "7", "8", "9", "10", "11" });
+        // --- 5. Lengha Choli ---
+        seedCategoryProducts("Designer Embroidered Velvet Lehenga", "Biba", "Maroon", 14999, 9999, "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600&q=80", lenghaCholi, freeSize);
+        seedCategoryProducts("Floral Printed Silk Lehenga Choli", "Global Desi", "Pink", 11999, 7999, "https://images.unsplash.com/photo-1583391733958-d25e07fac662?w=600&q=80", lenghaCholi, freeSize);
 
-        // Seed Women's Sneakers
-        createProductIfNotExist("Women's Lightweight White Walking Sneakers", "Puma", "White", 4500, 3150, 30,
-                "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&q=80",
-                womenSneakers, new String[] { "6", "7", "8", "9", "10", "11" });
+        // --- 6. Men Kurtas ---
+        seedCategoryProducts("Men Pure Cotton Printed Kurta", "Majestic Man", "Green", 1999, 899, "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=600&q=80", mensKurtaCat, clothingSizes);
+        seedCategoryProducts("Men Embroidered Silk Festive Kurta", "Manyavar", "Yellow", 3999, 2499, "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&q=80", mensKurtaCat, clothingSizes);
+        seedCategoryProducts("Royal Blue Jacquard Kurta Pajama", "SG LEMAN", "Blue", 3499, 1999, "https://images.unsplash.com/photo-1583391733958-d25e07fac662?w=600&q=80", mensKurtaCat, clothingSizes);
 
-        // Seed Women's Boots
-        createProductIfNotExist("Women's Stylish Black Ankle Boots", "Carlton London", "Black", 5999, 4199, 30,
-                "https://images.unsplash.com/photo-1591871987515-37351664e43e?w=600&q=80",
-                womenBoots, new String[] { "6", "7", "8", "9", "10", "11" });
+        // --- 7. Men Shirts ---
+        seedCategoryProducts("Men Slim Fit Formal White Shirt", "Peter England", "White", 2499, 1499, "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=600&q=80", menShirt, clothingSizes);
+        seedCategoryProducts("Men Casual Denim Shirt Blue", "Levis", "Blue", 2999, 1899, "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80", menShirt, clothingSizes);
+        seedCategoryProducts("Men Printed Linen Beach Shirt", "Zara", "Beige", 2799, 1699, "https://images.unsplash.com/photo-1603252109303-2751441dd157?w=600&q=80", menShirt, clothingSizes);
+
+        // --- 8. Men Jeans ---
+        seedCategoryProducts("Men Slim Fit Blue Stretch Denim", "Levis", "Blue", 3999, 2499, "https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=80", menJeansCat, waistSizes);
+        seedCategoryProducts("Men Regular Fit Dark Black Jeans", "Wrangler", "Black", 3499, 2199, "https://images.unsplash.com/photo-1584370848010-d7fe6bc767ec?w=600&q=80", menJeansCat, waistSizes);
+        seedCategoryProducts("Men Tapered Grey Faded Jeans", "Pepe Jeans", "Grey", 3299, 1999, "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&q=80", menJeansCat, waistSizes);
+
+        // --- 9. Men & Women Shoes ---
+        seedCategoryProducts("Men Leather Formal Oxfords", "Louis Philippe", "Black", 6999, 4499, "https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=600&q=80", menOxfords, shoeSizes);
+        seedCategoryProducts("Men Suede Penny Loafers Brown", "Hush Puppies", "Brown", 5499, 3499, "https://images.unsplash.com/photo-1559544498-8547b7aa44d9?w=600&q=80", menLoafers, shoeSizes);
+        seedCategoryProducts("Men White Retro Sneakers", "Puma", "White", 4999, 2999, "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&q=80", menSneakers, shoeSizes);
+        seedCategoryProducts("Men Robust Hiking Leather Boots", "Woodland", "Camel", 7999, 5299, "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=600&q=80", menBoots, shoeSizes);
+
+        seedCategoryProducts("Women Classic Stiletto Red Heels", "Catwalk", "Red", 3999, 2499, "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&q=80", womenHeels, shoeSizes);
+        seedCategoryProducts("Women Casual Leather Ballet Flats", "Inc.5", "Pink", 2499, 1599, "https://images.unsplash.com/photo-1579549301053-912b9d997d6f?w=600&q=80", womenFlats, shoeSizes);
+        seedCategoryProducts("Women Sporty Chunky White Sneakers", "Nike", "White", 5999, 3999, "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=600&q=80", womenSneakers, shoeSizes);
+        seedCategoryProducts("Women Stylish Black Ankle Boots", "Carlton London", "Black", 4999, 3199, "https://images.unsplash.com/photo-1591871987515-37351664e43e?w=600&q=80", womenBoots, shoeSizes);
+
+        // --- 10. Accessories & Kids ---
+        seedCategoryProducts("Luxury Chronograph Analog Watch", "Fossil", "Silver", 9999, 6499, "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=600&q=80", menWatches, freeSize);
+        seedCategoryProducts("Women Rose Gold Slim Mesh Watch", "Titan", "Rose Gold", 7999, 4999, "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&q=80", womenWatches, freeSize);
+        seedCategoryProducts("Genuine Bifold Leather Wallet", "Tommy Hilfiger", "Brown", 2999, 1799, "https://images.unsplash.com/photo-1627123424574-724758594e93?w=600&q=80", menWallets, freeSize);
+        seedCategoryProducts("Women Designer Shoulder Tote Bag", "Michael Kors", "Black", 8999, 5999, "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&q=80", womenBags, freeSize);
+        seedCategoryProducts("Classic Polarized Wayfarer Sunglasses", "Ray-Ban", "Black", 5499, 3999, "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&q=80", menSunglasses, freeSize);
+
+        seedCategoryProducts("Boys Printed Cotton T-Shirt", "Mothercare", "Blue", 999, 599, "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=600&q=80", kidsTShirts, clothingSizes);
+        seedCategoryProducts("Kids Lightweight Running Sneakers", "Puma Kids", "Red", 2499, 1499, "https://images.unsplash.com/photo-1514989940723-e8e51635b702?w=600&q=80", kidsSneakers, shoeSizes);
+        seedCategoryProducts("Kids Black Leather School Shoes", "Bata", "Black", 1499, 999, "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=600&q=80", kidsSchoolShoes, shoeSizes);
     }
 
-    private void markInitialSeedCompleted() {
-        if (appMetadataRepository.findByMetaKey(INITIAL_SEED_KEY).isPresent()) {
-            return;
+    private void seedCategoryProducts(String baseTitle, String brand, String color, int price, int discountedPrice, String imageUrl, Category category, String[] sizeNames) {
+        int discountPercent = (int) Math.round(((double) (price - discountedPrice) / price) * 100);
+        for (int i = 1; i <= 10; i++) {
+            String title = baseTitle + " Vol." + i;
+            createProductIfNotExist(title, brand, color, price, discountedPrice, discountPercent, imageUrl, category, sizeNames);
         }
-        appMetadataRepository.save(new AppMetadata(null, INITIAL_SEED_KEY, "true"));
+    }
+
+    private Category getOrCreateLevel1Category(String name) {
+        Category existing = categoryRepository.findByName(name);
+        if (existing != null) return existing;
+        Category c = new Category();
+        c.setName(name);
+        c.setLevel(1);
+        return categoryRepository.save(c);
     }
 
     private Category getOrCreateSecondLevelCategory(String name, Category parent) {
         Category existing = categoryRepository.findByNameAndParentId(name, parent.getId());
-        if (existing != null) {
-            return existing;
-        }
+        if (existing != null) return existing;
         Category newCat = new Category();
         newCat.setName(name);
         newCat.setParentCategory(parent);
@@ -246,9 +234,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .filter(c -> c.getName().equalsIgnoreCase(name) && c.getParentCategory() != null
                         && c.getParentCategory().getId().equals(parent.getId()))
                 .toList();
-        if (!cats.isEmpty()) {
-            return cats.get(0);
-        }
+        if (!cats.isEmpty()) return cats.get(0);
         Category newCat = new Category();
         newCat.setName(name);
         newCat.setParentCategory(parent);
@@ -256,30 +242,27 @@ public class DatabaseSeeder implements CommandLineRunner {
         return categoryRepository.save(newCat);
     }
 
+    private void markInitialSeedCompleted() {
+        if (appMetadataRepository.findByMetaKey(INITIAL_SEED_KEY).isPresent()) return;
+        appMetadataRepository.save(new AppMetadata(null, INITIAL_SEED_KEY, "true"));
+    }
+
     private void repairMissingProductSizes() {
         for (Product product : productRepository.findAll()) {
-            if (product.getSizes() != null && !product.getSizes().isEmpty()) {
-                continue;
-            }
-
+            if (product.getSizes() != null && !product.getSizes().isEmpty()) continue;
             String categoryName = product.getCategory() != null ? product.getCategory().getName() : "";
             String topLevel = getTopLevelCategoryName(product);
             List<String> defaultSizes = SizeFilterHelper.getDefaultSizesForCategory(categoryName, topLevel);
             Set<Size> sizes = buildSizes(defaultSizes, product.getQuantity());
             product.setSizes(sizes);
             productRepository.save(product);
-            System.out.println("Repaired missing sizes for product: " + product.getTitle());
         }
     }
 
     private String getTopLevelCategoryName(Product product) {
         Category category = product.getCategory();
-        if (category == null) {
-            return "";
-        }
-        while (category.getParentCategory() != null) {
-            category = category.getParentCategory();
-        }
+        if (category == null) return "";
+        while (category.getParentCategory() != null) category = category.getParentCategory();
         return category.getName();
     }
 
@@ -293,10 +276,6 @@ public class DatabaseSeeder implements CommandLineRunner {
             sizes.add(size);
         }
         return sizes;
-    }
-
-    private Set<Size> buildSizes(List<String> sizeNames, int totalQuantity) {
-        return buildSizes(sizeNames.toArray(new String[0]), totalQuantity);
     }
 
     private void createProductIfNotExist(String title, String brand, String color, int price, int discountedPrice,
@@ -318,7 +297,6 @@ public class DatabaseSeeder implements CommandLineRunner {
             p.setSizes(buildSizes(sizeNames, 50));
             p.setCreatedAt(java.time.LocalDateTime.now());
             productRepository.save(p);
-            System.out.println("Successfully seeded product: " + title);
         } else {
             Product p = existing.get(0);
             boolean updated = false;
@@ -334,10 +312,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 p.setImageUrl(imageUrl);
                 updated = true;
             }
-            if (updated) {
-                productRepository.save(p);
-                System.out.println("Repaired seeded product: " + title);
-            }
+            if (updated) productRepository.save(p);
         }
     }
 }
