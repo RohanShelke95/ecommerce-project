@@ -36,7 +36,7 @@ public class AdminProductController {
 	@PostMapping("/seed-demo")
 	public ResponseEntity<ApiResponse> seedDemoProductsHandler() {
 		try {
-			databaseSeeder.run();
+			databaseSeeder.run(new String[0]);
 			ApiResponse res = new ApiResponse("Database reset & 10 products per category seeded successfully!", true);
 			return new ResponseEntity<>(res, HttpStatus.OK);
 		} catch (Exception e) {

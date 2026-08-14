@@ -39,6 +39,11 @@ const ProductsTable = () => {
   const dispatch = useDispatch();
   const { customersProduct } = useSelector((store) => store);
   const [seeding, setSeeding] = useState(false);
+  const [filterValue, setFilterValue] = useState({
+    availability: "",
+    category: "",
+    sort: "",
+  });
 
   const handleSeedDatabase = async () => {
     const jwt = localStorage.getItem("jwt");
@@ -167,25 +172,28 @@ const ProductsTable = () => {
         </Grid>
       </Card> */}
 
-      <Card className="mt-2">
-        <CardHeader
-          title="All Products"
-          action={
-            <Button
-              variant="contained"
-              disabled={seeding}
-              onClick={handleSeedDatabase}
-              sx={{ backgroundColor: "#9155FD", "&:hover": { backgroundColor: "#7e3ffc" }, color: "white" }}
-            >
-              {seeding ? "Seeding Database..." : "Reset & Seed 10 Products Per Category"}
-            </Button>
-          }
-          sx={{
-            pt: 2,
-            alignItems: "center",
-            "& .MuiCardHeader-action": { mt: 0.6 },
-          }}
-        />
+      <Card className="mt-2 p-4">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4 px-2">
+          <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+            All Products
+          </Typography>
+          <Button
+            variant="contained"
+            disabled={seeding}
+            onClick={handleSeedDatabase}
+            sx={{
+              backgroundColor: "#9155FD !important",
+              "&:hover": { backgroundColor: "#7e3ffc !important" },
+              color: "white !important",
+              fontWeight: "bold",
+              px: 3,
+              py: 1,
+              borderRadius: "8px"
+            }}
+          >
+            {seeding ? "Resetting & Seeding Database..." : "⚡ Reset & Seed 10 Products Per Category"}
+          </Button>
+        </div>
         <TableContainer>
           <Table sx={{ minWidth: 800 }} aria-label="table in dashboard">
             <TableHead>
