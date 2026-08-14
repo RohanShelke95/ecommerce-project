@@ -33,6 +33,7 @@ public class AdminProductController {
 		this.databaseSeeder = databaseSeeder;
 	}
 
+	@CrossOrigin(origins = "*")
 	@GetMapping("/seed-demo")
 	public ResponseEntity<ApiResponse> seedDemoProductsGetHandler() {
 		try {
@@ -45,6 +46,7 @@ public class AdminProductController {
 		}
 	}
 
+@CrossOrigin(origins = "*")
 	@PostMapping("/seed-demo")
 	public ResponseEntity<ApiResponse> seedDemoProductsHandler() {
 		try {

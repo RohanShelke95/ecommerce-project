@@ -25,7 +25,8 @@ public class AppConfig {
 		
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and()
-		.authorizeHttpRequests(authorize -> authorize
+        .authorizeHttpRequests(authorize -> authorize
+				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/products").permitAll()
 				.requestMatchers("/api/admin/products/seed-demo").permitAll()
