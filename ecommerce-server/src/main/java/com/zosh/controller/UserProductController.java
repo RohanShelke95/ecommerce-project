@@ -48,19 +48,14 @@ public class UserProductController {
 			@RequestParam(required = false, defaultValue = "") String stock,
 			@RequestParam(required = false, defaultValue = "0") Integer pageNumber,
 			@RequestParam(required = false, defaultValue = "10") Integer pageSize,
-			@RequestParam(required = false) String lavelOne){
-		System.out.println("category: " + category);
-		System.out.println("lavelOne: " + lavelOne);
-		System.out.println("color: " + color);
-		System.out.println("minPrice: " + minPrice);
-		System.out.println("maxPrice: " + maxPrice);
+			@RequestParam(required = false, defaultValue = "") String lavelOne) {
 
-		Page<Product> res= productService.getAllProduct(category, color, size, minPrice, maxPrice, minDiscount, sort,stock,pageNumber,pageSize, lavelOne);
-		System.out.println("Found products count: " + res.getTotalElements());
-		
-		System.out.println("complete products");
-		return new ResponseEntity<>(res,HttpStatus.ACCEPTED);
-		
+		List<String> safeColor = color != null ? color : java.util.Collections.emptyList();
+		List<String> safeSize = size != null ? size : java.util.Collections.emptyList();
+
+		Page<Product> res = productService.getAllProduct(
+				category, safeColor, safeSize, minPrice, maxPrice, minDiscount, sort, stock, pageNumber, pageSize, lavelOne);
+		return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
 	}
 	
 
