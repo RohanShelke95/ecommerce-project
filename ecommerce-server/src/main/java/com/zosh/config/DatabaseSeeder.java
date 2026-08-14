@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.zosh.modal.Category;
 import com.zosh.modal.Product;
@@ -26,7 +25,7 @@ import com.zosh.util.SizeFilterHelper;
 @Component
 public class DatabaseSeeder implements CommandLineRunner {
 
-    private static final String INITIAL_SEED_KEY = "RESET_AND_SEED_V4_10_PRODUCTS_PER_CATEGORY";
+    private static final String INITIAL_SEED_KEY = "FORCE_RESET_AND_SEED_V5";
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
@@ -57,9 +56,8 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     @Override
-    @Transactional
     public void run(String... args) throws Exception {
-        System.out.println("Starting Comprehensive Database Check & Clean Seeding...");
+        System.out.println("Starting Reliable Database Reset & 10 Products Per Category Seeding...");
 
         if (appMetadataRepository.findByMetaKey(INITIAL_SEED_KEY).isEmpty()) {
             wipeOldProductData();
@@ -67,7 +65,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             markInitialSeedCompleted();
             System.out.println("Clean Database Reset & 10 Products per Category inserted successfully!");
         } else {
-            System.out.println("Demo products already seeded for RESET_AND_SEED_V4. Skipping...");
+            System.out.println("Demo products already seeded for FORCE_RESET_AND_SEED_V5. Skipping...");
         }
 
         repairMissingProductSizes();
@@ -75,18 +73,29 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     private void wipeOldProductData() {
-        System.out.println("Wiping existing product data to clean slate...");
+        System.out.println("Wiping existing product data in safe foreign-key order...");
+
+        try { cartItemRepository.deleteAll(); } catch (Exception e) { System.err.println("CartItem wipe warning: " + e.getMessage()); }
+        try { wishlistItemRepository.deleteAll(); } catch (Exception e) { System.err.println("WishlistItem wipe warning: " + e.getMessage()); }
+        try { ratingRepository.deleteAll(); } catch (Exception e) { System.err.println("Rating wipe warning: " + e.getMessage()); }
+        try { reviewRepository.deleteAll(); } catch (Exception e) { System.err.println("Review wipe warning: " + e.getMessage()); }
+        try { orderItemRepository.deleteAll(); } catch (Exception e) { System.err.println("OrderItem wipe warning: " + e.getMessage()); }
+        try { productRepository.deleteAll(); } catch (Exception e) { System.err.println("Product wipe warning: " + e.getMessage()); }
+
+        // Safely delete categories level by level (Level 3 -> Level 2 -> Level 1) to prevent FK crashes
         try {
-            cartItemRepository.deleteAll();
-            orderItemRepository.deleteAll();
-            wishlistItemRepository.deleteAll();
-            ratingRepository.deleteAll();
-            reviewRepository.deleteAll();
-            productRepository.deleteAll();
-            categoryRepository.deleteAll();
-            System.out.println("Old product data wiped successfully.");
+            List<Category> allCategories = categoryRepository.findAll();
+            List<Category> level3 = allCategories.stream().filter(c -> c.getLevel() == 3).toList();
+            List<Category> level2 = allCategories.stream().filter(c -> c.getLevel() == 2).toList();
+            List<Category> level1 = allCategories.stream().filter(c -> c.getLevel() == 1).toList();
+
+            categoryRepository.deleteAll(level3);
+            categoryRepository.deleteAll(level2);
+            categoryRepository.deleteAll(level1);
+            categoryRepository.deleteAll(); // clear remaining if any
+            System.out.println("Categories wiped level-by-level cleanly.");
         } catch (Exception e) {
-            System.err.println("Wipe warning: " + e.getMessage());
+            System.err.println("Category wipe warning: " + e.getMessage());
         }
     }
 
