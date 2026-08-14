@@ -11,6 +11,8 @@ import { getUser } from "./Redux/Auth/Action";
 import { getWishlist } from "./Redux/Customers/Wishlist/Action";
 // import Routers from './Routers/Routers';
 
+import ToastNotification from "./customer/Components/Toast/ToastNotification";
+
 function App() {
   const { auth } = useSelector((store) => store);
   const dispatch = useDispatch();
@@ -32,6 +34,7 @@ function App() {
 
   return (
     <div className="">
+      <ToastNotification />
       <Routes>
         <Route path="/*" element={<CustomerRoutes />} />
         {isAdminOrLoading && (

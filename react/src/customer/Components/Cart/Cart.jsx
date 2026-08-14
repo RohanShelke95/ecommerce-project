@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import CartItem from "./CartItem";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
 import { getCart } from "../../../Redux/Customers/Cart/Action";
+import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -14,7 +14,7 @@ const Cart = () => {
 
   useEffect(() => {
     dispatch(getCart(jwt));
-  }, [jwt]);
+  }, [jwt, dispatch]);
 
   return (
     <div className="px-4 sm:px-6 lg:px-16">
@@ -63,15 +63,30 @@ const Cart = () => {
           </div>
         </div>
       ) : (
-        <div className="h-[85vh] flex justify-center items-center flex-col">
-          <div className="text-center py-5">
-            <h1 className="text-lg font-medium">Hey, it feels so light!</h1>
-            <p className="text-gray-500 text-sm">
-              There is nothing in your bag, let's add some items
+        <div className="min-h-[70vh] flex justify-center items-center flex-col py-12">
+          <div className="bg-indigo-50 p-6 rounded-full mb-4 shadow-inner">
+            <ShoppingBagOutlinedIcon sx={{ fontSize: 60 }} className="text-indigo-600" />
+          </div>
+          <div className="text-center py-2 max-w-md">
+            <h1 className="text-2xl font-bold text-gray-800">Your Cart is Empty</h1>
+            <p className="text-gray-500 text-sm mt-2">
+              Looks like you haven't added anything to your cart yet. Explore our top categories and find something you love!
             </p>
           </div>
-          <Button onClick={() => navigate("/")} variant="outlined" sx={{ py: "11px" }}>
-            Continue Shopping
+          <Button
+            onClick={() => navigate("/")}
+            variant="contained"
+            sx={{
+              py: 1.5,
+              px: 4,
+              mt: 4,
+              backgroundColor: "#4f46e5",
+              borderRadius: "8px",
+              fontWeight: 600,
+              "&:hover": { backgroundColor: "#4338ca" },
+            }}
+          >
+            Start Shopping Now
           </Button>
         </div>
       )}

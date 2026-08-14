@@ -27,8 +27,7 @@ const authReducer = (state = initialState, action) => {
       return { ...state, isLoading: true, error: null, user: null };
 
     case REGISTER_SUCCESS:
-      // Store JWT response immediately; getUser() will overwrite with full profile
-      return { ...state, isLoading: false, error: null, user: action.payload };
+      return { ...state, isLoading: false, error: null };
     case REGISTER_FAILURE:
     case LOGIN_FAILURE:
       return { ...state, isLoading: false, error: action.payload };

@@ -37,6 +37,8 @@ console.log("add item to cart ",data)
       type: ADD_ITEM_TO_CART_SUCCESS,
       payload: data,
     });
+    // Re-fetch the cart to immediately update totals and items in UI
+    dispatch(getCart(reqData.jwt));
   } catch (error) {
     dispatch({
       type: ADD_ITEM_TO_CART_FAILURE,

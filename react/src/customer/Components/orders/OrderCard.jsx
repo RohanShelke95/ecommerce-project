@@ -5,10 +5,23 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import StarIcon from "@mui/icons-material/Star";
 
+import OrderTraker from "./OrderTraker";
+
 const OrderCard = ({ item, order }) => {
   const navigate = useNavigate();
+
+  const getStepNumber = (status) => {
+    switch (status) {
+      case "PLACED": return 1;
+      case "CONFIRMED": return 2;
+      case "SHIPPED": return 3;
+      case "DELIVERED": return 5;
+      default: return 1;
+    }
+  };
+
   return (
-    <Box className="p-4 sm:p-5 shadow-lg hover:shadow-2xl border rounded-md bg-white">
+    <Box className="p-4 sm:p-5 shadow-lg hover:shadow-2xl border rounded-md bg-white space-y-4">
       <Grid spacing={2} container sx={{ justifyContent: "space-between", alignItems: "center" }}>
         {/* Item image and titles */}
         <Grid item xs={12} sm={6}>
@@ -55,14 +68,14 @@ const OrderCard = ({ item, order }) => {
               <>
                 <AdjustIcon
                   sx={{ width: "12px", height: "12px" }}
-                  className="text-green-600 mr-1.5"
+                  className="text-indigo-600 mr-1.5"
                 />
-                <span>Expected Delivery On Mar 03</span>
+                <span>Status: {order?.orderStatus || "PLACED"}</span>
               </>
             )}
           </p>
           <p className="text-[10px] sm:text-xs text-gray-500 mt-1">
-            Your Item Has Been Placed
+            Order ID: #{order?.id}
           </p>
           {order?.orderStatus === "DELIVERED" && (
             <div
@@ -75,6 +88,11 @@ const OrderCard = ({ item, order }) => {
           )}
         </Grid>
       </Grid>
+
+      {/* Embedded Live Progress Bar Tracker */}
+      <div className="pt-3 border-t">
+        <OrderTraker activeStep={getStepNumber(order?.orderStatus)} />
+      </div>
     </Box>
   );
 };
