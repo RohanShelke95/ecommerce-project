@@ -37,10 +37,17 @@ public class UserProductController {
 	}
 
 	@GetMapping("/products")
-	public ResponseEntity<Page<Product>> findProductByCategoryHandler(@RequestParam String category,
-			@RequestParam List<String>color,@RequestParam List<String> size,@RequestParam Integer minPrice,
-			@RequestParam Integer maxPrice, @RequestParam Integer minDiscount, @RequestParam String sort, 
-			@RequestParam String stock, @RequestParam Integer pageNumber,@RequestParam Integer pageSize,
+	public ResponseEntity<Page<Product>> findProductByCategoryHandler(
+			@RequestParam(required = false, defaultValue = "") String category,
+			@RequestParam(required = false) List<String> color,
+			@RequestParam(required = false) List<String> size,
+			@RequestParam(required = false, defaultValue = "0") Integer minPrice,
+			@RequestParam(required = false, defaultValue = "1000000") Integer maxPrice,
+			@RequestParam(required = false, defaultValue = "0") Integer minDiscount,
+			@RequestParam(required = false, defaultValue = "price_low") String sort,
+			@RequestParam(required = false, defaultValue = "") String stock,
+			@RequestParam(required = false, defaultValue = "0") Integer pageNumber,
+			@RequestParam(required = false, defaultValue = "10") Integer pageSize,
 			@RequestParam(required = false) String lavelOne){
 		System.out.println("category: " + category);
 		System.out.println("lavelOne: " + lavelOne);
