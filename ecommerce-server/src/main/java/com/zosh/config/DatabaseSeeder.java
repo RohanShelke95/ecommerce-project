@@ -6,53 +6,92 @@ import java.util.Set;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.zosh.modal.Category;
 import com.zosh.modal.Product;
+import com.zosh.modal.AppMetadata;
+import com.zosh.modal.Size;
+
 import com.zosh.repository.AppMetadataRepository;
 import com.zosh.repository.CategoryRepository;
 import com.zosh.repository.ProductRepository;
-import com.zosh.modal.AppMetadata;
-import com.zosh.modal.Size;
+import com.zosh.repository.CartItemRepository;
+import com.zosh.repository.OrderItemRepository;
+import com.zosh.repository.WishlistItemRepository;
+import com.zosh.repository.RatingRepository;
+import com.zosh.repository.ReviewRepository;
+
 import com.zosh.util.SizeFilterHelper;
 
 @Component
 public class DatabaseSeeder implements CommandLineRunner {
 
-    private static final String INITIAL_SEED_KEY = "SEED_V3_10_PRODUCTS_PER_CATEGORY";
+    private static final String INITIAL_SEED_KEY = "RESET_AND_SEED_V4_10_PRODUCTS_PER_CATEGORY";
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final AppMetadataRepository appMetadataRepository;
+    private final CartItemRepository cartItemRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final WishlistItemRepository wishlistItemRepository;
+    private final RatingRepository ratingRepository;
+    private final ReviewRepository reviewRepository;
 
     public DatabaseSeeder(
             ProductRepository productRepository,
             CategoryRepository categoryRepository,
-            AppMetadataRepository appMetadataRepository) {
+            AppMetadataRepository appMetadataRepository,
+            CartItemRepository cartItemRepository,
+            OrderItemRepository orderItemRepository,
+            WishlistItemRepository wishlistItemRepository,
+            RatingRepository ratingRepository,
+            ReviewRepository reviewRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.appMetadataRepository = appMetadataRepository;
+        this.cartItemRepository = cartItemRepository;
+        this.orderItemRepository = orderItemRepository;
+        this.wishlistItemRepository = wishlistItemRepository;
+        this.ratingRepository = ratingRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        System.out.println("Starting Comprehensive Database Check & Seeding...");
-
-        repairMissingProductSizes();
+        System.out.println("Starting Comprehensive Database Check & Clean Seeding...");
 
         if (appMetadataRepository.findByMetaKey(INITIAL_SEED_KEY).isEmpty()) {
+            wipeOldProductData();
             seedDemoProducts();
             markInitialSeedCompleted();
-            System.out.println("Demo products (10 per category) inserted successfully.");
+            System.out.println("Clean Database Reset & 10 Products per Category inserted successfully!");
         } else {
-            System.out.println("Demo products already seeded for SEED_V3. Skipping...");
+            System.out.println("Demo products already seeded for RESET_AND_SEED_V4. Skipping...");
         }
 
+        repairMissingProductSizes();
         System.out.println("Database Check Completed.");
     }
 
+    private void wipeOldProductData() {
+        System.out.println("Wiping existing product data to clean slate...");
+        try {
+            cartItemRepository.deleteAll();
+            orderItemRepository.deleteAll();
+            wishlistItemRepository.deleteAll();
+            ratingRepository.deleteAll();
+            reviewRepository.deleteAll();
+            productRepository.deleteAll();
+            categoryRepository.deleteAll();
+            System.out.println("Old product data wiped successfully.");
+        } catch (Exception e) {
+            System.err.println("Wipe warning: " + e.getMessage());
+        }
+    }
+
     private void seedDemoProducts() {
-        System.out.println("Ensuring categories and seeding 10 products per category...");
+        System.out.println("Creating level 1, 2, 3 categories and seeding 10 products per category...");
 
         // ================= LEVEL 1 CATEGORIES =================
         Category womenLevel = getOrCreateLevel1Category("women");
@@ -132,80 +171,79 @@ public class DatabaseSeeder implements CommandLineRunner {
         Category kidsSchoolShoes = getOrCreateThirdLevelCategory("school_shoes", kidsShoes);
         Category kidsSandals = getOrCreateThirdLevelCategory("sandals", kidsShoes);
 
-        // ================= SEEDING PRODUCTS (10 PER CATEGORY) =================
+        // ================= SIZE ARRAYS =================
         String[] clothingSizes = new String[] { "S", "M", "L", "XL", "XXL" };
         String[] shoeSizes = new String[] { "6", "7", "8", "9", "10", "11" };
         String[] freeSize = new String[] { "Free Size" };
         String[] waistSizes = new String[] { "28", "30", "32", "34", "36" };
 
-        // --- 1. Women Dresses ---
-        seedCategoryProducts("Women Floral Chiffon Maxi Dress", "Zara", "Pink", 3999, 2499, "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&q=80", womenDresses, clothingSizes);
-        seedCategoryProducts("A-Line Velvet Evening Dress", "H&M", "Black", 4999, 3299, "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=600&q=80", womenDresses, clothingSizes);
-        seedCategoryProducts("Summer Casual Cotton Sundress", "ONLY", "Blue", 2999, 1899, "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600&q=80", womenDresses, clothingSizes);
-        seedCategoryProducts("Elegant Satin Slip Dress", "Mango", "Red", 3499, 2299, "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&q=80", womenDresses, clothingSizes);
-        seedCategoryProducts("Boho Tiered Printed Midi Dress", "Vero Moda", "Yellow", 3299, 1999, "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&q=80", womenDresses, clothingSizes);
+        // --- Women Clothing ---
+        seed10Products("Floral Chiffon Summer Dress", "Zara", "Pink", 3999, 2499, "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&q=80", womenDresses, clothingSizes);
+        seed10Products("White Cotton Ruffle Casual Top", "Forever 21", "White", 1999, 1199, "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=80", womenTops, clothingSizes);
+        seed10Products("High Rise Stretch Skinny Jeans", "Levis", "Blue", 3499, 2299, "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&q=80", womenJeansCat, waistSizes);
+        seed10Products("Kanjivaram Silk Woven Saree", "Kalyan Silks", "Red", 9999, 6999, "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80", sareeCat, freeSize);
+        seed10Products("Embroidered Velvet Lehenga Choli", "Biba", "Maroon", 14999, 9999, "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600&q=80", lenghaCholi, freeSize);
+        seed10Products("Cozy Knit Woolen Sweater", "H&M", "Beige", 2999, 1799, "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80", womenSweaters, clothingSizes);
+        seed10Products("Printed Graphic Cotton T-Shirt", "ONLY", "Yellow", 1299, 799, "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&q=80", womenTShirts, clothingSizes);
+        seed10Products("Faux Leather Biker Jacket", "Mango", "Black", 5999, 3499, "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80", womenJackets, clothingSizes);
+        seed10Products("Designer Silk Anarkali Gown", "Global Desi", "Green", 8999, 5499, "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=600&q=80", gounsCat, freeSize);
+        seed10Products("Embroidered Straight Rayon Kurta", "W", "Navy Blue", 2499, 1499, "https://images.unsplash.com/photo-1583391733958-d25e07fac662?w=600&q=80", womenKurtas, clothingSizes);
 
-        // --- 2. Women Tops ---
-        seedCategoryProducts("Women White Cotton Ruffle Top", "Forever 21", "White", 1999, 1199, "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=80", womenTops, clothingSizes);
-        seedCategoryProducts("Silk Crop Top Satin Blouse", "Zara", "Emerald", 2499, 1499, "https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=600&q=80", womenTops, clothingSizes);
-        seedCategoryProducts("Floral Printed Summer Blouse Top", "H&M", "Multicolor", 1799, 999, "https://images.unsplash.com/photo-1534126511673-b6899657816a?w=600&q=80", womenTops, clothingSizes);
+        // --- Women Accessories & Shoes ---
+        seed10Products("Rose Gold Mesh Strap Watch", "Titan", "Rose Gold", 7999, 4999, "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&q=80", womenWatches, freeSize);
+        seed10Products("Classic Leather Zip Wallet", "Fossil", "Tan", 2999, 1799, "https://images.unsplash.com/photo-1627123424574-724758594e93?w=600&q=80", womenWallets, freeSize);
+        seed10Products("Designer Shoulder Tote Bag", "Michael Kors", "Black", 8999, 5999, "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&q=80", womenBags, freeSize);
+        seed10Products("Cat Eye Trendy Sunglasses", "Ray-Ban", "Black", 4999, 3299, "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&q=80", womenSunglasses, freeSize);
+        seed10Products("Wide Brim Beach Sun Hat", "H&M", "Straw", 1499, 899, "https://images.unsplash.com/photo-1521369984125-a4ec3085d388?w=600&q=80", womenHats, freeSize);
+        seed10Products("Genuine Slim Leather Belt", "Zara", "Brown", 1299, 799, "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80", womenBelts, freeSize);
 
-        // --- 3. Women Jeans ---
-        seedCategoryProducts("Women High Rise Skinny Blue Jeans", "Levis", "Blue", 3499, 2299, "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&q=80", womenJeansCat, waistSizes);
-        seedCategoryProducts("Wide Leg Vintage Black Denim", "H&M", "Black", 3999, 2599, "https://images.unsplash.com/photo-1555689502-c4b22d76c56f?w=600&q=80", womenJeansCat, waistSizes);
-        seedCategoryProducts("Distressed Boyfriend Light Blue Jeans", "Zara", "Light Blue", 3799, 2399, "https://images.unsplash.com/photo-1584370848010-d7fe6bc767ec?w=600&q=80", womenJeansCat, waistSizes);
+        seed10Products("Lightweight Running White Sneakers", "Puma", "White", 4500, 3150, "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&q=80", womenSneakers, shoeSizes);
+        seed10Products("Stylish Leather Ankle Boots", "Carlton London", "Black", 5999, 3999, "https://images.unsplash.com/photo-1591871987515-37351664e43e?w=600&q=80", womenBoots, shoeSizes);
+        seed10Products("Classic Stiletto High Heels", "Catwalk", "Red", 3999, 2499, "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&q=80", womenHeels, shoeSizes);
+        seed10Products("Ballet Leather Slip-on Flats", "Inc.5", "Pink", 2499, 1599, "https://images.unsplash.com/photo-1579549301053-912b9d997d6f?w=600&q=80", womenFlats, shoeSizes);
 
-        // --- 4. Sarees ---
-        seedCategoryProducts("Kanjivaram Pure Silk Red Saree", "Kalyan Silks", "Red", 9999, 6999, "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80", sareeCat, freeSize);
-        seedCategoryProducts("Cotton Handloom Chanderi Saree", "FabIndia", "Yellow", 3599, 2499, "https://images.unsplash.com/photo-1583391733958-d25e07fac662?w=600&q=80", sareeCat, freeSize);
-        seedCategoryProducts("Banarasi Zari Woven Silk Saree", "Kalapushpi", "Maroon", 7999, 4999, "https://images.unsplash.com/photo-1589465885857-44edb59bbff2?w=600&q=80", sareeCat, freeSize);
+        // --- Men Clothing ---
+        seed10Products("Men Printed Cotton Straight Kurta", "Majestic Man", "Green", 1999, 899, "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=600&q=80", mensKurtaCat, clothingSizes);
+        seed10Products("Slim Fit Cotton Formal Shirt", "Peter England", "White", 2499, 1499, "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=600&q=80", menShirt, clothingSizes);
+        seed10Products("Slim Fit Blue Stretch Denim Jeans", "Levis", "Blue", 3999, 2499, "https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=80", menJeansCat, waistSizes);
+        seed10Products("Crew Neck Pullover Wool Sweater", "Roadster", "Charcoal", 2499, 1499, "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=600&q=80", menSweaters, clothingSizes);
+        seed10Products("Classic Solid Round Neck T-Shirt", "US Polo", "Black", 1299, 799, "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&q=80", menTShirts, clothingSizes);
+        seed10Products("Denim Trucker Casual Jacket", "Wrangler", "Blue", 4999, 2999, "https://images.unsplash.com/photo-1495105787522-5334e3ffa0ef?w=600&q=80", menJackets, clothingSizes);
+        seed10Products("Dry-Fit Gym Activewear Tracksuit", "Nike", "Grey", 4499, 2999, "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&q=80", menActivewear, clothingSizes);
 
-        // --- 5. Lengha Choli ---
-        seedCategoryProducts("Designer Embroidered Velvet Lehenga", "Biba", "Maroon", 14999, 9999, "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600&q=80", lenghaCholi, freeSize);
-        seedCategoryProducts("Floral Printed Silk Lehenga Choli", "Global Desi", "Pink", 11999, 7999, "https://images.unsplash.com/photo-1583391733958-d25e07fac662?w=600&q=80", lenghaCholi, freeSize);
+        // --- Men Accessories & Shoes ---
+        seed10Products("Chronograph Stainless Steel Watch", "Fossil", "Silver", 9999, 6499, "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=600&q=80", menWatches, freeSize);
+        seed10Products("Genuine Bifold Leather Wallet", "Tommy Hilfiger", "Brown", 2999, 1799, "https://images.unsplash.com/photo-1627123424574-724758594e93?w=600&q=80", menWallets, freeSize);
+        seed10Products("Canvas Travel Laptop Duffle Bag", "Wildcraft", "Black", 3499, 2199, "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80", menBags, freeSize);
+        seed10Products("Polarized Wayfarer Sunglasses", "Ray-Ban", "Black", 5499, 3999, "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&q=80", menSunglasses, freeSize);
+        seed10Products("Classic Cotton Baseball Cap Hat", "Adidas", "Navy Blue", 1299, 799, "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80", menHats, freeSize);
+        seed10Products("Formal Genuine Leather Belt", "Woodland", "Black", 1999, 1199, "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80", menBelts, freeSize);
 
-        // --- 6. Men Kurtas ---
-        seedCategoryProducts("Men Pure Cotton Printed Kurta", "Majestic Man", "Green", 1999, 899, "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=600&q=80", mensKurtaCat, clothingSizes);
-        seedCategoryProducts("Men Embroidered Silk Festive Kurta", "Manyavar", "Yellow", 3999, 2499, "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&q=80", mensKurtaCat, clothingSizes);
-        seedCategoryProducts("Royal Blue Jacquard Kurta Pajama", "SG LEMAN", "Blue", 3499, 1999, "https://images.unsplash.com/photo-1583391733958-d25e07fac662?w=600&q=80", mensKurtaCat, clothingSizes);
+        seed10Products("Retro Low-Top White Sneakers", "Puma", "White", 4999, 2999, "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&q=80", menSneakers, shoeSizes);
+        seed10Products("Formal Leather Derby Oxfords", "Louis Philippe", "Black", 6999, 4499, "https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=600&q=80", menOxfords, shoeSizes);
+        seed10Products("Suede Leather Slip-On Loafers", "Hush Puppies", "Brown", 5499, 3499, "https://images.unsplash.com/photo-1559544498-8547b7aa44d9?w=600&q=80", menLoafers, shoeSizes);
+        seed10Products("Robust Leather Hiking Boots", "Woodland", "Camel", 7999, 5299, "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=600&q=80", menBoots, shoeSizes);
 
-        // --- 7. Men Shirts ---
-        seedCategoryProducts("Men Slim Fit Formal White Shirt", "Peter England", "White", 2499, 1499, "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=600&q=80", menShirt, clothingSizes);
-        seedCategoryProducts("Men Casual Denim Shirt Blue", "Levis", "Blue", 2999, 1899, "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80", menShirt, clothingSizes);
-        seedCategoryProducts("Men Printed Linen Beach Shirt", "Zara", "Beige", 2799, 1699, "https://images.unsplash.com/photo-1603252109303-2751441dd157?w=600&q=80", menShirt, clothingSizes);
+        // --- Kids Clothing, Accessories & Shoes ---
+        seed10Products("Boys Casual Plaid Button Shirt", "Mothercare", "Blue", 1499, 899, "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=600&q=80", kidsShirts, clothingSizes);
+        seed10Products("Kids Cartoon Printed Cotton T-Shirt", "HM Kids", "Yellow", 999, 599, "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&q=80", kidsTShirts, clothingSizes);
+        seed10Products("Kids Comfortable Stretch Jeans", "Levis Kids", "Blue", 1999, 1299, "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&q=80", kidsJeansCat, waistSizes);
+        seed10Products("Kids Warm Knit Pattern Sweater", "Zara Kids", "Red", 1799, 1099, "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80", kidsSweaters, clothingSizes);
+        seed10Products("Kids Hooded Winter Puffer Jacket", "GAP", "Navy", 2999, 1899, "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80", kidsJackets, clothingSizes);
 
-        // --- 8. Men Jeans ---
-        seedCategoryProducts("Men Slim Fit Blue Stretch Denim", "Levis", "Blue", 3999, 2499, "https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=80", menJeansCat, waistSizes);
-        seedCategoryProducts("Men Regular Fit Dark Black Jeans", "Wrangler", "Black", 3499, 2199, "https://images.unsplash.com/photo-1584370848010-d7fe6bc767ec?w=600&q=80", menJeansCat, waistSizes);
-        seedCategoryProducts("Men Tapered Grey Faded Jeans", "Pepe Jeans", "Grey", 3299, 1999, "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&q=80", menJeansCat, waistSizes);
+        seed10Products("Kids Colorful Digital Watch", "Fastrack", "Blue", 1499, 899, "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=600&q=80", kidsWatches, freeSize);
+        seed10Products("Kids Cute School Backpack", "Wildcraft", "Red", 1999, 1199, "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80", kidsBags, freeSize);
+        seed10Products("Kids Embroidered Sun Cap", "H&M Kids", "Yellow", 799, 499, "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80", kidsHats, freeSize);
 
-        // --- 9. Men & Women Shoes ---
-        seedCategoryProducts("Men Leather Formal Oxfords", "Louis Philippe", "Black", 6999, 4499, "https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=600&q=80", menOxfords, shoeSizes);
-        seedCategoryProducts("Men Suede Penny Loafers Brown", "Hush Puppies", "Brown", 5499, 3499, "https://images.unsplash.com/photo-1559544498-8547b7aa44d9?w=600&q=80", menLoafers, shoeSizes);
-        seedCategoryProducts("Men White Retro Sneakers", "Puma", "White", 4999, 2999, "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&q=80", menSneakers, shoeSizes);
-        seedCategoryProducts("Men Robust Hiking Leather Boots", "Woodland", "Camel", 7999, 5299, "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=600&q=80", menBoots, shoeSizes);
-
-        seedCategoryProducts("Women Classic Stiletto Red Heels", "Catwalk", "Red", 3999, 2499, "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&q=80", womenHeels, shoeSizes);
-        seedCategoryProducts("Women Casual Leather Ballet Flats", "Inc.5", "Pink", 2499, 1599, "https://images.unsplash.com/photo-1579549301053-912b9d997d6f?w=600&q=80", womenFlats, shoeSizes);
-        seedCategoryProducts("Women Sporty Chunky White Sneakers", "Nike", "White", 5999, 3999, "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=600&q=80", womenSneakers, shoeSizes);
-        seedCategoryProducts("Women Stylish Black Ankle Boots", "Carlton London", "Black", 4999, 3199, "https://images.unsplash.com/photo-1591871987515-37351664e43e?w=600&q=80", womenBoots, shoeSizes);
-
-        // --- 10. Accessories & Kids ---
-        seedCategoryProducts("Luxury Chronograph Analog Watch", "Fossil", "Silver", 9999, 6499, "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=600&q=80", menWatches, freeSize);
-        seedCategoryProducts("Women Rose Gold Slim Mesh Watch", "Titan", "Rose Gold", 7999, 4999, "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&q=80", womenWatches, freeSize);
-        seedCategoryProducts("Genuine Bifold Leather Wallet", "Tommy Hilfiger", "Brown", 2999, 1799, "https://images.unsplash.com/photo-1627123424574-724758594e93?w=600&q=80", menWallets, freeSize);
-        seedCategoryProducts("Women Designer Shoulder Tote Bag", "Michael Kors", "Black", 8999, 5999, "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&q=80", womenBags, freeSize);
-        seedCategoryProducts("Classic Polarized Wayfarer Sunglasses", "Ray-Ban", "Black", 5499, 3999, "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&q=80", menSunglasses, freeSize);
-
-        seedCategoryProducts("Boys Printed Cotton T-Shirt", "Mothercare", "Blue", 999, 599, "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=600&q=80", kidsTShirts, clothingSizes);
-        seedCategoryProducts("Kids Lightweight Running Sneakers", "Puma Kids", "Red", 2499, 1499, "https://images.unsplash.com/photo-1514989940723-e8e51635b702?w=600&q=80", kidsSneakers, shoeSizes);
-        seedCategoryProducts("Kids Black Leather School Shoes", "Bata", "Black", 1499, 999, "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=600&q=80", kidsSchoolShoes, shoeSizes);
+        seed10Products("Kids Velcro Sport Sneakers", "Puma Kids", "Red", 2499, 1499, "https://images.unsplash.com/photo-1514989940723-e8e51635b702?w=600&q=80", kidsSneakers, shoeSizes);
+        seed10Products("Kids Black Leather School Shoes", "Bata", "Black", 1499, 999, "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=600&q=80", kidsSchoolShoes, shoeSizes);
+        seed10Products("Kids Casual Beach Sandals", "Crocs", "Blue", 1799, 1199, "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&q=80", kidsSandals, shoeSizes);
     }
 
-    private void seedCategoryProducts(String baseTitle, String brand, String color, int price, int discountedPrice, String imageUrl, Category category, String[] sizeNames) {
+    private void seed10Products(String baseTitle, String brand, String color, int price, int discountedPrice, String imageUrl, Category category, String[] sizeNames) {
         int discountPercent = (int) Math.round(((double) (price - discountedPrice) / price) * 100);
         for (int i = 1; i <= 10; i++) {
-            String title = baseTitle + " Vol." + i;
+            String title = baseTitle + " - Edition " + i;
             createProductIfNotExist(title, brand, color, price, discountedPrice, discountPercent, imageUrl, category, sizeNames);
         }
     }
