@@ -28,6 +28,7 @@ public class AppConfig {
 		.authorizeHttpRequests(Authorize -> Authorize
 				.requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/products").permitAll()
+				.requestMatchers("/api/admin/products/seed-demo").permitAll()
 				.requestMatchers("/api/**").authenticated()
 				.anyRequest().permitAll()
 				)

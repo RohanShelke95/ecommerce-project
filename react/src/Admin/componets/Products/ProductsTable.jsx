@@ -49,7 +49,7 @@ const ProductsTable = () => {
     const jwt = localStorage.getItem("jwt");
     setSeeding(true);
     try {
-      await axios.post(`${API_BASE_URL}/api/admin/products/seed-demo`, {}, {
+      await axios.get(`${API_BASE_URL}/api/admin/products/seed-demo`, {
         headers: { Authorization: `Bearer ${jwt}` }
       });
       alert("Database successfully reset & 10 products per category seeded!");
