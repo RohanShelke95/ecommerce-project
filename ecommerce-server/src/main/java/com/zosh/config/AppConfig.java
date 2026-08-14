@@ -25,12 +25,11 @@ public class AppConfig {
 		
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and()
-		.authorizeHttpRequests(Authorize -> Authorize
+		.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/products").permitAll()
 				.requestMatchers("/api/admin/products/seed-demo").permitAll()
-				.requestMatchers("/api/admin/products/seed-demo").permitAll()
-			.requestMatchers("/api/**").authenticated()
+				.requestMatchers("/api/**").authenticated()
 				.anyRequest().permitAll()
 				)
 		.addFilterBefore(new JwtTokenValidator(), BasicAuthenticationFilter.class)
