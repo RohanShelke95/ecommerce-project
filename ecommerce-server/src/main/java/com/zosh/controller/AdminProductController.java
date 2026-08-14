@@ -19,14 +19,30 @@ import com.zosh.request.CreateProductRequest;
 import com.zosh.response.ApiResponse;
 import com.zosh.service.ProductService;
 
+import com.zosh.config.DatabaseSeeder;
+
 @RestController
 @RequestMapping("/api/admin/products")
 public class AdminProductController {
 	
 	private ProductService productService;
+	private DatabaseSeeder databaseSeeder;
 	
-	public AdminProductController(ProductService productService) {
+	public AdminProductController(ProductService productService, DatabaseSeeder databaseSeeder) {
 		this.productService = productService;
+		this.databaseSeeder = databaseSeeder;
+	}
+
+	@PostMapping("/seed-demo")
+	public ResponseEntity<ApiResponse> seedDemoProductsHandler() {
+		try {
+			databaseSeeder.run();
+			ApiResponse res = new ApiResponse("Database reset & 10 products per category seeded successfully!", true);
+			return new ResponseEntity<>(res, HttpStatus.OK);
+		} catch (Exception e) {
+			ApiResponse res = new ApiResponse("Seeding failed: " + e.getMessage(), false);
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 	@PostMapping("/")

@@ -30,16 +30,31 @@ import {
   findProducts,
 } from "../../../Redux/Customers/Product/Action";
 
+import axios from "axios";
+import { API_BASE_URL } from "../../../config/api";
+
 const ProductsTable = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { customersProduct } = useSelector((store) => store);
-  const [filterValue, setFilterValue] = useState({
-    availability: "",
-    category: "",
-    sort: "",
-  });
+  const [seeding, setSeeding] = useState(false);
+
+  const handleSeedDatabase = async () => {
+    const jwt = localStorage.getItem("jwt");
+    setSeeding(true);
+    try {
+      await axios.post(`${API_BASE_URL}/api/admin/products/seed-demo`, {}, {
+        headers: { Authorization: `Bearer ${jwt}` }
+      });
+      alert("Database successfully reset & 10 products per category seeded!");
+      window.location.reload();
+    } catch (err) {
+      alert("Seeding failed: " + (err.response?.data?.message || err.message));
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   // query
   const searchParams = new URLSearchParams(location.search);
@@ -155,6 +170,16 @@ const ProductsTable = () => {
       <Card className="mt-2">
         <CardHeader
           title="All Products"
+          action={
+            <Button
+              variant="contained"
+              disabled={seeding}
+              onClick={handleSeedDatabase}
+              sx={{ backgroundColor: "#9155FD", "&:hover": { backgroundColor: "#7e3ffc" }, color: "white" }}
+            >
+              {seeding ? "Seeding Database..." : "Reset & Seed 10 Products Per Category"}
+            </Button>
+          }
           sx={{
             pt: 2,
             alignItems: "center",
