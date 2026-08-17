@@ -198,40 +198,6 @@ const ProductsTable = () => {
           <Typography variant="h5" sx={{ fontWeight: "bold" }}>
             All Products
           </Typography>
-          <div className="flex gap-4">
-            <Button
-              variant="contained"
-              disabled={seeding || clearing}
-              onClick={handleSeedDatabase} 
-              sx={{
-                backgroundColor: "#9155FD !important",
-                "&:hover": { backgroundColor: "#7e3ffc !important" },
-                color: "white !important",
-                fontWeight: "bold",
-                px: 3,
-                py: 1,
-                borderRadius: "8px"
-              }}
-            >
-              {seeding ? "Resetting & Seeding Database..." : "⚡ Reset & Seed 10 Products Per Category"}
-            </Button>
-            <Button
-              variant="contained"
-              disabled={seeding || clearing}
-              onClick={handleClearDatabase} 
-              sx={{
-                backgroundColor: "#FF3D57 !important",
-                "&:hover": { backgroundColor: "#DF203B !important" },
-                color: "white !important",
-                fontWeight: "bold",
-                px: 3,
-                py: 1,
-                borderRadius: "8px"
-              }}
-            >
-              {clearing ? "Clearing Database..." : "🗑️ Clear All Products"}
-            </Button>
-          </div>
         </div>
         <TableContainer>
           <Table sx={{ minWidth: 800 }} aria-label="table in dashboard">

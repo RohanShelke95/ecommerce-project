@@ -244,8 +244,12 @@ const CreateProductForm = () => {
         payload: data,
       });
 
-      alert("Product added successfully!");
-      window.location.reload();
+      if (data && (data.id || data.title)) {
+        alert("Product added successfully!");
+        window.location.reload();
+      } else {
+        throw new Error("No product data returned from server.");
+      }
     } catch (error) {
       console.error("Failed to create product:", error);
       const errMsg = error.response?.data?.error || error.response?.data?.message || error.message;
