@@ -6,6 +6,7 @@ import { IconButton } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { addItemToWishlist, removeWishlistItem } from "../../../../Redux/Customers/Wishlist/Action";
+import { getImageUrl } from "../../../../utils/getImageUrl";
 
 const ProductCard = ({ product }) => {
   const { title, brand, imageUrl, price, discountedPrice, color, discountPersent } = product;
@@ -57,7 +58,7 @@ const ProductCard = ({ product }) => {
       </div>
     <div className='h-[14rem] sm:h-[20rem] bg-gray-100 flex items-center justify-center'>
         {imageUrl ? (
-          <img className='h-full w-full object-cover object-left-top' src={imageUrl} alt={title} referrerPolicy="no-referrer" />
+          <img className='h-full w-full object-cover object-left-top' src={getImageUrl(imageUrl)} alt={title} referrerPolicy="no-referrer" />
         ) : (
           <div className='text-gray-400'>No Image</div>
         )}

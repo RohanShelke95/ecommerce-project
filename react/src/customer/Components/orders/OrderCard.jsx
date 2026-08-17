@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import StarIcon from "@mui/icons-material/Star";
 
 import OrderTraker from "./OrderTraker";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
 const OrderCard = ({ item, order }) => {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ const OrderCard = ({ item, order }) => {
           >
             <img
               className="w-[4rem] h-[4rem] sm:w-[5rem] sm:h-[5rem] object-cover object-top rounded flex-shrink-0 border"
-              src={item?.product?.imageUrl}
+              src={getImageUrl(item?.product?.imageUrl)}
               alt={item?.product?.title}
               referrerPolicy="no-referrer"
             />

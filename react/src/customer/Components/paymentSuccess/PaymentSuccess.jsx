@@ -6,6 +6,7 @@ import { getOrderById } from "../../../Redux/Customers/Order/Action";
 import OrderTraker from "../orders/OrderTraker";
 import AddressCard from "../adreess/AdreessCard";
 import { useParams } from "react-router-dom";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
 const PaymentSuccess = () => {
   const [paymentId, setPaymentId] = useState("");
@@ -65,7 +66,7 @@ const PaymentSuccess = () => {
               <div className="flex items-center min-w-0">
                 <img
                   className="w-[4.5rem] h-[4.5rem] sm:w-[5.5rem] sm:h-[5.5rem] object-cover object-top rounded flex-shrink-0 border"
-                  src={item?.product?.imageUrl}
+                  src={getImageUrl(item?.product?.imageUrl)}
                   alt={item?.product?.title}
                 />
                 <div className="ml-3 sm:ml-5 space-y-1 min-w-0">

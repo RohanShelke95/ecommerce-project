@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createReview, createRating } from "../../../Redux/Customers/Review/Action";
 import { useNavigate, useParams } from "react-router-dom";
 import { findProductById } from "../../../Redux/Customers/Product/Action";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
 const RateProduct = () => {
   const [formData, setFormData] = useState({ title: "", description: "" });
@@ -71,7 +72,7 @@ const RateProduct = () => {
           <div>
             <img
               className="w-[5rem] lg:w-[15rem]"
-              src={customersProduct.product?.imageUrl}
+              src={getImageUrl(customersProduct.product?.imageUrl)}
               alt=""
             />
           </div>

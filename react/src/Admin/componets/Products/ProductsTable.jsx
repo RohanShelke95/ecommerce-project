@@ -32,6 +32,7 @@ import {
 
 import axios from "axios";
 import { API_BASE_URL } from "../../../config/api";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
 const ProductsTable = () => {
   const location = useLocation();
@@ -180,7 +181,7 @@ const ProductsTable = () => {
           <Button
             variant="contained"
             disabled={seeding}
-            onClick={handleSeedDatabase}
+            onClick={handleSeedDatabase} 
             sx={{
               backgroundColor: "#9155FD !important",
               "&:hover": { backgroundColor: "#7e3ffc !important" },
@@ -216,7 +217,7 @@ const ProductsTable = () => {
                 >
                   <TableCell>
                     {" "}
-                    <Avatar alt={item.titel} src={item.imageUrl} />{" "}
+                    <Avatar alt={item.titel} src={getImageUrl(item.imageUrl)} />{" "}
                   </TableCell>
 
                   <TableCell

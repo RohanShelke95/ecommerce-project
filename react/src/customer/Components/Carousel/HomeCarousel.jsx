@@ -3,6 +3,7 @@ import AliceCarousel from "react-alice-carousel";
 import "react-alice-carousel/lib/alice-carousel.css";
 import { homeCarouselData } from "./HomeCaroselData";
 import { useNavigate } from "react-router-dom";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
 const handleDragStart = (e) => e.preventDefault();
 
@@ -12,7 +13,7 @@ const HomeCarousel = () => {
     <img
       className="cursor-pointer rounded-md"
       onClick={() => navigate(item.path)}
-      src={item.image}
+      src={getImageUrl(item.image)}
       alt=""
       onDragStart={handleDragStart}
       role="presentation"

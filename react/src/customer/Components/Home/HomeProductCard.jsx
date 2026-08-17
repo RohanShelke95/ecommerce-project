@@ -5,6 +5,7 @@ import { IconButton } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { addItemToWishlist, removeWishlistItem } from "../../../Redux/Customers/Wishlist/Action";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
 const HomeProductCard = ({ product }) => {
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ const HomeProductCard = ({ product }) => {
       <div className="h-[8rem] sm:h-[13rem] w-[7rem] sm:w-[10rem] mt-4">
         <img
           className="object-cover object-top w-full h-full"
-          src={product?.image || product?.imageUrl}
+          src={getImageUrl(product?.image || product?.imageUrl)}
           alt={product?.title}
           referrerPolicy="no-referrer"
         />

@@ -8,6 +8,7 @@ import { deepPurple } from "@mui/material/colors";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { getOrderById } from "../../../Redux/Customers/Order/Action";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
 const OrderDetails = () => {
   const dispatch = useDispatch();
@@ -83,7 +84,7 @@ const OrderDetails = () => {
               <div className="flex items-center min-w-0">
                 <img
                   className="w-[4rem] h-[4rem] sm:w-[5rem] sm:h-[5rem] object-cover object-top rounded flex-shrink-0 border"
-                  src={item?.product?.imageUrl}
+                  src={getImageUrl(item?.product?.imageUrl)}
                   alt=""
                   referrerPolicy="no-referrer"
                 />

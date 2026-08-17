@@ -5,6 +5,7 @@ import { removeCartItem, updateCartItem } from "../../../Redux/Customers/Cart/Ac
 import { IconButton } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
 const CartItem = ({ item, showButton }) => {
   const dispatch = useDispatch();
@@ -27,7 +28,7 @@ const CartItem = ({ item, showButton }) => {
         <div className="w-[5rem] h-[5rem] sm:w-[9rem] sm:h-[9rem] flex-shrink-0">
           <img
             className="w-full h-full object-cover object-top rounded"
-            src={item?.product?.imageUrl}
+            src={getImageUrl(item?.product?.imageUrl)}
             alt={item?.product?.title}
             referrerPolicy="no-referrer"
           />

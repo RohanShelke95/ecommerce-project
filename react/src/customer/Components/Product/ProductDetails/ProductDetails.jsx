@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { findProductById, findProducts } from "../../../../Redux/Customers/Product/Action";
 import { addItemToCart } from "../../../../Redux/Customers/Cart/Action";
 import { getAllReviews } from "../../../../Redux/Customers/Review/Action";
+import { getImageUrl } from "../../../../utils/getImageUrl";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -48,7 +49,7 @@ export default function ProductDetails() {
 
   useEffect(() => {
     if (customersProduct.product) {
-      setActiveImage(customersProduct.product.imageUrl);
+      setActiveImage(getImageUrl(customersProduct.product.imageUrl));
     }
   }, [customersProduct.product]);
 
@@ -76,7 +77,7 @@ export default function ProductDetails() {
     : 0;
 
 
-  const allImages = customersProduct.product ? [customersProduct.product.imageUrl, ...(customersProduct.product.images || [])].filter(Boolean) : [];
+  const allImages = customersProduct.product ? [customersProduct.product.imageUrl, ...(customersProduct.product.images || [])].filter(Boolean).map(getImageUrl) : [];
 
   return (
     <div className="bg-white lg:px-20">
@@ -144,7 +145,7 @@ export default function ProductDetails() {
           <div className="flex flex-col items-center ">
             <div className="overflow-hidden rounded-lg max-w-[30rem] max-h-[35rem] w-full">
               <img
-                src={activeImage || customersProduct.product?.imageUrl}
+                src={activeImage || getImageUrl(customersProduct.product?.imageUrl)}
                 alt={customersProduct.product?.title}
                 className="h-full w-full object-cover object-center"
                 referrerPolicy="no-referrer"

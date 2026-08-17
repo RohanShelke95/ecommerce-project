@@ -2,6 +2,7 @@ import { Avatar, Box, Card, CardHeader, Chip, Table, TableBody, TableCell, Table
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { getImageUrl } from '../../utils/getImageUrl'
 
 const RecentlyAddeddProducts = () => {
     const navigate=useNavigate();
@@ -32,7 +33,7 @@ const RecentlyAddeddProducts = () => {
         <TableBody>
           {Array.isArray(adminsProduct.products) && adminsProduct.products.slice(0,5).map(item => (
             <TableRow hover key={item.name} sx={{ '&:last-of-type td, &:last-of-type th': { border: 0 } }}>
-             <TableCell> <Avatar alt={item.title} src={item.imageUrl} /> </TableCell>
+             <TableCell> <Avatar alt={item.title} src={getImageUrl(item.imageUrl)} /> </TableCell>
              
               <TableCell sx={{ py: theme => `${theme.spacing(0.5)} !important` }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
