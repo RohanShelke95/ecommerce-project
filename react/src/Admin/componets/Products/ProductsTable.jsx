@@ -40,6 +40,7 @@ const ProductsTable = () => {
   const dispatch = useDispatch();
   const { customersProduct } = useSelector((store) => store);
   const [seeding, setSeeding] = useState(false);
+  const [clearing, setClearing] = useState(false);
   const [filterValue, setFilterValue] = useState({
     availability: "",
     category: "",
@@ -59,6 +60,25 @@ const ProductsTable = () => {
       alert("Seeding failed: " + (err.response?.data?.message || err.message));
     } finally {
       setSeeding(false);
+    }
+  };
+
+  const handleClearDatabase = async () => {
+    if (!window.confirm("Are you sure you want to delete ALL products? Categories and user accounts will be kept. This action cannot be undone.")) {
+      return;
+    }
+    const jwt = localStorage.getItem("jwt");
+    setClearing(true);
+    try {
+      await axios.post(`${API_BASE_URL}/api/admin/products/delete-all`, null, {
+          headers: { Authorization: `Bearer ${jwt}` }
+        });
+      alert("Database successfully cleared!");
+      window.location.reload();
+    } catch (err) {
+      alert("Failed to clear database: " + (err.response?.data?.message || err.message));
+    } finally {
+      setClearing(false);
     }
   };
 
@@ -178,22 +198,40 @@ const ProductsTable = () => {
           <Typography variant="h5" sx={{ fontWeight: "bold" }}>
             All Products
           </Typography>
-          <Button
-            variant="contained"
-            disabled={seeding}
-            onClick={handleSeedDatabase} 
-            sx={{
-              backgroundColor: "#9155FD !important",
-              "&:hover": { backgroundColor: "#7e3ffc !important" },
-              color: "white !important",
-              fontWeight: "bold",
-              px: 3,
-              py: 1,
-              borderRadius: "8px"
-            }}
-          >
-            {seeding ? "Resetting & Seeding Database..." : "⚡ Reset & Seed 10 Products Per Category"}
-          </Button>
+          <div className="flex gap-4">
+            <Button
+              variant="contained"
+              disabled={seeding || clearing}
+              onClick={handleSeedDatabase} 
+              sx={{
+                backgroundColor: "#9155FD !important",
+                "&:hover": { backgroundColor: "#7e3ffc !important" },
+                color: "white !important",
+                fontWeight: "bold",
+                px: 3,
+                py: 1,
+                borderRadius: "8px"
+              }}
+            >
+              {seeding ? "Resetting & Seeding Database..." : "⚡ Reset & Seed 10 Products Per Category"}
+            </Button>
+            <Button
+              variant="contained"
+              disabled={seeding || clearing}
+              onClick={handleClearDatabase} 
+              sx={{
+                backgroundColor: "#FF3D57 !important",
+                "&:hover": { backgroundColor: "#DF203B !important" },
+                color: "white !important",
+                fontWeight: "bold",
+                px: 3,
+                py: 1,
+                borderRadius: "8px"
+              }}
+            >
+              {clearing ? "Clearing Database..." : "🗑️ Clear All Products"}
+            </Button>
+          </div>
         </div>
         <TableContainer>
           <Table sx={{ minWidth: 800 }} aria-label="table in dashboard">

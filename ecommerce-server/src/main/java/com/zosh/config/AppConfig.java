@@ -30,6 +30,7 @@ public class AppConfig {
 				.requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/products").permitAll()
 				.requestMatchers("/api/admin/products/seed-demo").permitAll()
+				.requestMatchers("/api/admin/products/delete-all").permitAll()
 				.requestMatchers("/api/**").authenticated()
 				.anyRequest().permitAll()
 				)

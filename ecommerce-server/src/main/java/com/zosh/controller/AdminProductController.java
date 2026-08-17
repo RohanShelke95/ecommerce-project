@@ -60,6 +60,32 @@ public class AdminProductController {
 		}
 	}
 	
+	@CrossOrigin(origins = "*")
+	@PostMapping("/delete-all")
+	public ResponseEntity<ApiResponse> deleteAllProductsHandler() {
+		try {
+			databaseSeeder.wipeProductsOnly();
+			ApiResponse res = new ApiResponse("All products, cart items, wishlist items, reviews, and ratings deleted successfully (categories kept)!", true);
+			return new ResponseEntity<>(res, HttpStatus.OK);
+		} catch (Exception e) {
+			ApiResponse res = new ApiResponse("Failed to delete products: " + e.getMessage(), false);
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@CrossOrigin(origins = "*")
+	@GetMapping("/delete-all")
+	public ResponseEntity<ApiResponse> deleteAllProductsGetHandler() {
+		try {
+			databaseSeeder.wipeProductsOnly();
+			ApiResponse res = new ApiResponse("All products, cart items, wishlist items, reviews, and ratings deleted successfully (categories kept)!", true);
+			return new ResponseEntity<>(res, HttpStatus.OK);
+		} catch (Exception e) {
+			ApiResponse res = new ApiResponse("Failed to delete products: " + e.getMessage(), false);
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
 	@PostMapping("/")
 	public ResponseEntity<Product> createProductHandler(@RequestBody CreateProductRequest req) throws ProductException{
 		

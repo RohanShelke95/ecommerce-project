@@ -76,7 +76,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
     }
 
-    private void wipeOldProductData() {
+    public void wipeOldProductData() {
         System.out.println("Wiping existing product data in safe foreign-key order...");
 
         try { cartItemRepository.deleteAll(); } catch (Exception e) { System.err.println("CartItem wipe warning: " + e.getMessage()); }
@@ -101,6 +101,15 @@ public class DatabaseSeeder implements CommandLineRunner {
         } catch (Exception e) {
             System.err.println("Category wipe warning: " + e.getMessage());
         }
+    }
+    public void wipeProductsOnly() {
+        System.out.println("Wiping products only (keeping categories, users, and metadata)...");
+        try { cartItemRepository.deleteAll(); } catch (Exception e) { System.err.println("CartItem wipe warning: " + e.getMessage()); }
+        try { wishlistItemRepository.deleteAll(); } catch (Exception e) { System.err.println("WishlistItem wipe warning: " + e.getMessage()); }
+        try { ratingRepository.deleteAll(); } catch (Exception e) { System.err.println("Rating wipe warning: " + e.getMessage()); }
+        try { reviewRepository.deleteAll(); } catch (Exception e) { System.err.println("Review wipe warning: " + e.getMessage()); }
+        try { orderItemRepository.deleteAll(); } catch (Exception e) { System.err.println("OrderItem wipe warning: " + e.getMessage()); }
+        try { productRepository.deleteAll(); } catch (Exception e) { System.err.println("Product wipe warning: " + e.getMessage()); }
     }
 
     private void seedDemoProducts() {
