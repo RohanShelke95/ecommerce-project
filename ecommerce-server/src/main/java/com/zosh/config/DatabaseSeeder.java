@@ -183,68 +183,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         String[] freeSize = new String[] { "Free Size" };
         String[] waistSizes = new String[] { "28", "30", "32", "34", "36" };
 
-        // --- Women Clothing ---
-        seed10Products("Floral Chiffon Summer Dress", "Zara", "Pink", 3999, 2499, "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&q=80", womenDresses, clothingSizes);
-        seed10Products("White Cotton Ruffle Casual Top", "Forever 21", "White", 1999, 1199, "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=80", womenTops, clothingSizes);
-        seed10Products("High Rise Stretch Skinny Jeans", "Levis", "Blue", 3499, 2299, "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&q=80", womenJeansCat, waistSizes);
-        seed10Products("Kanjivaram Silk Woven Saree", "Kalyan Silks", "Red", 9999, 6999, "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80", sareeCat, freeSize);
-        seed10Products("Embroidered Velvet Lehenga Choli", "Biba", "Maroon", 14999, 9999, "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600&q=80", lenghaCholi, freeSize);
-        seed10Products("Cozy Knit Woolen Sweater", "H&M", "Beige", 2999, 1799, "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80", womenSweaters, clothingSizes);
-        seed10Products("Printed Graphic Cotton T-Shirt", "ONLY", "Yellow", 1299, 799, "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&q=80", womenTShirts, clothingSizes);
-        seed10Products("Faux Leather Biker Jacket", "Mango", "Black", 5999, 3499, "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80", womenJackets, clothingSizes);
-        seed10Products("Designer Silk Anarkali Gown", "Global Desi", "Green", 8999, 5499, "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=600&q=80", gounsCat, freeSize);
-        seed10Products("Embroidered Straight Rayon Kurta", "W", "Navy Blue", 2499, 1499, "https://images.unsplash.com/photo-1583391733958-d25e07fac662?w=600&q=80", womenKurtas, clothingSizes);
-
-        // --- Women Accessories & Shoes ---
-        seed10Products("Rose Gold Mesh Strap Watch", "Titan", "Rose Gold", 7999, 4999, "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&q=80", womenWatches, freeSize);
-        seed10Products("Classic Leather Zip Wallet", "Fossil", "Tan", 2999, 1799, "https://images.unsplash.com/photo-1627123424574-724758594e93?w=600&q=80", womenWallets, freeSize);
-        seed10Products("Designer Shoulder Tote Bag", "Michael Kors", "Black", 8999, 5999, "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&q=80", womenBags, freeSize);
-        seed10Products("Cat Eye Trendy Sunglasses", "Ray-Ban", "Black", 4999, 3299, "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&q=80", womenSunglasses, freeSize);
-        seed10Products("Wide Brim Beach Sun Hat", "H&M", "Straw", 1499, 899, "https://images.unsplash.com/photo-1521369984125-a4ec3085d388?w=600&q=80", womenHats, freeSize);
-        seed10Products("Genuine Slim Leather Belt", "Zara", "Brown", 1299, 799, "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80", womenBelts, freeSize);
-
-        seed10Products("Lightweight Running White Sneakers", "Puma", "White", 4500, 3150, "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&q=80", womenSneakers, shoeSizes);
-        seed10Products("Stylish Leather Ankle Boots", "Carlton London", "Black", 5999, 3999, "https://images.unsplash.com/photo-1591871987515-37351664e43e?w=600&q=80", womenBoots, shoeSizes);
-        seed10Products("Classic Stiletto High Heels", "Catwalk", "Red", 3999, 2499, "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&q=80", womenHeels, shoeSizes);
-        seed10Products("Ballet Leather Slip-on Flats", "Inc.5", "Pink", 2499, 1599, "https://images.unsplash.com/photo-1579549301053-912b9d997d6f?w=600&q=80", womenFlats, shoeSizes);
-
-        // --- Men Clothing ---
-        seed10Products("Men Printed Cotton Straight Kurta", "Majestic Man", "Green", 1999, 899, "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=600&q=80", mensKurtaCat, clothingSizes);
-        seed10Products("Slim Fit Cotton Formal Shirt", "Peter England", "White", 2499, 1499, "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=600&q=80", menShirt, clothingSizes);
-        seed10Products("Slim Fit Blue Stretch Denim Jeans", "Levis", "Blue", 3999, 2499, "https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=80", menJeansCat, waistSizes);
-        seed10Products("Crew Neck Pullover Wool Sweater", "Roadster", "Charcoal", 2499, 1499, "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=600&q=80", menSweaters, clothingSizes);
-        seed10Products("Classic Solid Round Neck T-Shirt", "US Polo", "Black", 1299, 799, "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&q=80", menTShirts, clothingSizes);
-        seed10Products("Denim Trucker Casual Jacket", "Wrangler", "Blue", 4999, 2999, "https://images.unsplash.com/photo-1495105787522-5334e3ffa0ef?w=600&q=80", menJackets, clothingSizes);
-        seed10Products("Dry-Fit Gym Activewear Tracksuit", "Nike", "Grey", 4499, 2999, "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&q=80", menActivewear, clothingSizes);
-
-        // --- Men Accessories & Shoes ---
-        seed10Products("Chronograph Stainless Steel Watch", "Fossil", "Silver", 9999, 6499, "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=600&q=80", menWatches, freeSize);
-        seed10Products("Genuine Bifold Leather Wallet", "Tommy Hilfiger", "Brown", 2999, 1799, "https://images.unsplash.com/photo-1627123424574-724758594e93?w=600&q=80", menWallets, freeSize);
-        seed10Products("Canvas Travel Laptop Duffle Bag", "Wildcraft", "Black", 3499, 2199, "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80", menBags, freeSize);
-        seed10Products("Polarized Wayfarer Sunglasses", "Ray-Ban", "Black", 5499, 3999, "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&q=80", menSunglasses, freeSize);
-        seed10Products("Classic Cotton Baseball Cap Hat", "Adidas", "Navy Blue", 1299, 799, "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80", menHats, freeSize);
-        seed10Products("Formal Genuine Leather Belt", "Woodland", "Black", 1999, 1199, "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80", menBelts, freeSize);
-
-        seed10Products("Retro Low-Top White Sneakers", "Puma", "White", 4999, 2999, "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&q=80", menSneakers, shoeSizes);
-        seed10Products("Formal Leather Derby Oxfords", "Louis Philippe", "Black", 6999, 4499, "https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=600&q=80", menOxfords, shoeSizes);
-        seed10Products("Suede Leather Slip-On Loafers", "Hush Puppies", "Brown", 5499, 3499, "https://images.unsplash.com/photo-1559544498-8547b7aa44d9?w=600&q=80", menLoafers, shoeSizes);
-        seed10Products("Robust Leather Hiking Boots", "Woodland", "Camel", 7999, 5299, "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=600&q=80", menBoots, shoeSizes);
-
-        // --- Kids Clothing, Accessories & Shoes ---
-        seed10Products("Boys Casual Plaid Button Shirt", "Mothercare", "Blue", 1499, 899, "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=600&q=80", kidsShirts, clothingSizes);
-        seed10Products("Kids Cartoon Printed Cotton T-Shirt", "HM Kids", "Yellow", 999, 599, "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&q=80", kidsTShirts, clothingSizes);
-        seed10Products("Kids Comfortable Stretch Jeans", "Levis Kids", "Blue", 1999, 1299, "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&q=80", kidsJeansCat, waistSizes);
-        seed10Products("Kids Warm Knit Pattern Sweater", "Zara Kids", "Red", 1799, 1099, "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80", kidsSweaters, clothingSizes);
-        seed10Products("Kids Hooded Winter Puffer Jacket", "GAP", "Navy", 2999, 1899, "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80", kidsJackets, clothingSizes);
-
-        seed10Products("Kids Colorful Digital Watch", "Fastrack", "Blue", 1499, 899, "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=600&q=80", kidsWatches, freeSize);
-        seed10Products("Kids Cute School Backpack", "Wildcraft", "Red", 1999, 1199, "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80", kidsBags, freeSize);
-        seed10Products("Kids Embroidered Sun Cap", "H&M Kids", "Yellow", 799, 499, "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80", kidsHats, freeSize);
-
-        seed10Products("Kids Velcro Sport Sneakers", "Puma Kids", "Red", 2499, 1499, "https://images.unsplash.com/photo-1514989940723-e8e51635b702?w=600&q=80", kidsSneakers, shoeSizes);
-        seed10Products("Kids Black Leather School Shoes", "Bata", "Black", 1499, 999, "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=600&q=80", kidsSchoolShoes, shoeSizes);
-        seed10Products("Kids Casual Beach Sandals", "Crocs", "Blue", 1799, 1199, "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&q=80", kidsSandals, shoeSizes);
-    }
+        
 
     private void seed10Products(String baseTitle, String brand, String color, int price, int discountedPrice, String imageUrl, Category category, String[] sizeNames) {
         int discountPercent = (int) Math.round(((double) (price - discountedPrice) / price) * 100);

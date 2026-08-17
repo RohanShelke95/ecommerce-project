@@ -16,7 +16,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
+  Typography, 
 } from "@mui/material";
 
 import React from "react";
@@ -110,7 +110,7 @@ const ProductsTable = () => {
       stock: availability,
     };
     dispatch(findProducts(data));
-  }, [availability, category, sort, page, customersProduct.deleteProduct, customersProduct.product]);
+  }, [availability, category, sort, page, customersProduct.deleteProduct, customersProduct.product]); 
 
 
   const handleFilterChange = (e, sectionId) => {
