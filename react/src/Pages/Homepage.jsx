@@ -16,11 +16,11 @@ const Homepage = () => {
       lengha_choli: "women",
       saree: "women",
       women_dress: "women",
-      women_kurtas: "women",
+      kurtas: "women",
 
     };
 
-    const categories = ["mens_kurta", "shoes", "lengha_choli", "saree", "women_dress", "women_kurtas"];
+    const categories = ["mens_kurta", "shoes", "lengha_choli", "saree", "women_dress", "kurtas"];
 
     categories.forEach((category) => {
       dispatch(
@@ -70,8 +70,8 @@ const Homepage = () => {
         )}
 
 
-        {customersProduct.categoryProducts?.women_kurtas?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.women_kurtas} section={"Women's Kurtas"} />
+        {customersProduct.categoryProducts?.kurtas?.length > 0 && (
+          <HomeProductSection data={customersProduct.categoryProducts?.kurtas} section={"Women's Kurtas"} />
         )}
 
         
