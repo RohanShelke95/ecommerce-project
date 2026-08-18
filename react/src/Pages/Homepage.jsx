@@ -13,9 +13,10 @@ const Homepage = () => {
     const categoryToLavelOne = {
       mens_kurta: "men",
       shoes: "men",
+      lengha_choli: "women",
       saree: "women",
       women_dress: "women",
-      lengha_choli: "women",
+     
 
     };
 
@@ -58,14 +59,17 @@ const Homepage = () => {
         )}
 
 
-        {customersProduct.categoryProducts?.women_dress?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.women_dress} section={"Women's Dresses"} />
-        )}
-
         {customersProduct.categoryProducts?.saree?.length > 0 && (
 
           <HomeProductSection data={customersProduct.categoryProducts?.saree} section={"Saree"} />
         )}
+
+
+        {customersProduct.categoryProducts?.women_dress?.length > 0 && (
+          <HomeProductSection data={customersProduct.categoryProducts?.women_dress} section={"Women's Dresses"} />
+        )}
+
+        
 
 
          {/* {customersProduct.categoryProducts?.["t-shirts"]?.length > 0 && (
