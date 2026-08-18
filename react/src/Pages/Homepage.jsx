@@ -16,8 +16,7 @@ const Homepage = () => {
       lengha_choli: "women",
       saree: "women",
       women_dress: "women",
-      women_kurtas
-     
+      women_kurtas: "women",
 
     };
 
