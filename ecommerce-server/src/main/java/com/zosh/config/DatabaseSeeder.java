@@ -177,12 +177,12 @@ public class DatabaseSeeder implements CommandLineRunner {
         Category kidsSchoolShoes = getOrCreateThirdLevelCategory("school_shoes", kidsShoes);
         Category kidsSandals = getOrCreateThirdLevelCategory("sandals", kidsShoes);
 
+
         // ================= SIZE ARRAYS =================
         String[] clothingSizes = new String[] { "S", "M", "L", "XL", "XXL" };
         String[] shoeSizes = new String[] { "6", "7", "8", "9", "10", "11" };
         String[] freeSize = new String[] { "Free Size" };
         String[] waistSizes = new String[] { "28", "30", "32", "34", "36" };
-
 
     
     private void seed10Products(String baseTitle, String brand, String color, int price, int discountedPrice, String imageUrl, Category category, String[] sizeNames) {
