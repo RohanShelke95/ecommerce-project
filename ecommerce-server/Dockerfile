@@ -17,6 +17,9 @@ WORKDIR /app
 # Copy the built jar file from build stage
 COPY --from=build /app/target/*.jar app.jar
 
+# Copy the product images so they are available at runtime
+COPY uploads ./uploads
+
 # Expose backend port
 EXPOSE 5454
 

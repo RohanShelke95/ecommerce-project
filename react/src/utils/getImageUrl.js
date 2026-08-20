@@ -1,36 +1,43 @@
 /**
  * Utility to normalize image URLs.
  *
- * Product images stored in the database sometimes contain only a relative
- * path (e.g. "/image/612/612/...") instead of the full Flipkart CDN URL.
- * This helper detects such paths and prepends the correct base domain so
- * images load properly on every environment (local dev, Vercel, Render,
- * Hostinger, etc.).
+ * Product images stored in the database can be:
+ *  1. Full URLs (http… or data:…)  → returned as-is
+ *  2. Relative upload paths         → prefixed with the backend base URL
+ *     e.g. "uploads/men/clothing/Shirt/beige-shirt1.webp"
+ *     or   "/uploads/men/clothing/Shirt/beige-shirt1.webp"
+ *  3. Flipkart CDN relative paths   → prefixed with the Flipkart CDN base
  */
 
-const BASE_IMAGE_URL = "https://rukminim1.flixcart.com";
+const FLIPKART_CDN = "https://rukminim1.flixcart.com";
+
+// Must match the deployed backend URL used in api.js
+const BACKEND_URL =
+  process.env.REACT_APP_API_URL ||
+  (process.env.NODE_ENV === "production"
+    ? "https://ecommerce-project-olf9.onrender.com"
+    : "http://localhost:5454");
 
 /**
  * Returns a fully-qualified image URL.
  *
- * - If `url` is falsy, returns an empty string.
- * - If `url` already starts with "http" or "data:", it is returned as-is.
- * - Otherwise it is treated as a relative path and the Flipkart CDN base
- *   domain is prepended.
- *
- * @param {string} url - The raw image URL / path.
- * @returns {string} A full image URL safe to use in `<img src>`.
+ * @param {string} url - The raw image URL / path from the database.
+ * @returns {string} A full image URL safe to use in <img src>.
  */
 export const getImageUrl = (url) => {
   if (!url) return "";
-  // If already absolute (http or data), return as-is
+
+  // 1. Already a full URL – return as-is
   if (url.startsWith("http") || url.startsWith("data:")) return url;
-  // If the URL is a relative upload path (e.g., /uploads/...), prepend backend base URL
-  if (url.startsWith("/uploads/")) {
-    const backendBase = process.env.REACT_APP_BACKEND_URL || "http://localhost:8080";
-    // Ensure no double slash when concatenating
-    return `${backendBase.replace(/\/+$/, "")}${url}`;
+
+  // 2. Upload path (with or without leading slash)
+  //    e.g. "/uploads/…" or "uploads/…"
+  if (url.includes("uploads/")) {
+    // Normalise: ensure exactly one leading slash
+    const cleanPath = "/" + url.replace(/^\/+/, "");
+    return `${BACKEND_URL.replace(/\/+$/, "")}${cleanPath}`;
   }
-  // Otherwise treat as Flipkart CDN relative path
-  return `${BASE_IMAGE_URL}${url}`;
+
+  // 3. Flipkart CDN relative path (legacy data)
+  return `${FLIPKART_CDN}${url.startsWith("/") ? "" : "/"}${url}`;
 };
