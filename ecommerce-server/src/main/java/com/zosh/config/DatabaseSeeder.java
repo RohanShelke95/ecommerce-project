@@ -176,13 +176,13 @@ public class DatabaseSeeder implements CommandLineRunner {
         Category kidsSneakers = getOrCreateThirdLevelCategory("sneakers", kidsShoes);
         Category kidsSchoolShoes = getOrCreateThirdLevelCategory("school_shoes", kidsShoes);
         Category kidsSandals = getOrCreateThirdLevelCategory("sandals", kidsShoes);
+    }
 
-
-        // ================= SIZE ARRAYS =================
-        String[] clothingSizes = new String[] { "S", "M", "L", "XL", "XXL" };
-        String[] shoeSizes = new String[] { "6", "7", "8", "9", "10", "11" };
-        String[] freeSize = new String[] { "Free Size" };
-        String[] waistSizes = new String[] { "28", "30", "32", "34", "36" };
+    // ================= SIZE ARRAYS =================
+    String[] clothingSizes = new String[] { "S", "M", "L", "XL", "XXL" };
+    String[] shoeSizes = new String[] { "6", "7", "8", "9", "10", "11" };
+    String[] freeSize = new String[] { "Free Size" };
+    String[] waistSizes = new String[] { "28", "30", "32", "34", "36" };
 
     
     private void seed10Products(String baseTitle, String brand, String color, int price, int discountedPrice, String imageUrl, Category category, String[] sizeNames) {
@@ -236,7 +236,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             String categoryName = product.getCategory() != null ? product.getCategory().getName() : "";
             String topLevel = getTopLevelCategoryName(product);
             List<String> defaultSizes = SizeFilterHelper.getDefaultSizesForCategory(categoryName, topLevel);
-            Set<Size> sizes = buildSizes(defaultSizes, product.getQuantity());
+            Set<Size> sizes = buildSizes(defaultSizes.toArray(new String[0]), product.getQuantity());
             product.setSizes(sizes);
             productRepository.save(product);
         }
