@@ -23,6 +23,14 @@ const BASE_IMAGE_URL = "https://rukminim1.flixcart.com";
  */
 export const getImageUrl = (url) => {
   if (!url) return "";
+  // If already absolute (http or data), return as-is
   if (url.startsWith("http") || url.startsWith("data:")) return url;
+  // If the URL is a relative upload path (e.g., /uploads/...), prepend backend base URL
+  if (url.startsWith("/uploads/")) {
+    const backendBase = process.env.REACT_APP_BACKEND_URL || "http://localhost:8080";
+    // Ensure no double slash when concatenating
+    return `${backendBase.replace(/\/+$/, "")}${url}`;
+  }
+  // Otherwise treat as Flipkart CDN relative path
   return `${BASE_IMAGE_URL}${url}`;
 };

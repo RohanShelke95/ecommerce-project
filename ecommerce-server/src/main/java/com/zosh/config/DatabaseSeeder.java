@@ -183,8 +183,8 @@ public class DatabaseSeeder implements CommandLineRunner {
         String[] freeSize = new String[] { "Free Size" };
         String[] waistSizes = new String[] { "28", "30", "32", "34", "36" };
 
-        
 
+    
     private void seed10Products(String baseTitle, String brand, String color, int price, int discountedPrice, String imageUrl, Category category, String[] sizeNames) {
         int discountPercent = (int) Math.round(((double) (price - discountedPrice) / price) * 100);
         for (int i = 1; i <= 10; i++) {
