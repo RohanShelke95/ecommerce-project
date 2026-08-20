@@ -74,6 +74,7 @@ const RateProduct = () => {
               className="w-[5rem] lg:w-[15rem]"
               src={getImageUrl(customersProduct.product?.imageUrl)}
               alt=""
+              referrerPolicy="no-referrer"
             />
           </div>
           <div className="ml-3 lg:ml-5 space-y-2 lg:space-y-4">

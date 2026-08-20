@@ -174,7 +174,7 @@ export default function Navigation() {
                             navigate(`/product/${product.id}`);
                           }}
                         >
-                          <img src={getImageUrl(product.imageUrl)} alt={product.title} className="w-8 h-8 object-cover rounded mr-2" />
+                          <img src={getImageUrl(product.imageUrl)} alt={product.title} className="w-8 h-8 object-cover rounded mr-2" referrerPolicy="no-referrer" />
                           <div className="flex flex-col overflow-hidden">
                             <span className="text-sm font-medium text-gray-900 truncate">{product.title}</span>
                             <span className="text-xs text-gray-500">₹{product.discountedPrice}</span>
@@ -468,7 +468,7 @@ export default function Navigation() {
                           className="p-3 hover:bg-gray-50 cursor-pointer flex items-center border-b last:border-b-0"
                           onClick={() => { setSearchTerm(""); navigate(`/product/${product.id}`); }}
                         >
-                          <img src={getImageUrl(product.imageUrl)} alt={product.title} className="w-10 h-10 object-cover rounded mr-3" />
+                          <img src={getImageUrl(product.imageUrl)} alt={product.title} className="w-10 h-10 object-cover rounded mr-3" referrerPolicy="no-referrer" />
                           <div className="flex flex-col overflow-hidden">
                             <span className="text-sm font-medium text-gray-900 truncate">{product.title}</span>
                             <span className="text-xs text-gray-500">₹{product.discountedPrice}</span>
