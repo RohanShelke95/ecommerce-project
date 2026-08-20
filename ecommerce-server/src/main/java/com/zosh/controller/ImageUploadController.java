@@ -1,17 +1,14 @@
 package com.zosh.controller;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.UUID;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -19,7 +16,8 @@ import java.util.HashMap;
 @RequestMapping("/api/admin/products")
 public class ImageUploadController {
 
-    private static final String UPLOAD_DIR = "uploads/";
+    @Autowired
+    private Cloudinary cloudinary;
 
     @PostMapping("/upload-image")
     public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
@@ -28,29 +26,18 @@ public class ImageUploadController {
         }
 
         try {
-            // Create uploads directory if it doesn't exist
-            File dir = new File(UPLOAD_DIR);
-            if (!dir.exists()) {
-                dir.mkdirs();
+            // Check if Cloudinary is configured
+            if (cloudinary.config.cloudName == null || cloudinary.config.cloudName.isEmpty()) {
+                System.err.println("Cloudinary credentials are not configured! Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("message", "Cloudinary credentials missing on server."));
             }
 
-            // Generate a unique file name
-            String originalFilename = file.getOriginalFilename();
-            String extension = "";
-            if (originalFilename != null && originalFilename.lastIndexOf(".") > 0) {
-                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            }
-            String uniqueFilename = UUID.randomUUID().toString() + extension;
-
-            // Save the file
-            Path path = Paths.get(UPLOAD_DIR + uniqueFilename);
-            Files.write(path, file.getBytes());
-
-            // Generate the URL to access the uploaded file
-            String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/uploads/")
-                    .path(uniqueFilename)
-                    .toUriString();
+            // Upload the file to Cloudinary
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+            
+            // Get the secure HTTPS URL from the response
+            String fileUrl = (String) uploadResult.get("secure_url");
 
             Map<String, String> response = new HashMap<>();
             response.put("imageUrl", fileUrl);
@@ -60,7 +47,7 @@ public class ImageUploadController {
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Failed to upload file: " + e.getMessage()));
+                    .body(Map.of("message", "Failed to upload file to Cloudinary: " + e.getMessage()));
         }
     }
 }
