@@ -209,6 +209,7 @@ const ProductsTable = () => {
                 <TableCell sx={{ textAlign: "center" }}>Price</TableCell>
                 <TableCell sx={{ textAlign: "center" }}>Quantity</TableCell>
 
+                <TableCell sx={{ textAlign: "center" }}>Update</TableCell>
                 <TableCell sx={{ textAlign: "center" }}>Delete</TableCell>
               </TableRow>
             </TableHead>
@@ -247,6 +248,16 @@ const ProductsTable = () => {
                   </TableCell>
                   <TableCell sx={{ textAlign: "center" }}>
                     {item.quantity}
+                  </TableCell>
+
+                  <TableCell sx={{ textAlign: "center" }}>
+                    <Button
+                      variant="text"
+                      color="primary"
+                      onClick={() => navigate(`/admin/product/update/${item.id}`)}
+                    >
+                      Update
+                    </Button>
                   </TableCell>
 
                   <TableCell sx={{ textAlign: "center" }}>
