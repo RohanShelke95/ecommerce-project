@@ -28,14 +28,14 @@ export const register = userData => async dispatch => {
     const user = response.data;
     if(user.jwt) {
       localStorage.setItem("jwt", user.jwt);
-      // Fetch full user profile so auth.user is populated
-      dispatch(getUser(user.jwt));
+      // Fetch full user profile so auth.user is populated immediately
+      await dispatch(getUser(user.jwt));
     }
-    console.log("registerr :- ",user)
+    console.log("registerr :- ",user);
     dispatch(registerSuccess(user));
   } catch (error) {
-    console.log("error ",error)
-    const message = error.response?.data?.error || error.message;
+    console.log("error ",error);
+    const message = error.response?.data?.message || error.response?.data?.error || error.message;
     dispatch(registerFailure(message));
   }
 };
@@ -52,13 +52,13 @@ export const login = userData => async dispatch => {
     const user = response.data;
     if(user.jwt) {
       localStorage.setItem("jwt", user.jwt);
-      // Fetch full user profile so auth.user is populated
-      dispatch(getUser(user.jwt));
+      // Fetch full user profile so auth.user is populated immediately
+      await dispatch(getUser(user.jwt));
     }
-    console.log("login ",user)
+    console.log("login ",user);
     dispatch(loginSuccess(user));
   } catch (error) {
-    const message = error.response?.data?.error || error.message;
+    const message = error.response?.data?.message || error.response?.data?.error || error.message;
     dispatch(loginFailure(message));
   }
 };

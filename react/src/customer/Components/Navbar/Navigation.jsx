@@ -73,7 +73,7 @@ export default function Navigation() {
   };
 
   useEffect(() => {
-    if (auth.user) {
+    if (auth.user || localStorage.getItem("jwt")) {
       setOpenAuthModal(false);
       if (location.pathname === "/login" || location.pathname === "/register") {
         navigate("/");

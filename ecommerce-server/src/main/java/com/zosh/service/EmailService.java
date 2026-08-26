@@ -1,5 +1,6 @@
 package com.zosh.service;
 
+import java.util.concurrent.CompletableFuture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -19,19 +20,22 @@ public class EmailService {
     private String senderEmail;
 
     public void sendEmail(String toEmail, String subject, String htmlBody) {
-        try {
-            MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        // Send email asynchronously so HTTP request thread returns immediately
+        CompletableFuture.runAsync(() -> {
+            try {
+                MimeMessage message = javaMailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom(senderEmail);
-            helper.setTo(toEmail);
-            helper.setSubject(subject);
-            helper.setText(htmlBody, true); // true indicates HTML
+                helper.setFrom(senderEmail);
+                helper.setTo(toEmail);
+                helper.setSubject(subject);
+                helper.setText(htmlBody, true); // true indicates HTML
 
-            javaMailSender.send(message);
-            System.out.println("Mail sent successfully to " + toEmail);
-        } catch (MessagingException e) {
-            System.err.println("Error sending email to " + toEmail + ": " + e.getMessage());
-        }
+                javaMailSender.send(message);
+                System.out.println("Mail sent successfully to " + toEmail);
+            } catch (Exception e) {
+                System.err.println("Error sending email to " + toEmail + ": " + e.getMessage());
+            }
+        });
     }
 }

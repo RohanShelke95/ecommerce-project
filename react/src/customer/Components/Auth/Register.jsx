@@ -59,7 +59,9 @@ export default function RegisterUserForm({ handleNext }) {
     setErrors({});
     const userData = { firstName, lastName, email, password, role: "ROLE_CUSTOMER" };
     console.log("user data", userData);
-    dispatch(register(userData));
+    dispatch(register(userData)).then(() => {
+      navigate("/");
+    });
   };
 
   return (
