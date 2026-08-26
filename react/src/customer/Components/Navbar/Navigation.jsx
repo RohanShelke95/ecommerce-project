@@ -302,13 +302,37 @@ export default function Navigation() {
 
               {/* Logo */}
               <div className="ml-2 flex lg:ml-0">
-                <Link to="/">
-                  <span className="sr-only">Shop With Zosh</span>
-                  <img
-                    src="https://res.cloudinary.com/ddkso1wxi/image/upload/v1675919455/Logo/Copy_of_Zosh_Academy_nblljp.png"
-                    alt="Shopwithzosh"
-                    className="h-8 w-8 mr-2"
-                  />
+                <Link to="/" className="flex items-center gap-1">
+                  <span className="sr-only">Zyra Fashion</span>
+                  <span
+                    style={{
+                      fontFamily: "'Georgia', serif",
+                      fontSize: "1.55rem",
+                      fontWeight: "800",
+                      letterSpacing: "0.08em",
+                      background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                      lineHeight: 1,
+                      userSelect: "none",
+                    }}
+                  >
+                    ZYRA
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "0.6rem",
+                      fontWeight: "600",
+                      letterSpacing: "0.2em",
+                      color: "#7c3aed",
+                      textTransform: "uppercase",
+                      alignSelf: "flex-end",
+                      paddingBottom: "2px",
+                    }}
+                  >
+                    fashion
+                  </span>
                 </Link>
               </div>
 

@@ -15,14 +15,31 @@ function Navbar() {
         <div className="mx-auto px-4">
           <div className="flex justify-between items-center">
             {/* Logo */}
-            <Link to="/" className="flex items-center py-6">
-              <img
-                src="https://res.cloudinary.com/ddkso1wxi/image/upload/v1675919455/Logo/Copy_of_Zosh_Academy_nblljp.png"
-                alt="Shopwithzosh"
-                className="h-8 w-8 mr-2"
-              />
-              <span className="font-bold text-white text-lg">
-                Shop With Zosh
+            <Link to="/" className="flex items-center gap-1 py-6">
+              <span
+                style={{
+                  fontFamily: "'Georgia', serif",
+                  fontSize: "1.55rem",
+                  fontWeight: "800",
+                  letterSpacing: "0.08em",
+                  color: "#ffffff",
+                  lineHeight: 1,
+                }}
+              >
+                ZYRA
+              </span>
+              <span
+                style={{
+                  fontSize: "0.6rem",
+                  fontWeight: "600",
+                  letterSpacing: "0.2em",
+                  color: "#c7d2fe",
+                  textTransform: "uppercase",
+                  alignSelf: "flex-end",
+                  paddingBottom: "2px",
+                }}
+              >
+                fashion
               </span>
             </Link>
 

@@ -33,8 +33,8 @@ const Achivement = () => {
   
        <Card sx={{ position: 'relative' }}>
       <CardContent>
-      <Typography variant='h6' sx={{ letterSpacing: '0.25px' }}>
-          Shop With Zosh
+        <Typography variant='h6' sx={{ letterSpacing: '0.25px' }}>
+          Zyra Fashion
         </Typography>
         <Typography variant='body2' >Congratulations 🥳</Typography>
         
