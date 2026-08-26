@@ -36,6 +36,27 @@ export const register = userData => async dispatch => {
   } catch (error) {
     console.log("error ",error);
     const message = error.response?.data?.message || error.response?.data?.error || error.message;
+    
+    // If account was created during a prior request, auto-login seamlessly
+    if (message && (message.toLowerCase().includes("already used") || message.toLowerCase().includes("already exist"))) {
+      try {
+        console.log("Email already registered, attempting auto-login...");
+        const loginRes = await axios.post(`${API_BASE_URL}/auth/signin`, {
+          email: userData.email,
+          password: userData.password,
+        });
+        const loginData = loginRes.data;
+        if (loginData?.jwt) {
+          localStorage.setItem("jwt", loginData.jwt);
+          await dispatch(getUser(loginData.jwt));
+          dispatch(loginSuccess(loginData));
+          return;
+        }
+      } catch (loginErr) {
+        console.log("Auto-login fallback failed:", loginErr);
+      }
+    }
+    
     dispatch(registerFailure(message));
   }
 };

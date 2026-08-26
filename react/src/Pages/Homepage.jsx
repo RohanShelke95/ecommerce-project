@@ -5,6 +5,14 @@ import HomeProductSection from "../customer/Components/Home/HomeProductSection";
 import { useDispatch, useSelector } from "react-redux";
 import { findProducts } from "../Redux/Customers/Product/Action";
 
+// Static datasets for instant 0-millisecond initial page rendering
+import { kurtaPage1 } from "../Data/Kurta/kurta";
+import { mensShoesPage1 } from "../Data/shoes";
+import { sareePage1 } from "../Data/Saree/page1";
+import { lenghaCholiPage2 } from "../Data/Saree/lenghaCholiPage2";
+import women_dress from "../Data/Women/women_dress.json";
+import { gounsPage1 } from "../Data/Gouns/gouns";
+
 const Homepage = () => {
   const dispatch = useDispatch();
   const { customersProduct } = useSelector((store) => store);
@@ -17,7 +25,6 @@ const Homepage = () => {
       saree: "women",
       women_dress: "women",
       kurtas: "women",
-
     };
 
     const categories = ["mens_kurta", "shoes", "lengha_choli", "saree", "women_dress", "kurtas"];
@@ -35,73 +42,57 @@ const Homepage = () => {
           pageNumber: 0,
           pageSize: 10,
           stock: "",
-          lavelOne: categoryToLavelOne[category] || ""
+          lavelOne: categoryToLavelOne[category] || "",
         })
       );
     });
   }, [dispatch]);
+
+  // Instant data fallback: display local dataset immediately so page loads in 0ms, then update with live DB data
+  const mensKurtaData =
+    customersProduct.categoryProducts?.mens_kurta?.length > 0
+      ? customersProduct.categoryProducts?.mens_kurta
+      : kurtaPage1;
+
+  const shoesData =
+    customersProduct.categoryProducts?.shoes?.length > 0
+      ? customersProduct.categoryProducts?.shoes
+      : mensShoesPage1;
+
+  const lenghaData =
+    customersProduct.categoryProducts?.lengha_choli?.length > 0
+      ? customersProduct.categoryProducts?.lengha_choli
+      : lenghaCholiPage2;
+
+  const sareeData =
+    customersProduct.categoryProducts?.saree?.length > 0
+      ? customersProduct.categoryProducts?.saree
+      : sareePage1;
+
+  const womenDressData =
+    customersProduct.categoryProducts?.women_dress?.length > 0
+      ? customersProduct.categoryProducts?.women_dress
+      : women_dress;
+
+  const kurtasData =
+    customersProduct.categoryProducts?.kurtas?.length > 0
+      ? customersProduct.categoryProducts?.kurtas
+      : gounsPage1;
 
   return (
     <div className="">
       <HomeCarousel images={homeCarouselData} />
 
       <div className="space-y-6 sm:space-y-10 py-10 sm:py-16 lg:py-20">
-        {customersProduct.categoryProducts?.mens_kurta?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.mens_kurta} section={"Men's Kurta"} />
-        )}
-
-        {customersProduct.categoryProducts?.shoes?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.shoes} section={"Men's Shoes"} />
-        )}
-
-         {customersProduct.categoryProducts?.lengha_choli?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.lengha_choli} section={"Lengha Choli"} />
-        )}
-
-
-        {customersProduct.categoryProducts?.saree?.length > 0 && (
-
-          <HomeProductSection data={customersProduct.categoryProducts?.saree} section={"Saree"} />
-        )}
-
-
-        {customersProduct.categoryProducts?.women_dress?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.women_dress} section={"Women's Dresses"} />
-        )}
-
-
-        {customersProduct.categoryProducts?.kurtas?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.kurtas} section={"Women's Kurtas"} />
-        )}
-
-        
-
-
-         {/* {customersProduct.categoryProducts?.["t-shirts"]?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.["t-shirts"]} section={"T-Shirts"} />
-        )} */}
-
-       
-
-        {/* {customersProduct.categoryProducts?.womens_gouns?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.womens_gouns} section={"Women's Gouns"} />
-        )} */} 
-
-      {/* 
-        {customersProduct.categoryProducts?.dress?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.dress} section={"Dress"} />
-        )} */}
-
-        {/* {customersProduct.categoryProducts?.tops?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.tops} section={"Tops"} />
-        )} */}
-
+        <HomeProductSection data={mensKurtaData} section={"Men's Kurta"} />
+        <HomeProductSection data={shoesData} section={"Men's Shoes"} />
+        <HomeProductSection data={lenghaData} section={"Lengha Choli"} />
+        <HomeProductSection data={sareeData} section={"Saree"} />
+        <HomeProductSection data={womenDressData} section={"Women's Dresses"} />
+        <HomeProductSection data={kurtasData} section={"Women's Kurtas"} />
       </div>
-
     </div>
-
   );
 };
 
-export default Homepage; 
-
+export default Homepage;
