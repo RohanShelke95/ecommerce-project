@@ -28,11 +28,11 @@ export const register = userData => async dispatch => {
     const user = response.data;
     if(user.jwt) {
       localStorage.setItem("jwt", user.jwt);
-      // Fetch full user profile so auth.user is populated immediately
-      await dispatch(getUser(user.jwt));
+      // Fetch full user profile asynchronously in background
+      dispatch(getUser(user.jwt));
     }
     console.log("registerr :- ",user);
-    dispatch(registerSuccess(user));
+    dispatch(registerSuccess({ ...user, firstName: userData.firstName, lastName: userData.lastName, email: userData.email }));
   } catch (error) {
     console.log("error ",error);
     const message = error.response?.data?.message || error.response?.data?.error || error.message;

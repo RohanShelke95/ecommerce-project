@@ -32,6 +32,7 @@ const authReducer = (state = initialState, action) => {
         ...state,
         isLoading: false,
         error: null,
+        user: action.payload,
         successMessage: "Registration successful! Welcome to ShopWithUs.",
       };
     case REGISTER_FAILURE:

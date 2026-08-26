@@ -19,7 +19,16 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String senderEmail;
 
+    @Value("${spring.mail.password:}")
+    private String senderPassword;
+
     public void sendEmail(String toEmail, String subject, String htmlBody) {
+        // Skip email attempt if password is empty or default placeholder to prevent connection hangs
+        if (senderPassword == null || senderPassword.isBlank() || senderPassword.contains("your-app-password")) {
+            System.out.println("[EMAIL] Skipping email send to " + toEmail + " (SMTP password not configured)");
+            return;
+        }
+
         // Send email asynchronously so HTTP request thread returns immediately
         CompletableFuture.runAsync(() -> {
             try {
