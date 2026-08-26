@@ -9,7 +9,7 @@ import { findProducts } from "../Redux/Customers/Product/Action";
 import { kurtaPage1 } from "../Data/Kurta/kurta";
 import { mensShoesPage1 } from "../Data/shoes";
 import { sareePage1 } from "../Data/Saree/page1";
-import { lenghaCholiPage2 } from "../Data/Saree/lenghaCholiPage2";
+import { lehngacholiPage2 } from "../Data/Saree/lenghaCholiPage2";
 import women_dress from "../Data/Women/women_dress.json";
 import { gounsPage1 } from "../Data/Gouns/gouns";
 
@@ -62,7 +62,7 @@ const Homepage = () => {
   const lenghaData =
     customersProduct.categoryProducts?.lengha_choli?.length > 0
       ? customersProduct.categoryProducts?.lengha_choli
-      : lenghaCholiPage2;
+      : lehngacholiPage2;
 
   const sareeData =
     customersProduct.categoryProducts?.saree?.length > 0
