@@ -71,6 +71,11 @@ export default function RegisterUserForm({ handleNext }) {
               <Alert severity="error">{auth.error}</Alert>
             </Grid>
           )}
+          {auth.successMessage && (
+            <Grid item xs={12}>
+              <Alert severity="success">{auth.successMessage}</Alert>
+            </Grid>
+          )}
           <Grid item xs={12} sm={6}>
             <TextField
               required

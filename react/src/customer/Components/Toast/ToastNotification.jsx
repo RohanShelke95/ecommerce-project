@@ -9,14 +9,18 @@ const ToastNotification = () => {
 
   const { auth, cart, wishlist } = useSelector((store) => store);
 
-  // Listen for Auth changes
+  // Listen for Auth errors & success messages
   useEffect(() => {
     if (auth.error) {
       setMessage(typeof auth.error === 'string' ? auth.error : "Authentication failed!");
       setSeverity("error");
       setOpen(true);
+    } else if (auth.successMessage) {
+      setMessage(auth.successMessage);
+      setSeverity("success");
+      setOpen(true);
     }
-  }, [auth.error]);
+  }, [auth.error, auth.successMessage]);
 
   // Listen for Cart errors
   useEffect(() => {

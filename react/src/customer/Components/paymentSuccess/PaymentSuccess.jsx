@@ -27,10 +27,15 @@ const PaymentSuccess = () => {
   }, [orderId]);
 
   useEffect(() => {
-    if (paymentId && paymentStatus === "paid") {
+    if (orderId) {
+      dispatch(getOrderById(orderId));
+    }
+  }, [orderId, dispatch]);
+
+  useEffect(() => {
+    if (paymentId && paymentStatus === "paid" && !paymentId.startsWith("COD_")) {
       const data = { orderId, paymentId, jwt };
       dispatch(updatePayment(data));
-      dispatch(getOrderById(orderId));
     }
   }, [orderId, paymentId, paymentStatus, jwt, dispatch]);
 

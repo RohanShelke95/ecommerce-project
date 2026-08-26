@@ -16,6 +16,7 @@ const initialState = {
   user: null,
   isLoading: false,
   error: null,
+  successMessage: null,
   customers: [],
   fetchingUser: false,
 };
@@ -24,15 +25,25 @@ const authReducer = (state = initialState, action) => {
   switch (action.type) {
     case REGISTER_REQUEST:
     case LOGIN_REQUEST:
-      return { ...state, isLoading: true, error: null, user: null };
+      return { ...state, isLoading: true, error: null, successMessage: null, user: null };
 
     case REGISTER_SUCCESS:
-      return { ...state, isLoading: false, error: null };
+      return {
+        ...state,
+        isLoading: false,
+        error: null,
+        successMessage: "Registration successful! Welcome to ShopWithUs.",
+      };
     case REGISTER_FAILURE:
     case LOGIN_FAILURE:
-      return { ...state, isLoading: false, error: action.payload };
+      return { ...state, isLoading: false, error: action.payload, successMessage: null };
     case LOGIN_SUCCESS:
-      return { ...state, isLoading: false, error: null };
+      return {
+        ...state,
+        isLoading: false,
+        error: null,
+        successMessage: "Logged in successfully! Welcome back.",
+      };
     case GET_USER_REQUEST:
       return { ...state, isLoading: true, error: null, fetchingUser: true };
     case GET_USER_SUCCESS:
@@ -42,12 +53,12 @@ const authReducer = (state = initialState, action) => {
         user: action.payload,
         fetchingUser: false,
       };
-      case GET_ALL_CUSTOMERS_SUCCESS:
-        return {
-          ...state,
-          isLoading: false,
-          customers: action.payload,
-        };
+    case GET_ALL_CUSTOMERS_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        customers: action.payload,
+      };
     case GET_USER_FAILURE:
       return {
         ...state,
