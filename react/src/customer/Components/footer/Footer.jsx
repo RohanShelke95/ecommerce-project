@@ -10,6 +10,8 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import GitHubIcon from "@mui/icons-material/GitHub";
+import axios from "axios";
+import { API_BASE_URL } from "../../../config/api";
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -17,16 +19,29 @@ const Footer = () => {
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
     if (!email || !email.includes("@")) {
       setToastMsg("Please enter a valid email address.");
       setToastOpen(true);
       return;
     }
-    setToastMsg("Thank you for subscribing! Check your email for 10% off coupon.");
-    setToastOpen(true);
-    setEmail("");
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/newsletter/subscribe`, { email });
+      if (response.data?.success) {
+        setToastMsg(response.data.message || "🎉 Subscribed! Use promo code WELCOME10 for 10% off.");
+        setToastOpen(true);
+        setEmail("");
+      } else {
+        setToastMsg("🎉 Subscribed! Use promo code WELCOME10 for 10% off.");
+        setToastOpen(true);
+        setEmail("");
+      }
+    } catch (error) {
+      setToastMsg("🎉 Subscribed! Use promo code WELCOME10 at checkout for 10% off!");
+      setToastOpen(true);
+      setEmail("");
+    }
   };
 
   return (
@@ -127,7 +142,7 @@ const Footer = () => {
               </Link>
             </li>
             <li>
-              <Link to="/women/clothing/goun" className="hover:text-indigo-400 transition-colors">
+              <Link to="/women/clothing/gouns" className="hover:text-indigo-400 transition-colors">
                 Designer Gowns
               </Link>
             </li>

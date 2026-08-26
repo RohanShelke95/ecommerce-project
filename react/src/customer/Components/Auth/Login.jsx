@@ -108,6 +108,22 @@ export default function LoginUserForm({ handleNext }) {
           </Grid>
 
           <Grid item xs={12}>
+            <div className="flex justify-end mb-1">
+              <Button
+                size="small"
+                onClick={() => navigate("/forgot-password")}
+                sx={{
+                  textTransform: "none",
+                  fontSize: "0.8rem",
+                  color: "#4f46e5",
+                  fontWeight: "bold",
+                  p: 0,
+                  minWidth: 0,
+                }}
+              >
+                Forgot Password?
+              </Button>
+            </div>
             <Button
               className="bg-[#9155FD] w-full"
               type="submit"

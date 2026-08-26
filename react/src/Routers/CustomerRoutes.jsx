@@ -21,6 +21,7 @@ import RateProduct from "../customer/Components/ReviewProduct/RateProduct";
 import SearchProduct from "../customer/Components/Product/Product/SearchProduct";
 import Wishlist from "../customer/Components/Wishlist/Wishlist";
 import ProtectedRoute from "./ProtectedRoute";
+import ForgotPassword from "../customer/Components/Auth/ForgotPassword";
 
 const CustomerRoutes = () => {
     const location = useLocation();
@@ -38,6 +39,7 @@ const CustomerRoutes = () => {
      <Routes>
      <Route path="/login" element={<Homepage />}></Route>
      <Route path="/register" element={<Homepage />}></Route>
+     <Route path="/forgot-password" element={<ForgotPassword />}></Route>
 
         <Route path="/" element={<Homepage />}></Route>
         <Route path="/products/search" element={<SearchProduct/>}></Route>

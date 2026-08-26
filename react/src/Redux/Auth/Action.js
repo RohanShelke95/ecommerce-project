@@ -3,6 +3,9 @@ import {
   REGISTER_REQUEST,
   REGISTER_SUCCESS,
   REGISTER_FAILURE,
+  SEND_OTP_REQUEST,
+  SEND_OTP_SUCCESS,
+  SEND_OTP_FAILURE,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
@@ -20,6 +23,47 @@ import api, { API_BASE_URL } from '../../config/api';
 const registerRequest = () => ({ type: REGISTER_REQUEST });
 const registerSuccess = (user) => ({ type: REGISTER_SUCCESS, payload:user });
 const registerFailure = error => ({ type: REGISTER_FAILURE, payload: error });
+
+export const sendOtp = (email) => async (dispatch) => {
+  dispatch({ type: SEND_OTP_REQUEST });
+  try {
+    const response = await axios.post(`${API_BASE_URL}/auth/send-otp`, { email });
+    dispatch({
+      type: SEND_OTP_SUCCESS,
+      payload: response.data?.message || `Verification code sent to ${email}`,
+    });
+    return response.data;
+  } catch (error) {
+    const message = error.response?.data?.message || error.response?.data?.error || error.message;
+    dispatch({ type: SEND_OTP_FAILURE, payload: message });
+    throw new Error(message);
+  }
+};
+
+export const verifyOtpAndSignup = (signupData) => async (dispatch) => {
+  dispatch(registerRequest());
+  try {
+    const response = await axios.post(`${API_BASE_URL}/auth/signup-verify`, signupData);
+    const user = response.data;
+    if (user.jwt) {
+      localStorage.setItem("jwt", user.jwt);
+      dispatch(getUser(user.jwt));
+    }
+    dispatch(
+      registerSuccess({
+        ...user,
+        firstName: signupData.firstName,
+        lastName: signupData.lastName,
+        email: signupData.email,
+      })
+    );
+    return user;
+  } catch (error) {
+    const message = error.response?.data?.message || error.response?.data?.error || error.message;
+    dispatch(registerFailure(message));
+    throw new Error(message);
+  }
+};
 
 export const register = userData => async dispatch => {
   dispatch(registerRequest());

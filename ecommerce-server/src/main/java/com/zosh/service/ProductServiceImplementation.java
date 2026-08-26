@@ -448,6 +448,23 @@ public class ProductServiceImplementation implements ProductService {
 			Integer maxPrice, Integer minDiscount, String sort) {
 		List<Product> products = productRepository.filterProducts(category, minPrice, maxPrice, minDiscount, sort);
 
+		// Fallback for Gowns category name variations (gouns / goun / gowns / gown / womens_gouns)
+		if (products.isEmpty() && category != null && !category.isBlank()) {
+			String catLower = category.trim().toLowerCase();
+			if (catLower.equals("goun") || catLower.equals("gouns") || catLower.equals("gowns") || catLower.equals("gown") || catLower.equals("womens_gouns")) {
+				String[] altCategories = {"gouns", "goun", "gowns", "gown", "womens_gouns"};
+				for (String alt : altCategories) {
+					if (!alt.equalsIgnoreCase(category)) {
+						List<Product> altProducts = productRepository.filterProducts(alt, minPrice, maxPrice, minDiscount, sort);
+						if (!altProducts.isEmpty()) {
+							products = altProducts;
+							break;
+						}
+					}
+				}
+			}
+		}
+
 		if (lavelOne != null && !lavelOne.trim().isEmpty()) {
 			products = products.stream()
 			        .filter(p -> {

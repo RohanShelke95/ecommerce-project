@@ -2,6 +2,9 @@ import {
   REGISTER_REQUEST,
   REGISTER_SUCCESS,
   REGISTER_FAILURE,
+  SEND_OTP_REQUEST,
+  SEND_OTP_SUCCESS,
+  SEND_OTP_FAILURE,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
@@ -15,6 +18,7 @@ import {
 const initialState = {
   user: null,
   isLoading: false,
+  sendingOtp: false,
   error: null,
   successMessage: null,
   customers: [],
@@ -23,6 +27,18 @@ const initialState = {
 
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
+    case SEND_OTP_REQUEST:
+      return { ...state, sendingOtp: true, error: null, successMessage: null };
+    case SEND_OTP_SUCCESS:
+      return {
+        ...state,
+        sendingOtp: false,
+        error: null,
+        successMessage: action.payload,
+      };
+    case SEND_OTP_FAILURE:
+      return { ...state, sendingOtp: false, error: action.payload };
+
     case REGISTER_REQUEST:
     case LOGIN_REQUEST:
       return { ...state, isLoading: true, error: null, successMessage: null, user: null };
