@@ -50,8 +50,9 @@ import {
         };
         case GET_ORDER_HISTORY_REQUEST:
             return {
+              ...state,
               loading: true,
-              orders: [],
+              // preserve existing orders so UI doesn't flash "No Orders Yet"
             };
           case GET_ORDER_HISTORY_SUCCESS:
             return {

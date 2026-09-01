@@ -80,25 +80,32 @@ const HomeProductSection = ({ section, data }) => {
               position: "absolute",
               top: "50%",
               transform: "translateY(-50%)",
-              right: { xs: "4px", sm: "-15px" },
-              bgcolor: "#9155FD",
-              color: "white",
-              "&.MuiButton-root": { bgcolor: "#9155FD" }, // enforce primary color override
-              "&:hover": { bgcolor: "#7a3beb" },
-              minWidth: "0rem",
-              width: { xs: "2rem", sm: "2.2rem" },
-              height: { xs: "3rem", sm: "4rem" },
-              borderRadius: "4px",
+              right: { xs: "2px", sm: "-18px" },
+              bgcolor: "white",
+              color: "#4f46e5",
+              border: "1.5px solid #e0e0e0",
+              "&.MuiButton-root": { bgcolor: "white" },
+              "&:hover": {
+                bgcolor: "#4f46e5",
+                color: "white",
+                borderColor: "#4f46e5",
+                "& .MuiSvgIcon-root": { color: "white" },
+              },
+              minWidth: "0px",
+              width: { xs: "2rem", sm: "2.4rem" },
+              height: { xs: "3.2rem", sm: "4.2rem" },
+              borderRadius: "50px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0px 4px 10px rgba(0,0,0,0.15)",
-              padding: 0
+              boxShadow: "0 4px 16px rgba(79,70,229,0.18)",
+              padding: 0,
+              transition: "all 0.22s ease",
             }}
             aria-label="next"
           >
             <ArrowForwardIosIcon
-              sx={{ color: "white", fontSize: { xs: "0.8rem", sm: "1.1rem" } }}
+              sx={{ color: "#4f46e5", fontSize: { xs: "0.8rem", sm: "1rem" } }}
             />
           </Button>
         )}
@@ -113,28 +120,35 @@ const HomeProductSection = ({ section, data }) => {
               position: "absolute",
               top: "50%",
               transform: "translateY(-50%)",
-              left: { xs: "4px", sm: "-15px" },
-              bgcolor: "#9155FD",
-              color: "white",
-              "&.MuiButton-root": { bgcolor: "#9155FD" }, // enforce primary color override
-              "&:hover": { bgcolor: "#7a3beb" },
-              minWidth: "0rem",
-              width: { xs: "2rem", sm: "2.2rem" },
-              height: { xs: "3rem", sm: "4rem" },
-              borderRadius: "4px",
+              left: { xs: "2px", sm: "-18px" },
+              bgcolor: "white",
+              color: "#4f46e5",
+              border: "1.5px solid #e0e0e0",
+              "&.MuiButton-root": { bgcolor: "white" },
+              "&:hover": {
+                bgcolor: "#4f46e5",
+                color: "white",
+                borderColor: "#4f46e5",
+                "& .MuiSvgIcon-root": { color: "white" },
+              },
+              minWidth: "0px",
+              width: { xs: "2rem", sm: "2.4rem" },
+              height: { xs: "3.2rem", sm: "4.2rem" },
+              borderRadius: "50px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0px 4px 10px rgba(0,0,0,0.15)",
-              padding: 0
+              boxShadow: "0 4px 16px rgba(79,70,229,0.18)",
+              padding: 0,
+              transition: "all 0.22s ease",
             }}
             aria-label="prev"
           >
             <ArrowBackIosIcon
-              sx={{ 
-                color: "white", 
-                fontSize: { xs: "0.8rem", sm: "1.1rem" },
-                ml: { xs: "4px", sm: "6px" } // centering correction for back chevron
+              sx={{
+                color: "#4f46e5",
+                fontSize: { xs: "0.8rem", sm: "1rem" },
+                ml: { xs: "4px", sm: "5px" },
               }}
             />
           </Button>

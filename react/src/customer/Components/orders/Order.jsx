@@ -1,4 +1,4 @@
-import { Box, Grid, Button } from "@mui/material";
+import { Box, Grid, Button, CircularProgress } from "@mui/material";
 import React, { useEffect } from "react";
 import OrderCard from "./OrderCard";
 import { useDispatch, useSelector } from "react-redux";
@@ -53,7 +53,13 @@ const Order = () => {
         {/* Orders List */}
         <Grid item xs={12} md={9}>
           <Box className="space-y-4">
-            {order.orders?.length > 0 ? (
+            {order.loading ? (
+              // Show spinner while orders are being fetched
+              <div className="flex flex-col items-center justify-center py-20">
+                <CircularProgress sx={{ color: "#4f46e5" }} size={48} />
+                <p className="text-gray-500 mt-4 text-sm">Loading your orders...</p>
+              </div>
+            ) : order.orders?.length > 0 ? (
               order.orders.map((singleOrder) =>
                 singleOrder?.orderItems?.map((item) => (
                   <OrderCard key={item.id} item={item} order={singleOrder} />
