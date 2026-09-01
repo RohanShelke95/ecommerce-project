@@ -78,7 +78,7 @@ const OrderCard = ({ item, order }) => {
           <p className="text-[10px] sm:text-xs text-gray-500 mt-1">
             Order ID: #{order?.id}
           </p>
-          {order?.orderStatus === "DELIVERED" && (
+          {order?.orderStatus === "DELIVERED" && item?.product?.id && (
             <div
               onClick={() => navigate(`/account/rate/${item.product.id}`)}
               className="flex items-center justify-end sm:justify-start text-indigo-600 cursor-pointer mt-2 text-xs sm:text-sm hover:underline"

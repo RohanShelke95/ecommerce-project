@@ -23,6 +23,26 @@ const Order = () => {
     dispatch(getOrderHistory({ jwt }));
   }, [jwt, dispatch]);
 
+  // Safely extract orders list even if backend payload structure varies
+  const ordersList = Array.isArray(order.orders)
+    ? order.orders
+    : Array.isArray(order.orders?.orders)
+    ? order.orders.orders
+    : Array.isArray(order.orders?.content)
+    ? order.orders.content
+    : [];
+
+  // Extract individual order items with unique safe keys
+  const allOrderItems = ordersList.flatMap((singleOrder) => {
+    if (!singleOrder) return [];
+    const items = Array.isArray(singleOrder.orderItems) ? singleOrder.orderItems : [];
+    return items.map((item, idx) => ({
+      item,
+      order: singleOrder,
+      key: item?.id ? `item-${item.id}` : `ord-${singleOrder?.id || 'id'}-${idx}`,
+    }));
+  });
+
   return (
     <Box className="px-4 sm:px-6 lg:px-10 py-5 min-h-screen">
       <Grid container spacing={4} sx={{ justifyContent: "space-between" }}>
@@ -59,12 +79,10 @@ const Order = () => {
                 <CircularProgress sx={{ color: "#4f46e5" }} size={48} />
                 <p className="text-gray-500 mt-4 text-sm">Loading your orders...</p>
               </div>
-            ) : order.orders?.length > 0 ? (
-              order.orders.map((singleOrder) =>
-                singleOrder?.orderItems?.map((item) => (
-                  <OrderCard key={item.id} item={item} order={singleOrder} />
-                ))
-              )
+            ) : allOrderItems.length > 0 ? (
+              allOrderItems.map(({ item, order: singleOrder, key }) => (
+                <OrderCard key={key} item={item} order={singleOrder} />
+              ))
             ) : (
               <div className="flex flex-col items-center justify-center py-16 px-4 border rounded-md shadow-sm bg-white">
                 <div className="bg-blue-50 p-6 rounded-full mb-4">
