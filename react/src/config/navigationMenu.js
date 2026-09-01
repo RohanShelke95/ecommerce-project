@@ -126,8 +126,5 @@ export const navigation = {
         ],
       },
     ],
-    pages: [
-      { name: 'About Us', id: 'about', href: '/about' },
-      { name: 'Track Order', id: 'track-order', href: '/account/order' },
-    ],
+    pages: [],
   }

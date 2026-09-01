@@ -250,13 +250,7 @@ export default function Navigation() {
                   </Tab.Panels>
                 </Tab.Group>
 
-                <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                  {navigation.pages.map((page) => (
-                    <div key={page.name} className="flow-root">
-                      <Link to={page.href || "/"} onClick={() => setOpen(false)} className="-m-2 block p-2 font-medium text-gray-900">{page.name}</Link>
-                    </div>
-                  ))}
-                </div>
+
 
                 {/* Mobile Auth */}
                 <div className="space-y-4 border-t border-gray-200 px-4 py-6">
@@ -415,15 +409,7 @@ export default function Navigation() {
                     </Popover>
                   ))}
 
-                  {navigation.pages.map((page) => (
-                    <Link
-                      key={page.name}
-                      to={page.href || "/"}
-                      className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
-                    >
-                      {page.name}
-                    </Link>
-                  ))}
+
                 </div>
               </Popover.Group>
 
