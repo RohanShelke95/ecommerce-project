@@ -27,6 +27,10 @@ public class ErrorDetails {
 		this.error = error;
 	}
 
+	public String getMessage() {
+		return error;
+	}
+
 	public String getDetails() {
 		return details;
 	}

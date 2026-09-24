@@ -36,7 +36,7 @@ export default function ProductDetails() {
       return;
     }
     setErrorMsg("");
-    const data = { productId, size: selectedSize.name };
+    const data = { productId: Number(productId), size: selectedSize.name, quantity: 1 };
     dispatch(addItemToCart({ data, jwt }));
     navigate("/cart");
   };

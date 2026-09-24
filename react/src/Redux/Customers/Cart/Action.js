@@ -17,6 +17,18 @@ import {
   UPDATE_CART_ITEM_SUCCESS,
 } from "./ActionType";
 
+const getErrorMessage = (error) => {
+  if (error.response && error.response.data) {
+    return (
+      error.response.data.error ||
+      error.response.data.message ||
+      error.response.data.details ||
+      error.message
+    );
+  }
+  return error.message;
+};
+
 export const addItemToCart = (reqData) => async (dispatch) => {
     console.log("req data ",reqData)
   try {
@@ -42,10 +54,7 @@ console.log("add item to cart ",data)
   } catch (error) {
     dispatch({
       type: ADD_ITEM_TO_CART_FAILURE,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+      payload: getErrorMessage(error),
     });
   }
 };
@@ -67,10 +76,7 @@ console.log("cart ",data)
   } catch (error) {
     dispatch({
       type: GET_CART_FAILURE,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+      payload: getErrorMessage(error),
     });
   }
 };
@@ -95,10 +101,7 @@ export const removeCartItem = (reqData) => async (dispatch) => {
     } catch (error) {
       dispatch({
         type: REMOVE_CART_ITEM_FAILURE,
-        payload:
-          error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message,
+        payload: getErrorMessage(error),
       });
     }
   };
@@ -126,10 +129,7 @@ export const removeCartItem = (reqData) => async (dispatch) => {
     } catch (error) {
       dispatch({
         type: UPDATE_CART_ITEM_FAILURE,
-        payload:
-          error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message,
+        payload: getErrorMessage(error),
       });
     }
   };
