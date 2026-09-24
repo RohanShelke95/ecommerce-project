@@ -16,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 public class AppConfig {
@@ -60,7 +61,7 @@ public class AppConfig {
 		.and()
 		.exceptionHandling()
 		.authenticationEntryPoint((request, response, authException) -> {
-			response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.setContentType("application/json");
 			response.getWriter().write("{\"error\":\"Unauthorized\", \"message\":\"" + authException.getMessage() + "\"}");
 		})
