@@ -58,9 +58,14 @@ public class AppConfig {
 					}
 				})
 		.and()
-		.httpBasic()
+		.exceptionHandling()
+		.authenticationEntryPoint((request, response, authException) -> {
+			response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+			response.setContentType("application/json");
+			response.getWriter().write("{\"error\":\"Unauthorized\", \"message\":\"" + authException.getMessage() + "\"}");
+		})
 		.and()
-		.formLogin();
+		.httpBasic();
 		
 		return http.build();
 		
