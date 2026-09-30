@@ -25,7 +25,11 @@ public class EmailService {
     public void sendEmail(String toEmail, String subject, String htmlBody) {
         // Skip email attempt if password is empty or default placeholder to prevent connection hangs
         if (senderPassword == null || senderPassword.isBlank() || senderPassword.contains("your-app-password")) {
-            System.out.println("[EMAIL] Skipping email send to " + toEmail + " (SMTP password not configured)");
+            System.err.println("=================================================================");
+            System.err.println("[EMAIL WARNING] Cannot send real email to: " + toEmail);
+            System.err.println("[REASON] SPRING_MAIL_PASSWORD is not set or still default placeholder 'your-app-password'.");
+            System.err.println("[ACTION REQUIRED] Set SPRING_MAIL_PASSWORD environment variable in Render dashboard with your 16-letter Gmail App Password!");
+            System.err.println("=================================================================");
             return;
         }
 
