@@ -8,9 +8,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -57,8 +59,30 @@ public class AuthController {
 		this.otpService = otpService;
 		this.smsService = smsService;
 	}
-	
+
+	/**
+	 * DEBUG ONLY: Test email delivery directly.
+	 * Call: GET /auth/test-email?to=yourmail@gmail.com
+	 * Watch Render logs for SUCCESS or ERROR message.
+	 */
+	@GetMapping("/test-email")
+	public ResponseEntity<ApiResponse> testEmail(@RequestParam String to) {
+		System.out.println("[TEST-EMAIL] Manual email test triggered to: " + to);
+		try {
+			emailService.sendEmail(to,
+				"ShopWithUs - Test Email ✅",
+				"<h2>Test email working! ✅</h2><p>If you see this, your Gmail SMTP is configured correctly on the server.</p>"
+			);
+			ApiResponse res = new ApiResponse("Test email dispatched to " + to + ". Check your inbox and Render logs.", true);
+			return new ResponseEntity<>(res, HttpStatus.OK);
+		} catch (Exception e) {
+			ApiResponse res = new ApiResponse("Email test failed: " + e.getMessage(), false);
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	@PostMapping("/signup")
+
 	public ResponseEntity<AuthResponse> createUserHandler(@Valid @RequestBody User user) throws UserException{
 		
 		  	String email = user.getEmail();
