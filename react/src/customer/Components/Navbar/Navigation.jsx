@@ -59,7 +59,7 @@ export default function Navigation() {
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm, dispatch]);
 
-  const handleOpen = () => setOpenAuthModal(true);
+  const handleOpen = () => navigate("/login");
   const handleClose = () => {
     setOpenAuthModal(false);
     if (location.pathname === "/login" || location.pathname === "/register") {
@@ -73,7 +73,7 @@ export default function Navigation() {
   };
 
   useEffect(() => {
-    if (auth.user || localStorage.getItem("jwt")) {
+    if (auth.user) {
       setOpenAuthModal(false);
       if (location.pathname === "/login" || location.pathname === "/register") {
         navigate("/");

@@ -15,11 +15,7 @@ export default function LoginUserForm({ handleNext }) {
   const [passwordError, setPasswordError] = useState("");
   const { auth } = useSelector((store) => store);
 
-  useEffect(() => {
-    if (jwt) {
-      dispatch(getUser(jwt));
-    }
-  }, [jwt]);
+
 
 
 

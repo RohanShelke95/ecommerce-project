@@ -23,8 +23,8 @@ export default function AuthModal({ handleClose, open }) {
   const location = useLocation();
   const { auth } = useSelector((store) => store);
   useEffect(() => {
-    if (auth.user || auth.successMessage) handleClose();
-  }, [auth.user, auth.successMessage]);
+    if (auth.user) handleClose();
+  }, [auth.user, handleClose]);
   return (
     <>
     <Modal

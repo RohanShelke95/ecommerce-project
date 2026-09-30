@@ -35,10 +35,6 @@ api.interceptors.response.use(
     if (status === 401 || (status === 400 && isProtectedEndpoint)) {
       console.warn(`[API] Stale/invalid JWT detected (${status} on ${url}). Clearing session.`);
       localStorage.clear();
-      // Redirect to login if not already there
-      if (window.location.pathname !== "/login" && window.location.pathname !== "/register") {
-        window.location.href = "/login";
-      }
     }
     return Promise.reject(error);
   }

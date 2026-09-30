@@ -80,7 +80,8 @@ const authReducer = (state = initialState, action) => {
       return {
         ...state,
         isLoading: false,
-        error: action.payload,
+        error: null,
+        user: null,
         fetchingUser: false,
       };
     case LOGOUT:

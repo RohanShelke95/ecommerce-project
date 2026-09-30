@@ -165,7 +165,8 @@ export const getUser = (token) => {
       dispatch({ type: GET_USER_SUCCESS, payload: user });
       console.log("req User ",user)
     } catch (error) {
-      const errorMessage = error.message;
+      localStorage.removeItem("jwt");
+      const errorMessage = error.response?.data?.message || error.message;
       dispatch({ type: GET_USER_FAILURE, payload: errorMessage });
     }
   };

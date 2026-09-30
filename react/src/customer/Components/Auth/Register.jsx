@@ -37,11 +37,7 @@ export default function RegisterUserForm() {
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
 
-  useEffect(() => {
-    if (jwt) {
-      dispatch(getUser(jwt));
-    }
-  }, [jwt, dispatch]);
+
 
   // Resend OTP countdown timer
   useEffect(() => {
