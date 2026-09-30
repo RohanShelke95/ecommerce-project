@@ -32,6 +32,7 @@ import jakarta.validation.Valid;
 
 import com.zosh.request.OtpSignupRequest;
 import com.zosh.service.OtpService;
+import com.zosh.service.SmsService;
 
 @RestController
 @RequestMapping("/auth")
@@ -44,8 +45,9 @@ public class AuthController {
 	private CartService cartService;
 	private EmailService emailService;
 	private OtpService otpService;
+	private SmsService smsService;
 	
-	public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, CustomUserDetails customUserDetails, CartService cartService, EmailService emailService, OtpService otpService) {
+	public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, CustomUserDetails customUserDetails, CartService cartService, EmailService emailService, OtpService otpService, SmsService smsService) {
 		this.userRepository=userRepository;
 		this.passwordEncoder=passwordEncoder;
 		this.jwtTokenProvider=jwtTokenProvider;
@@ -53,6 +55,7 @@ public class AuthController {
 		this.cartService=cartService;
 		this.emailService = emailService;
 		this.otpService = otpService;
+		this.smsService = smsService;
 	}
 	
 	@PostMapping("/signup")
@@ -175,9 +178,28 @@ public class AuthController {
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
+	@PostMapping("/send-mobile-otp")
+	public ResponseEntity<ApiResponse> sendMobileOtpHandler(@RequestBody Map<String, String> req) throws UserException {
+		String mobile = req.get("mobile");
+		if (mobile == null || mobile.isBlank() || mobile.replaceAll("[^0-9]", "").length() < 10) {
+			throw new UserException("Please provide a valid 10-digit mobile number.");
+		}
+
+		String cleanMobile = mobile.trim();
+		String otpKey = "MOBILE_" + cleanMobile;
+		String otp = otpService.generateOtp(otpKey);
+
+		// Send SMS OTP via SMS Service
+		smsService.sendSmsOtp(cleanMobile, otp);
+
+		ApiResponse res = new ApiResponse("SMS OTP verification code dispatched to " + cleanMobile, true);
+		return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
 	@PostMapping("/signup-verify")
 	public ResponseEntity<AuthResponse> verifyOtpAndSignupHandler(@Valid @RequestBody OtpSignupRequest req) throws UserException {
 		String email = req.getEmail();
+		String mobile = req.getMobile();
 		String otp = req.getOtp();
 		String firstName = req.getFirstName();
 		String lastName = req.getLastName();
@@ -187,10 +209,14 @@ public class AuthController {
 			throw new UserException("Email, OTP code, and password are required.");
 		}
 
-		// Validate OTP
+		// Validate OTP (Check email key or mobile key)
 		boolean isValid = otpService.validateOtp(email, otp);
+		if (!isValid && mobile != null && !mobile.isBlank()) {
+			isValid = otpService.validateOtp("MOBILE_" + mobile.trim(), otp);
+		}
+
 		if (!isValid) {
-			throw new UserException("Invalid or expired verification code. Please check your email and try again.");
+			throw new UserException("Invalid or expired verification code. Please check and try again.");
 		}
 
 		// Check duplicate user again
@@ -202,6 +228,7 @@ public class AuthController {
 		// Create user
 		User createdUser = new User();
 		createdUser.setEmail(email.trim().toLowerCase());
+		createdUser.setMobile(mobile != null ? mobile.trim() : null);
 		createdUser.setFirstName(firstName);
 		createdUser.setLastName(lastName);
 		createdUser.setPassword(passwordEncoder.encode(password));

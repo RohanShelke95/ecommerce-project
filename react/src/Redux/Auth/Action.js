@@ -40,6 +40,22 @@ export const sendOtp = (email) => async (dispatch) => {
   }
 };
 
+export const sendMobileOtp = (mobile) => async (dispatch) => {
+  dispatch({ type: SEND_OTP_REQUEST });
+  try {
+    const response = await axios.post(`${API_BASE_URL}/auth/send-mobile-otp`, { mobile });
+    dispatch({
+      type: SEND_OTP_SUCCESS,
+      payload: response.data?.message || `SMS verification code sent to ${mobile}`,
+    });
+    return response.data;
+  } catch (error) {
+    const message = error.response?.data?.message || error.response?.data?.error || error.message;
+    dispatch({ type: SEND_OTP_FAILURE, payload: message });
+    throw new Error(message);
+  }
+};
+
 export const verifyOtpAndSignup = (signupData) => async (dispatch) => {
   dispatch(registerRequest());
   try {

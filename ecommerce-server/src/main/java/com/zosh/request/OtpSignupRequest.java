@@ -2,6 +2,7 @@ package com.zosh.request;
 
 public class OtpSignupRequest {
     private String email;
+    private String mobile;
     private String otp;
     private String firstName;
     private String lastName;
@@ -9,8 +10,9 @@ public class OtpSignupRequest {
 
     public OtpSignupRequest() {}
 
-    public OtpSignupRequest(String email, String otp, String firstName, String lastName, String password) {
+    public OtpSignupRequest(String email, String mobile, String otp, String firstName, String lastName, String password) {
         this.email = email;
+        this.mobile = mobile;
         this.otp = otp;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -23,6 +25,14 @@ public class OtpSignupRequest {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public String getOtp() {
