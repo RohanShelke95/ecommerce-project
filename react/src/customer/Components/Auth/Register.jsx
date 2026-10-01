@@ -7,18 +7,15 @@ import {
   IconButton,
   CircularProgress,
   Box,
-  Tabs,
-  Tab,
   Typography,
 } from "@mui/material";
-import { Visibility, VisibilityOff, PhoneAndroid, EmailOutlined } from "@mui/icons-material";
+import { Visibility, VisibilityOff, EmailOutlined } from "@mui/icons-material";
 import MarkEmailReadOutlinedIcon from "@mui/icons-material/MarkEmailReadOutlined";
-import SmsOutlinedIcon from "@mui/icons-material/SmsOutlined";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { sendOtp, sendMobileOtp, verifyOtpAndSignup } from "../../../Redux/Auth/Action";
+import { sendOtp, verifyOtpAndSignup } from "../../../Redux/Auth/Action";
 import { useEffect, useState } from "react";
-import { auth, RecaptchaVerifier, signInWithPhoneNumber } from "../../../config/firebase";
 
 export default function RegisterUserForm() {
   const navigate = useNavigate();
@@ -26,9 +23,6 @@ export default function RegisterUserForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const { auth } = useSelector((store) => store);
-
-  // Verification method: 0 = Email OTP, 1 = Mobile SMS OTP
-  const [otpMethod, setOtpMethod] = useState(0);
 
   // Step 1 = Form details, Step 2 = OTP Verification
   const [step, setStep] = useState(1);
@@ -62,11 +56,12 @@ export default function RegisterUserForm() {
   };
 
   const validateMobile = (mobile) => {
+    if (!mobile) return true; // Optional or validate if provided
     const clean = mobile.replace(/[^0-9]/g, "");
     return clean.length >= 10;
   };
 
-  // Step 1: Send OTP code to Email or Mobile
+  // Step 1: Send OTP code to Email
   const handleSendOtp = async (event) => {
     event.preventDefault();
     const newErrors = {};
@@ -80,7 +75,7 @@ export default function RegisterUserForm() {
     if (!formData.email || !validateEmail(formData.email)) {
       newErrors.email = "Please enter a valid email address.";
     }
-    if (otpMethod === 1 && (!formData.mobile || !validateMobile(formData.mobile))) {
+    if (formData.mobile && !validateMobile(formData.mobile)) {
       newErrors.mobile = "Please enter a valid 10-digit mobile number.";
     }
     if (!formData.password || formData.password.length < 6) {
@@ -94,45 +89,13 @@ export default function RegisterUserForm() {
 
     setErrors({});
     try {
-      if (otpMethod === 1) {
-        // Format mobile number to E.164 (+91XXXXXXXXXX)
-        const clean = formData.mobile.replace(/[^0-9]/g, "");
-        const formattedMobile = clean.startsWith("91") && clean.length === 12
-          ? `+${clean}`
-          : `+91${clean.slice(-10)}`;
-
-        // Clear existing recaptcha if any
-        if (!window.recaptchaVerifier) {
-          window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-            size: "invisible",
-            callback: () => {
-              // reCAPTCHA solved
-            },
-          });
-        }
-
-        const confirmationResult = await signInWithPhoneNumber(
-          auth,
-          formattedMobile,
-          window.recaptchaVerifier
-        );
-        window.confirmationResult = confirmationResult;
-      } else {
-        await dispatch(sendOtp(formData.email));
-      }
+      await dispatch(sendOtp(formData.email));
       setStep(2);
       setTimer(60);
       setCanResend(false);
     } catch (err) {
       console.error("OTP send error:", err);
-      // Reset recaptcha on error so user can retry
-      if (window.recaptchaVerifier) {
-        try {
-          window.recaptchaVerifier.clear();
-          window.recaptchaVerifier = null;
-        } catch (e) {}
-      }
-      setErrors({ form: err.message || "Failed to send OTP code. Please try again." });
+      setErrors({ form: err.message || "Failed to send verification code. Please check your email." });
     }
   };
 
@@ -140,31 +103,12 @@ export default function RegisterUserForm() {
   const handleResendOtp = async () => {
     if (!canResend) return;
     try {
-      if (otpMethod === 1) {
-        const clean = formData.mobile.replace(/[^0-9]/g, "");
-        const formattedMobile = clean.startsWith("91") && clean.length === 12
-          ? `+${clean}`
-          : `+91${clean.slice(-10)}`;
-
-        if (!window.recaptchaVerifier) {
-          window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-            size: "invisible",
-          });
-        }
-        const confirmationResult = await signInWithPhoneNumber(
-          auth,
-          formattedMobile,
-          window.recaptchaVerifier
-        );
-        window.confirmationResult = confirmationResult;
-      } else {
-        await dispatch(sendOtp(formData.email));
-      }
+      await dispatch(sendOtp(formData.email));
       setTimer(60);
       setCanResend(false);
     } catch (err) {
       console.error("OTP resend error:", err);
-      setErrors({ form: err.message || "Failed to resend OTP code." });
+      setErrors({ form: err.message || "Failed to resend verification code." });
     }
   };
 
@@ -178,13 +122,6 @@ export default function RegisterUserForm() {
 
     setErrors({});
     try {
-      let isFirebaseVerified = false;
-      if (otpMethod === 1 && window.confirmationResult) {
-        // Verify code with Firebase
-        await window.confirmationResult.confirm(otp.trim());
-        isFirebaseVerified = true;
-      }
-
       await dispatch(
         verifyOtpAndSignup({
           email: formData.email,
@@ -193,7 +130,6 @@ export default function RegisterUserForm() {
           firstName: formData.firstName,
           lastName: formData.lastName,
           password: formData.password,
-          firebaseVerified: isFirebaseVerified,
         })
       );
       navigate("/");
@@ -205,9 +141,8 @@ export default function RegisterUserForm() {
 
   return (
     <div className="w-full">
-      <div id="recaptcha-container"></div>
       {step === 1 ? (
-        /* ── STEP 1: Registration & Method Selection ── */
+        /* ── STEP 1: Registration Form ── */
         <form onSubmit={handleSendOtp}>
           <Grid container spacing={2.5}>
             {errors.form && (
@@ -227,34 +162,12 @@ export default function RegisterUserForm() {
             )}
 
             <Grid item xs={12}>
-              <Typography variant="body2" className="text-gray-600 mb-1 font-medium">
-                Choose Verification Option:
-              </Typography>
-              <Tabs
-                value={otpMethod}
-                onChange={(e, val) => setOtpMethod(val)}
-                variant="fullWidth"
-                sx={{
-                  backgroundColor: "#f3f4f6",
-                  borderRadius: "8px",
-                  padding: "4px",
-                  "& .MuiTab-root": {
-                    borderRadius: "6px",
-                    fontWeight: "bold",
-                    fontSize: "0.85rem",
-                    textTransform: "none",
-                    minHeight: "40px",
-                  },
-                  "& .Mui-selected": {
-                    backgroundColor: "#ffffff",
-                    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-                    color: "#4f46e5",
-                  },
-                }}
-              >
-                <Tab icon={<EmailOutlined fontSize="small" />} iconPosition="start" label="Email OTP" />
-                <Tab icon={<PhoneAndroid fontSize="small" />} iconPosition="start" label="Mobile SMS OTP" />
-              </Tabs>
+              <div className="flex items-center gap-2 p-3 bg-indigo-50 border border-indigo-100 rounded-lg text-xs text-indigo-800">
+                <EmailOutlined fontSize="small" className="text-indigo-600" />
+                <span>
+                  A 6-digit verification code will be sent to your email to verify your account.
+                </span>
+              </div>
             </Grid>
 
             <Grid item xs={12} sm={6}>
@@ -302,17 +215,16 @@ export default function RegisterUserForm() {
 
             <Grid item xs={12}>
               <TextField
-                required={otpMethod === 1}
                 id="mobile"
                 name="mobile"
-                label={otpMethod === 1 ? "Mobile Number (Required for SMS OTP)" : "Mobile Number (Optional)"}
+                label="Mobile Number (Optional)"
                 type="tel"
                 fullWidth
                 placeholder="e.g. 9876543210"
                 value={formData.mobile}
                 onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
                 error={!!errors.mobile}
-                helperText={errors.mobile}
+                helperText={errors.mobile || "Saved to your account profile for delivery updates"}
                 InputProps={{
                   startAdornment: <InputAdornment position="start">+91</InputAdornment>,
                 }}
@@ -363,11 +275,7 @@ export default function RegisterUserForm() {
                 disabled={auth.sendingOtp}
                 startIcon={auth.sendingOtp ? <CircularProgress size={18} color="inherit" /> : null}
               >
-                {auth.sendingOtp
-                  ? "Sending Verification Code..."
-                  : otpMethod === 1
-                  ? "Verify via Mobile SMS OTP"
-                  : "Verify via Email OTP"}
+                {auth.sendingOtp ? "Sending Verification Code..." : "Send Verification Code"}
               </Button>
             </Grid>
           </Grid>
@@ -380,51 +288,44 @@ export default function RegisterUserForm() {
               <ArrowBackIcon fontSize="small" />
             </IconButton>
             <h2 className="text-xl font-bold text-gray-900">
-              {otpMethod === 1 ? "Verify Mobile Number" : "Verify Email Address"}
+              Verify Email Address
             </h2>
           </div>
 
           <Alert
-            icon={otpMethod === 1 ? <SmsOutlinedIcon /> : <MarkEmailReadOutlinedIcon />}
+            icon={<MarkEmailReadOutlinedIcon />}
             severity="info"
             className="text-xs"
           >
-            {otpMethod === 1 ? (
-              <>
-                To complete registration, we've sent a 6-digit SMS OTP code to{" "}
-                <strong>+91 {formData.mobile}</strong>
-              </>
-            ) : (
-              <>
-                To complete registration, we've sent a 6-digit OTP code to{" "}
-                <strong>{formData.email}</strong>
-              </>
-            )}
+            To complete registration, we've sent a 6-digit OTP code to{" "}
+            <strong>{formData.email}</strong>. Please check your inbox.
           </Alert>
 
-          {auth.error && <Alert severity="error">{auth.error}</Alert>}
           {errors.otp && <Alert severity="error">{errors.otp}</Alert>}
 
-          <div className="pt-2">
-            <TextField
-              required
-              id="otp"
-              name="otp"
-              label="Enter 6-Digit OTP Code"
-              fullWidth
-              autoFocus
-              value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              placeholder="e.g. 482915"
-              inputProps={{ maxLength: 6, style: { fontSize: "1.25rem", letterSpacing: "0.25em", textAlign: "center" } }}
-            />
-          </div>
+          <TextField
+            required
+            id="otp"
+            name="otp"
+            label="Enter 6-Digit OTP"
+            fullWidth
+            placeholder="123456"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, "").slice(0, 6))}
+            inputProps={{ maxLength: 6, style: { letterSpacing: "8px", fontSize: "1.25rem", textAlign: "center", fontWeight: "bold" } }}
+            helperText="Code expires in 10 minutes"
+          />
 
-          <div className="flex justify-between items-center text-xs text-gray-500 pt-1">
+          <div className="flex justify-between items-center text-xs text-gray-500 py-1">
             <span>
-              {canResend ? "Didn't receive code?" : `Resend code in ${timer}s`}
+              {timer > 0 ? (
+                `Resend code in ${timer}s`
+              ) : (
+                <span className="text-green-600 font-medium">You can now request a new code</span>
+              )}
             </span>
             <Button
+              variant="text"
               size="small"
               disabled={!canResend || auth.sendingOtp}
               onClick={handleResendOtp}

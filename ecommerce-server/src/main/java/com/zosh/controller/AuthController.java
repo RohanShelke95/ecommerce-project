@@ -85,17 +85,12 @@ public class AuthController {
 		}
 	}
 
-	/**
-	 * DEBUG ONLY: Test SMS delivery directly.
-	 * Call: GET /auth/test-sms?mobile=9876543210
-	 */
 	@GetMapping("/test-sms")
 	public ResponseEntity<ApiResponse> testSms(@RequestParam String mobile) {
 		System.out.println("[TEST-SMS] Manual SMS test triggered to: " + mobile);
 		try {
-			String details = smsService.sendViaFast2SMSWithDetails(mobile, "123456");
-			boolean success = details != null && details.contains("\"return\":true");
-			ApiResponse res = new ApiResponse(details, success);
+			boolean success = smsService.sendSmsOtp(mobile, "123456");
+			ApiResponse res = new ApiResponse("SMS OTP sent: " + success, success);
 			return new ResponseEntity<>(res, success ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			ApiResponse res = new ApiResponse("SMS failed: " + e.getMessage(), false);
