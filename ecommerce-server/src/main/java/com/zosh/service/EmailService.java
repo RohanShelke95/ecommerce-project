@@ -21,8 +21,31 @@ public class EmailService {
     @Value("${spring.mail.password:}")
     private String senderPassword;
 
+    /**
+     * Synchronous email sending — throws exception on failure so caller can catch/diagnose errors.
+     */
+    public void sendEmailSync(String toEmail, String subject, String htmlBody) throws Exception {
+        if (senderPassword == null || senderPassword.isBlank() || senderPassword.contains("your-app-password")) {
+            throw new IllegalStateException("SPRING_MAIL_PASSWORD is not configured in Render environment variables.");
+        }
+
+        System.out.println("[EMAIL] Attempting synchronous email dispatch from: " + senderEmail + " to: " + toEmail);
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setFrom(senderEmail);
+        helper.setTo(toEmail);
+        helper.setSubject(subject);
+        helper.setText(htmlBody, true);
+
+        javaMailSender.send(message);
+        System.out.println("[EMAIL SUCCESS] Mail sent successfully to: " + toEmail);
+    }
+
+    /**
+     * Asynchronous email sending for non-blocking HTTP requests.
+     */
     public void sendEmail(String toEmail, String subject, String htmlBody) {
-        // Skip email attempt if password is empty or still the default placeholder
         if (senderPassword == null || senderPassword.isBlank() || senderPassword.contains("your-app-password")) {
             System.err.println("=================================================================");
             System.err.println("[EMAIL SKIPPED] Cannot send real email to: " + toEmail);
@@ -33,20 +56,9 @@ public class EmailService {
             return;
         }
 
-        // Send email asynchronously to avoid blocking the HTTP response
         CompletableFuture.runAsync(() -> {
             try {
-                System.out.println("[EMAIL] Attempting to send email to: " + toEmail);
-                MimeMessage message = javaMailSender.createMimeMessage();
-                MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-                helper.setFrom(senderEmail);
-                helper.setTo(toEmail);
-                helper.setSubject(subject);
-                helper.setText(htmlBody, true); // true = HTML body
-
-                javaMailSender.send(message);
-                System.out.println("[EMAIL SUCCESS] Mail sent successfully to: " + toEmail);
+                sendEmailSync(toEmail, subject, htmlBody);
             } catch (Exception e) {
                 System.err.println("[EMAIL ERROR] Failed to send email to: " + toEmail);
                 System.err.println("[EMAIL ERROR] Cause: " + e.getClass().getSimpleName() + " - " + e.getMessage());

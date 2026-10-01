@@ -34,7 +34,7 @@ public class SmsService {
             return sendViaFast2SMS(cleanPhone, otp);
         }
 
-        // Default: Mock SMS provider — logs OTP to server console only
+        // Default: Mock SMS provider — logs OTP to server console
         System.out.println("=================================================");
         System.out.println("📱 [SMS OTP DISPATCH - MOCK PROVIDER]");
         System.out.println("📱 TO: " + cleanPhone);
@@ -43,32 +43,29 @@ public class SmsService {
         return true;
     }
 
-    private boolean sendViaFast2SMS(String phoneNumber, String otp) {
+    public String sendViaFast2SMSWithDetails(String phoneNumber, String otp) {
         try {
-            // Strip country code — Fast2SMS needs a 10-digit Indian mobile number only
+            // Strip country code: Fast2SMS requires 10-digit Indian mobile number
             String numbers = phoneNumber;
             if (numbers.startsWith("+91")) numbers = numbers.substring(3);
             else if (numbers.startsWith("91") && numbers.length() == 12) numbers = numbers.substring(2);
 
-            System.out.println("[FAST2SMS] Attempting OTP delivery to: " + numbers);
+            System.out.println("[FAST2SMS] Dispatching OTP via Fast2SMS OTP route to: " + numbers);
 
-            String encodedMessage = URLEncoder.encode(
-                "Your ShopWithUs OTP is: " + otp + ". Valid 10 mins. Do NOT share this code.",
-                StandardCharsets.UTF_8
-            );
+            // Fast2SMS Official OTP route:
+            // https://www.fast2sms.com/dev/bulkV2?authorization=KEY&variables_values=OTP&route=otp&numbers=NUMBERS
+            String cleanKey = fast2smsApiKey.trim();
+            String cleanOtp = otp.trim();
 
-            // Fast2SMS Quick route (route=q) — no DLT registration needed
-            // NOTE: API key is sent as an HTTP header "authorization", NOT in the URL query string.
-            // Putting it in the URL query string would break it if the key contains slashes or special chars.
             String url = "https://www.fast2sms.com/dev/bulkV2"
-                + "?route=q"
-                + "&message=" + encodedMessage
-                + "&language=english"
+                + "?authorization=" + URLEncoder.encode(cleanKey, StandardCharsets.UTF_8)
+                + "&route=otp"
+                + "&variables_values=" + URLEncoder.encode(cleanOtp, StandardCharsets.UTF_8)
                 + "&flash=0"
                 + "&numbers=" + numbers;
 
             HttpHeaders headers = new HttpHeaders();
-            headers.set("authorization", fast2smsApiKey);
+            headers.set("authorization", cleanKey);
             headers.set("cache-control", "no-cache");
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -81,20 +78,18 @@ public class SmsService {
             );
 
             String body = response.getBody();
-            System.out.println("[FAST2SMS RESPONSE] HTTP Status: " + response.getStatusCode());
-            System.out.println("[FAST2SMS RESPONSE] Body: " + body);
+            System.out.println("[FAST2SMS RESPONSE] Status: " + response.getStatusCode() + " | Body: " + body);
 
-            if (body != null && body.contains("\"return\":true")) {
-                System.out.println("[FAST2SMS SUCCESS] OTP SMS dispatched successfully to: " + numbers);
-                return true;
-            } else {
-                System.err.println("[FAST2SMS FAILED] Check your API key and Fast2SMS account balance/credits.");
-                return false;
-            }
-
+            return body != null ? body : "Empty response from Fast2SMS";
         } catch (Exception e) {
-            System.err.println("[SMS ERROR] Fast2SMS call failed: " + e.getClass().getSimpleName() + " — " + e.getMessage());
-            return false;
+            String err = "[SMS ERROR] Fast2SMS dispatch failed: " + e.getClass().getSimpleName() + " - " + e.getMessage();
+            System.err.println(err);
+            return err;
         }
+    }
+
+    private boolean sendViaFast2SMS(String phoneNumber, String otp) {
+        String result = sendViaFast2SMSWithDetails(phoneNumber, otp);
+        return result != null && result.contains("\"return\":true");
     }
 }

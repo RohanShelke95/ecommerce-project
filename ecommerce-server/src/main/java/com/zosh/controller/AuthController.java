@@ -61,22 +61,44 @@ public class AuthController {
 	}
 
 	/**
-	 * DEBUG ONLY: Test email delivery directly.
+	 * DEBUG ONLY: Test email delivery directly and synchronously.
 	 * Call: GET /auth/test-email?to=yourmail@gmail.com
-	 * Watch Render logs for SUCCESS or ERROR message.
 	 */
 	@GetMapping("/test-email")
 	public ResponseEntity<ApiResponse> testEmail(@RequestParam String to) {
 		System.out.println("[TEST-EMAIL] Manual email test triggered to: " + to);
 		try {
-			emailService.sendEmail(to,
+			emailService.sendEmailSync(to,
 				"ShopWithUs - Test Email ✅",
 				"<h2>Test email working! ✅</h2><p>If you see this, your Gmail SMTP is configured correctly on the server.</p>"
 			);
-			ApiResponse res = new ApiResponse("Test email dispatched to " + to + ". Check your inbox and Render logs.", true);
+			ApiResponse res = new ApiResponse("Email sent successfully to " + to + "!", true);
 			return new ResponseEntity<>(res, HttpStatus.OK);
 		} catch (Exception e) {
-			ApiResponse res = new ApiResponse("Email test failed: " + e.getMessage(), false);
+			String errMsg = e.getClass().getSimpleName() + ": " + e.getMessage();
+			if (e.getCause() != null) {
+				errMsg += " | Cause: " + e.getCause().getMessage();
+			}
+			System.err.println("[TEST-EMAIL ERROR] " + errMsg);
+			ApiResponse res = new ApiResponse("Email failed: " + errMsg, false);
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * DEBUG ONLY: Test SMS delivery directly.
+	 * Call: GET /auth/test-sms?mobile=9876543210
+	 */
+	@GetMapping("/test-sms")
+	public ResponseEntity<ApiResponse> testSms(@RequestParam String mobile) {
+		System.out.println("[TEST-SMS] Manual SMS test triggered to: " + mobile);
+		try {
+			String details = smsService.sendViaFast2SMSWithDetails(mobile, "123456");
+			boolean success = details != null && details.contains("\"return\":true");
+			ApiResponse res = new ApiResponse(details, success);
+			return new ResponseEntity<>(res, success ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			ApiResponse res = new ApiResponse("SMS failed: " + e.getMessage(), false);
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
