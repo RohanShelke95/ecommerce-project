@@ -255,8 +255,11 @@ public class AuthController {
 			throw new UserException("Email, OTP code, and password are required.");
 		}
 
-		// Validate OTP (Check email key or mobile key)
-		boolean isValid = otpService.validateOtp(email, otp);
+		// Validate OTP (Check Firebase client-side verification, email key, or mobile key)
+		boolean isValid = req.isFirebaseVerified();
+		if (!isValid) {
+			isValid = otpService.validateOtp(email, otp);
+		}
 		if (!isValid && mobile != null && !mobile.isBlank()) {
 			isValid = otpService.validateOtp("MOBILE_" + mobile.trim(), otp);
 		}

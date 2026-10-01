@@ -7,6 +7,8 @@ public class OtpSignupRequest {
     private String firstName;
     private String lastName;
     private String password;
+    private boolean firebaseVerified;
+    private String firebaseToken;
 
     public OtpSignupRequest() {}
 
@@ -65,5 +67,21 @@ public class OtpSignupRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isFirebaseVerified() {
+        return firebaseVerified;
+    }
+
+    public void setFirebaseVerified(boolean firebaseVerified) {
+        this.firebaseVerified = firebaseVerified;
+    }
+
+    public String getFirebaseToken() {
+        return firebaseToken;
+    }
+
+    public void setFirebaseToken(String firebaseToken) {
+        this.firebaseToken = firebaseToken;
     }
 }

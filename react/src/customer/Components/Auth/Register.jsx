@@ -14,11 +14,11 @@ import {
 import { Visibility, VisibilityOff, PhoneAndroid, EmailOutlined } from "@mui/icons-material";
 import MarkEmailReadOutlinedIcon from "@mui/icons-material/MarkEmailReadOutlined";
 import SmsOutlinedIcon from "@mui/icons-material/SmsOutlined";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { sendOtp, sendMobileOtp, verifyOtpAndSignup } from "../../../Redux/Auth/Action";
 import { useEffect, useState } from "react";
+import { auth, RecaptchaVerifier, signInWithPhoneNumber } from "../../../config/firebase";
 
 export default function RegisterUserForm() {
   const navigate = useNavigate();
@@ -95,7 +95,28 @@ export default function RegisterUserForm() {
     setErrors({});
     try {
       if (otpMethod === 1) {
-        await dispatch(sendMobileOtp(formData.mobile));
+        // Format mobile number to E.164 (+91XXXXXXXXXX)
+        const clean = formData.mobile.replace(/[^0-9]/g, "");
+        const formattedMobile = clean.startsWith("91") && clean.length === 12
+          ? `+${clean}`
+          : `+91${clean.slice(-10)}`;
+
+        // Clear existing recaptcha if any
+        if (!window.recaptchaVerifier) {
+          window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+            size: "invisible",
+            callback: () => {
+              // reCAPTCHA solved
+            },
+          });
+        }
+
+        const confirmationResult = await signInWithPhoneNumber(
+          auth,
+          formattedMobile,
+          window.recaptchaVerifier
+        );
+        window.confirmationResult = confirmationResult;
       } else {
         await dispatch(sendOtp(formData.email));
       }
@@ -104,6 +125,14 @@ export default function RegisterUserForm() {
       setCanResend(false);
     } catch (err) {
       console.error("OTP send error:", err);
+      // Reset recaptcha on error so user can retry
+      if (window.recaptchaVerifier) {
+        try {
+          window.recaptchaVerifier.clear();
+          window.recaptchaVerifier = null;
+        } catch (e) {}
+      }
+      setErrors({ form: err.message || "Failed to send OTP code. Please try again." });
     }
   };
 
@@ -112,7 +141,22 @@ export default function RegisterUserForm() {
     if (!canResend) return;
     try {
       if (otpMethod === 1) {
-        await dispatch(sendMobileOtp(formData.mobile));
+        const clean = formData.mobile.replace(/[^0-9]/g, "");
+        const formattedMobile = clean.startsWith("91") && clean.length === 12
+          ? `+${clean}`
+          : `+91${clean.slice(-10)}`;
+
+        if (!window.recaptchaVerifier) {
+          window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+            size: "invisible",
+          });
+        }
+        const confirmationResult = await signInWithPhoneNumber(
+          auth,
+          formattedMobile,
+          window.recaptchaVerifier
+        );
+        window.confirmationResult = confirmationResult;
       } else {
         await dispatch(sendOtp(formData.email));
       }
@@ -120,6 +164,7 @@ export default function RegisterUserForm() {
       setCanResend(false);
     } catch (err) {
       console.error("OTP resend error:", err);
+      setErrors({ form: err.message || "Failed to resend OTP code." });
     }
   };
 
@@ -133,6 +178,13 @@ export default function RegisterUserForm() {
 
     setErrors({});
     try {
+      let isFirebaseVerified = false;
+      if (otpMethod === 1 && window.confirmationResult) {
+        // Verify code with Firebase
+        await window.confirmationResult.confirm(otp.trim());
+        isFirebaseVerified = true;
+      }
+
       await dispatch(
         verifyOtpAndSignup({
           email: formData.email,
@@ -141,20 +193,28 @@ export default function RegisterUserForm() {
           firstName: formData.firstName,
           lastName: formData.lastName,
           password: formData.password,
+          firebaseVerified: isFirebaseVerified,
         })
       );
       navigate("/");
     } catch (err) {
       console.error("OTP verification error:", err);
+      setErrors({ otp: err.message || "Invalid or expired verification code." });
     }
   };
 
   return (
     <div className="w-full">
+      <div id="recaptcha-container"></div>
       {step === 1 ? (
         /* ── STEP 1: Registration & Method Selection ── */
         <form onSubmit={handleSendOtp}>
           <Grid container spacing={2.5}>
+            {errors.form && (
+              <Grid item xs={12}>
+                <Alert severity="error">{errors.form}</Alert>
+              </Grid>
+            )}
             {auth.error && (
               <Grid item xs={12}>
                 <Alert severity="error">{auth.error}</Alert>
