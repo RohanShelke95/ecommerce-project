@@ -20,7 +20,6 @@ import {
 } from "@mui/material";
 
 import React from "react";
-import { dressPage1 } from "../../../Data/dress/page1";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";

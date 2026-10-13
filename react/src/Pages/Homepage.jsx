@@ -1,30 +1,32 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import HomeCarousel from "../customer/Components/Carousel/HomeCarousel";
 import { homeCarouselData } from "../customer/Components/Carousel/HomeCaroselData";
 import HomeProductSection from "../customer/Components/Home/HomeProductSection";
+import HomeProductSectionSkeleton from "../customer/Components/Skeletons/HomeProductSectionSkeleton";
 import { useDispatch, useSelector } from "react-redux";
 import { findProducts } from "../Redux/Customers/Product/Action";
+
+const HOME_SECTIONS = [
+  { key: "mens_kurta", title: "Men's Kurta", lavelOne: "men" },
+  { key: "shoes", title: "Men's Shoes", lavelOne: "men" },
+  { key: "lengha_choli", title: "Lengha Choli", lavelOne: "women" },
+  { key: "saree", title: "Saree", lavelOne: "women" },
+  { key: "women_dress", title: "Women's Dresses", lavelOne: "women" },
+  { key: "kurtas", title: "Women's Kurtas", lavelOne: "women" },
+];
 
 const Homepage = () => {
   const dispatch = useDispatch();
   const { customersProduct } = useSelector((store) => store);
+  const [isWarmingUp, setIsWarmingUp] = useState(false);
 
   useEffect(() => {
-    const categoryToLavelOne = {
-      mens_kurta: "men",
-      shoes: "men",
-      lengha_choli: "women",
-      saree: "women",
-      women_dress: "women",
-      kurtas: "women",
-    };
-
-    const categories = ["mens_kurta", "shoes", "lengha_choli", "saree", "women_dress", "kurtas"];
-
-    categories.forEach((category) => {
+    // If any section is not yet loaded in Redux, trigger fetch
+    HOME_SECTIONS.forEach(({ key, lavelOne }) => {
+      // Background revalidation or initial fetch
       dispatch(
         findProducts({
-          category,
+          category: key,
           colors: [],
           sizes: [],
           minPrice: 0,
@@ -34,40 +36,68 @@ const Homepage = () => {
           pageNumber: 0,
           pageSize: 10,
           stock: "",
-          lavelOne: categoryToLavelOne[category] || "",
+          lavelOne: lavelOne || "",
         })
       );
     });
+
+    // Check if initial categories are missing to show a warm-up indicator if slow
+    const hasAnyCategory = HOME_SECTIONS.some(
+      (sec) => customersProduct.categoryProducts?.[sec.key]?.length > 0
+    );
+
+    if (!hasAnyCategory) {
+      const timer = setTimeout(() => {
+        setIsWarmingUp(true);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
   }, [dispatch]);
 
+  // Turn off warm up indicator once products arrive
+  useEffect(() => {
+    const hasAnyCategory = HOME_SECTIONS.some(
+      (sec) => customersProduct.categoryProducts?.[sec.key]?.length > 0
+    );
+    if (hasAnyCategory) {
+      setIsWarmingUp(false);
+    }
+  }, [customersProduct.categoryProducts]);
+
   return (
-    <div className="">
+    <div className="min-h-screen bg-gray-50/50">
       <HomeCarousel images={homeCarouselData} />
 
-      <div className="space-y-6 sm:space-y-10 py-10 sm:py-16 lg:py-20">
-        {customersProduct.categoryProducts?.mens_kurta?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.mens_kurta} section={"Men's Kurta"} />
-        )}
+      {/* Gentle notice if Render server is cold-starting for the first time */}
+      {isWarmingUp && (
+        <div className="mx-4 sm:mx-8 lg:mx-16 my-4 p-3 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs sm:text-sm rounded-lg flex items-center justify-between shadow-sm animate-pulse">
+          <div className="flex items-center space-x-2">
+            <span className="w-2.5 h-2.5 bg-indigo-600 rounded-full animate-ping inline-block"></span>
+            <span>Connecting to live store database. Products will appear in just a few seconds...</span>
+          </div>
+        </div>
+      )}
 
-        {customersProduct.categoryProducts?.shoes?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.shoes} section={"Men's Shoes"} />
-        )}
-
-        {customersProduct.categoryProducts?.lengha_choli?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.lengha_choli} section={"Lengha Choli"} />
-        )}
-
-        {customersProduct.categoryProducts?.saree?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.saree} section={"Saree"} />
-        )}
-
-        {customersProduct.categoryProducts?.women_dress?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.women_dress} section={"Women's Dresses"} />
-        )}
-
-        {customersProduct.categoryProducts?.kurtas?.length > 0 && (
-          <HomeProductSection data={customersProduct.categoryProducts?.kurtas} section={"Women's Kurtas"} />
-        )}
+      <div className="space-y-6 sm:space-y-10 py-6 sm:py-10 lg:py-14">
+        {HOME_SECTIONS.map((section) => {
+          const items = customersProduct.categoryProducts?.[section.key];
+          if (items && items.length > 0) {
+            return (
+              <HomeProductSection
+                key={section.key}
+                data={items}
+                section={section.title}
+              />
+            );
+          }
+          // While loading or before response, render modern skeleton
+          return (
+            <HomeProductSectionSkeleton
+              key={section.key}
+              sectionTitle={section.title}
+            />
+          );
+        })}
       </div>
     </div>
   );

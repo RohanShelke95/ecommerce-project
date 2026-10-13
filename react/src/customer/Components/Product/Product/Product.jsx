@@ -19,6 +19,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { filters as fallbackFilters, singleFilter, sortOptions } from "./FilterData";
 import { buildDynamicFilters, formatCategoryTitle, isFilterSelected } from "./filterUtils";
 import ProductCard from "../ProductCard/ProductCard";
+import ProductCardSkeleton from "../../Skeletons/ProductCardSkeleton";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
@@ -550,9 +551,16 @@ export default function Product() {
                   <div className="flex flex-wrap justify-center bg-white border py-5 rounded-md min-h-[50vh]">
                     {customersProduct?.products?.content?.length > 0 ? (
                       customersProduct?.products?.content?.map((item, index) => {
-                        console.log(`Drawing saree #${index + 1}:`, item.title);
                         return <ProductCard key={item.id} product={item} />;
                       })
+                    ) : customersProduct.loading ? (
+                      <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+                        {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                          <div key={n} className="flex justify-center">
+                            <ProductCardSkeleton />
+                          </div>
+                        ))}
+                      </div>
                     ) : (
                       <div className="w-full flex flex-col items-center justify-center py-20 px-4 text-center">
                         <svg className="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

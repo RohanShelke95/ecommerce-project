@@ -27,7 +27,7 @@ export default function Navigation() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { auth, cart } = useSelector((store) => store);
+  const { auth, cart, wishlist } = useSelector((store) => store);
   const [openAuthModal, setOpenAuthModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const openUserMenu = Boolean(anchorEl);
@@ -492,21 +492,26 @@ export default function Navigation() {
                 {/* Wishlist — always visible */}
                 <button
                   onClick={() => navigate("/wishlist")}
-                  className="p-1 text-gray-600 hover:text-gray-900"
+                  className="p-1 flex items-center text-gray-600 hover:text-gray-900 transition-colors"
                   aria-label="Wishlist"
                 >
                   <FavoriteBorderIcon sx={{ fontSize: 24 }} />
+                  {wishlist?.wishlist?.wishlistItems?.length > 0 && (
+                    <span className="ml-1 text-xs font-semibold text-pink-600 bg-pink-50 px-1.5 py-0.5 rounded-full border border-pink-200">
+                      {wishlist.wishlist.wishlistItems.length}
+                    </span>
+                  )}
                 </button>
 
                 {/* Cart — always visible */}
                 <button
                   onClick={() => navigate("/cart")}
-                  className="p-1 flex items-center text-gray-600 hover:text-gray-900"
+                  className="p-1 flex items-center text-gray-600 hover:text-gray-900 transition-colors"
                   aria-label="Cart"
                 >
                   <ShoppingBagIcon className="h-6 w-6 flex-shrink-0" aria-hidden="true" />
-                  <span className="ml-1 text-sm font-medium text-gray-700">
-                    {cart.cart?.totalItem || 0}
+                  <span className="ml-1 text-xs font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">
+                    {cart.cart?.totalItem || cart.cartItems?.length || 0}
                   </span>
                 </button>
               </div>

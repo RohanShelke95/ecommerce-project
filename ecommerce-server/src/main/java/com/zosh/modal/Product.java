@@ -16,12 +16,19 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.*;
 
 @Entity
+@Table(name = "product", indexes = {
+    @Index(name = "idx_product_category", columnList = "category_id"),
+    @Index(name = "idx_product_discounted_price", columnList = "discounted_price"),
+    @Index(name = "idx_product_created_at", columnList = "createdAt")
+})
 @Getter
 @Setter
 @NoArgsConstructor

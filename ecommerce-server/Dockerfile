@@ -24,4 +24,4 @@ COPY uploads ./uploads
 EXPOSE 5454
 
 # Command to execute the jar file
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-XX:+UseSerialGC", "-Xss512k", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]

@@ -13,6 +13,7 @@ import { filters as fallbackFilters, sortOptions } from "./FilterData";
 import { buildDynamicFilters } from "./filterUtils";
 import ProductFiltersPanel from "./ProductFiltersPanel";
 import ProductCard from "../ProductCard/ProductCard";
+import ProductCardSkeleton from "../../Skeletons/ProductCardSkeleton";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { searchProductsPage } from "../../../../Redux/Customers/Product/Action";
@@ -355,6 +356,14 @@ export default function SearchProduct() {
                       resultItems.map((item) => (
                         <ProductCard key={item.id} product={item} />
                       ))
+                    ) : customersProduct.loading ? (
+                      <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+                        {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                          <div key={n} className="flex justify-center">
+                            <ProductCardSkeleton />
+                          </div>
+                        ))}
+                      </div>
                     ) : (
                       <div className="w-full flex flex-col items-center justify-center py-20 px-4 text-center">
                         <svg

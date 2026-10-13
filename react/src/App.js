@@ -1,33 +1,49 @@
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import Navigation from "./customer/Components/Navbar/Navigation";
 import CustomerRoutes from "./Routers/CustomerRoutes";
-import AdminRoutes from "./Routers/AdminRoutes";
-import NotFound from "./Pages/Notfound";
 import AdminPannel from "./Admin/AdminPannel";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { getUser } from "./Redux/Auth/Action";
 import { getWishlist } from "./Redux/Customers/Wishlist/Action";
-// import Routers from './Routers/Routers';
-
+import { getCart } from "./Redux/Customers/Cart/Action";
 import ToastNotification from "./customer/Components/Toast/ToastNotification";
+import { API_BASE_URL } from "./config/api";
+import axios from "axios";
 
 function App() {
   const { auth } = useSelector((store) => store);
   const dispatch = useDispatch();
   const jwt = localStorage.getItem("jwt");
 
+  // Initial user session hydration
   useEffect(() => {
     if (jwt) {
       dispatch(getUser(jwt));
       dispatch(getWishlist(jwt));
+      dispatch(getCart(jwt)); // Preload cart count for Navbar badge
     }
-  }, [jwt]);
+  }, [jwt, dispatch]);
+
+  // Backend Warmup & Keep-Alive Ping
+  useEffect(() => {
+    // Immediate non-blocking ping to wake up Render container if asleep
+    const pingBackend = async () => {
+      try {
+        await axios.get(`${API_BASE_URL}/`, { timeout: 15000 });
+      } catch (err) {
+        // Silent catch: ping attempt initiated
+      }
+    };
+
+    pingBackend();
+
+    // Heartbeat every 10 minutes to prevent Render from going to sleep while tab is open
+    const intervalId = setInterval(pingBackend, 10 * 60 * 1000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   // Determine if user is (or might be) an admin:
-  // - auth.user already loaded and is ROLE_ADMIN, OR
-  // - JWT exists and user profile is still being fetched (avoid premature 404)
   const isAdminOrLoading =
     auth.user?.role === "ROLE_ADMIN" ||
     (jwt && auth.fetchingUser);

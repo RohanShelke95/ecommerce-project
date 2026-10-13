@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getCart } from "../../../Redux/Customers/Cart/Action";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+import CartSkeleton from "../Skeletons/CartSkeleton";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -13,18 +14,25 @@ const Cart = () => {
   const { cart } = useSelector((store) => store);
 
   useEffect(() => {
-    dispatch(getCart(jwt));
+    if (jwt) {
+      dispatch(getCart(jwt));
+    }
   }, [jwt, dispatch]);
 
+  // If cart is actively fetching and we have no items in store yet, show skeleton
+  if (cart.loading && (!cart.cartItems || cart.cartItems.length === 0)) {
+    return <CartSkeleton />;
+  }
+
   return (
-    <div className="px-4 sm:px-6 lg:px-16">
+    <div className="px-4 sm:px-6 lg:px-16 min-h-[70vh]">
       {cart.cartItems?.length > 0 ? (
         <div className="lg:grid grid-cols-3 gap-6 py-6">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-3 mb-6 lg:mb-0">
-            {cart.cartItems.map((item, index) => (
+            {cart.cartItems.map((item, index) =>
               item ? <CartItem key={item.id || index} item={item} showButton={true} /> : null
-            ))}
+            )}
           </div>
 
           {/* Price Summary */}
@@ -34,12 +42,12 @@ const Cart = () => {
               <hr />
               <div className="space-y-3 font-semibold">
                 <div className="flex justify-between pt-3 text-black">
-                  <span>Price ({cart.cart?.totalItem} item)</span>
-                  <span>₹{cart.cart?.totalPrice}</span>
+                  <span>Price ({cart.cart?.totalItem || cart.cartItems?.length} item)</span>
+                  <span>₹{cart.cart?.totalPrice || 0}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Discount</span>
-                  <span className="text-green-700">-₹{cart.cart?.discounte}</span>
+                  <span className="text-green-700">-₹{cart.cart?.discounte || 0}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Delivery Charges</span>
@@ -48,7 +56,7 @@ const Cart = () => {
                 <hr />
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total Amount</span>
-                  <span className="text-green-700">₹{cart.cart?.totalDiscountedPrice}</span>
+                  <span className="text-green-700">₹{cart.cart?.totalDiscountedPrice || 0}</span>
                 </div>
               </div>
               <Button

@@ -21,31 +21,51 @@ import {
   SEARCH_PRODUCTS_PAGE_FAILURE,
 } from "./ActionType";
 
+const getInitialCategoryProducts = () => {
+  try {
+    const cached = localStorage.getItem("cached_home_categories");
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (parsed && typeof parsed === "object") return parsed;
+    }
+  } catch (e) {
+    console.warn("Failed to load cached home categories:", e);
+  }
+  return {};
+};
+
 const initialState = {
   products: [],
   product: null,
   loading: false,
   error: null,
-  deleteProduct:null,
-  searchProducts:[],
+  deleteProduct: null,
+  searchProducts: [],
   searchResults: null,
-  categoryProducts: {} // New field to store products by category
+  categoryProducts: getInitialCategoryProducts() // Hydrated from local cache for instant load
 };
 
 const customerProductReducer = (state = initialState, action) => {
   switch (action.type) {
     case FIND_PRODUCTS_BY_CATEGORY_REQUEST:
       return { ...state, loading: true, error: null };
-    case FIND_PRODUCTS_BY_CATEGORY_SUCCESS:
+    case FIND_PRODUCTS_BY_CATEGORY_SUCCESS: {
+      const updatedCategoryProducts = {
+        ...state.categoryProducts,
+        [action.category]: action.payload?.content || []
+      };
+      try {
+        localStorage.setItem("cached_home_categories", JSON.stringify(updatedCategoryProducts));
+      } catch (e) {
+        // Ignore quota errors
+      }
       return { 
         ...state, 
         products: action.payload, 
         loading: false,
-        categoryProducts: {
-          ...state.categoryProducts,
-          [action.category]: action.payload.content // Store by category name
-        }
+        categoryProducts: updatedCategoryProducts
       };
+    }
     case FIND_PRODUCTS_BY_CATEGORY_FAILURE:
       return { ...state, loading: false, error: action.payload };
 

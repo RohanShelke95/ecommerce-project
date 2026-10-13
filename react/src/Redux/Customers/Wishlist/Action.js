@@ -27,9 +27,17 @@ export const getWishlist = (jwt) => async (dispatch) => {
 };
 
 export const addItemToWishlist = (reqData) => async (dispatch) => {
-  dispatch({ type: ADD_ITEM_TO_WISHLIST_REQUEST });
+  // Optimistically update the UI immediately
+  dispatch({
+    type: ADD_ITEM_TO_WISHLIST_SUCCESS,
+    payload: {
+      id: Date.now(),
+      product: reqData.product || { id: reqData.productId },
+    },
+  });
+
   try {
-    const { data } = await axios.post(
+    await axios.post(
       `${API_BASE_URL}/api/wishlist/add/${reqData.productId}`,
       {},
       {
@@ -38,18 +46,24 @@ export const addItemToWishlist = (reqData) => async (dispatch) => {
         },
       }
     );
-    dispatch({ type: ADD_ITEM_TO_WISHLIST_SUCCESS, payload: data });
-    // Re-fetch the wishlist to keep the Redux store synchronized
-    dispatch(getWishlist(reqData.jwt));
   } catch (error) {
+    // If request failed, report error to revert/notify
     dispatch({ type: ADD_ITEM_TO_WISHLIST_FAILURE, payload: error.message });
+    // Re-fetch to restore true state from server
+    if (reqData.jwt) dispatch(getWishlist(reqData.jwt));
   }
 };
 
 export const removeWishlistItem = (reqData) => async (dispatch) => {
-  dispatch({ type: REMOVE_WISHLIST_ITEM_REQUEST });
+  // Optimistically remove from UI immediately
+  dispatch({
+    type: REMOVE_WISHLIST_ITEM_SUCCESS,
+    payload: reqData.wishlistItemId,
+    productId: reqData.productId,
+  });
+
   try {
-    const { data } = await axios.delete(
+    await axios.delete(
       `${API_BASE_URL}/api/wishlist/remove/${reqData.wishlistItemId}`,
       {
         headers: {
@@ -57,11 +71,8 @@ export const removeWishlistItem = (reqData) => async (dispatch) => {
         },
       }
     );
-    dispatch({
-      type: REMOVE_WISHLIST_ITEM_SUCCESS,
-      payload: reqData.wishlistItemId,
-    });
   } catch (error) {
     dispatch({ type: REMOVE_WISHLIST_ITEM_FAILURE, payload: error.message });
+    if (reqData.jwt) dispatch(getWishlist(reqData.jwt));
   }
 };

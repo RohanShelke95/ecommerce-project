@@ -9,6 +9,7 @@ import { findProductById, findProducts } from "../../../../Redux/Customers/Produ
 import { addItemToCart } from "../../../../Redux/Customers/Cart/Action";
 import { getAllReviews } from "../../../../Redux/Customers/Review/Action";
 import { getImageUrl } from "../../../../utils/getImageUrl";
+import { showToast } from "../../Toast/ToastNotification";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -27,17 +28,19 @@ export default function ProductDetails() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!jwt) {
-      setErrorMsg("Please login first to add products to your cart.");
-      setTimeout(() => navigate("/login"), 2000);
+      showToast("Please login first to add products to your cart", "warning");
+      navigate("/login");
       return;
     }
     if (!selectedSize) {
       setErrorMsg("Please select a size before adding to cart.");
+      showToast("Please select a size first", "warning");
       return;
     }
     setErrorMsg("");
     const data = { productId: Number(productId), size: selectedSize.name, quantity: 1 };
     dispatch(addItemToCart({ data, jwt }));
+    showToast("Product added to cart!", "success");
     navigate("/cart");
   };
 

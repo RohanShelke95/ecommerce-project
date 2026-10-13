@@ -18,12 +18,27 @@ const initialState = {
 
 export const wishlistReducer = (state = initialState, action) => {
   switch (action.type) {
-    case ADD_ITEM_TO_WISHLIST_REQUEST:
     case GET_USER_WISHLIST_REQUEST:
-    case REMOVE_WISHLIST_ITEM_REQUEST:
       return { ...state, loading: true, error: null };
-    case ADD_ITEM_TO_WISHLIST_SUCCESS:
-      return { ...state, loading: false };
+    case ADD_ITEM_TO_WISHLIST_REQUEST:
+    case REMOVE_WISHLIST_ITEM_REQUEST:
+      return { ...state, error: null };
+    case ADD_ITEM_TO_WISHLIST_SUCCESS: {
+      const currentItems = state.wishlist?.wishlistItems || [];
+      const alreadyExists = currentItems.some(
+        (item) => item.product?.id === action.payload?.product?.id
+      );
+      return {
+        ...state,
+        wishlist: {
+          ...state.wishlist,
+          wishlistItems: alreadyExists
+            ? currentItems
+            : [...currentItems, action.payload],
+        },
+        loading: false,
+      };
+    }
     case GET_USER_WISHLIST_SUCCESS:
       return { ...state, wishlist: action.payload, loading: false };
     case REMOVE_WISHLIST_ITEM_SUCCESS:
@@ -31,8 +46,10 @@ export const wishlistReducer = (state = initialState, action) => {
         ...state,
         wishlist: {
           ...state.wishlist,
-          wishlistItems: state.wishlist.wishlistItems.filter(
-            (item) => item.id !== action.payload
+          wishlistItems: (state.wishlist?.wishlistItems || []).filter(
+            (item) =>
+              item.id !== action.payload &&
+              (!action.productId || item.product?.id !== action.productId)
           ),
         },
         loading: false,

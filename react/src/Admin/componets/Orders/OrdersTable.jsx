@@ -24,7 +24,6 @@ import React, { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 import { Grid, Select } from "@mui/material";
-import { dressPage1 } from "../../../Data/dress/page1";
 import { useDispatch, useSelector } from "react-redux";
 import {
   confirmOrder,
