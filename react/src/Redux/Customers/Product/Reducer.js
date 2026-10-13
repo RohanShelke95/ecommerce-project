@@ -70,7 +70,7 @@ const customerProductReducer = (state = initialState, action) => {
       return { ...state, loading: false, error: action.payload };
 
     case FIND_PRODUCT_BY_ID_REQUEST:
-      return { ...state, loading: true, error: null };
+      return { ...state, product: null, loading: true, error: null };
     case FIND_PRODUCT_BY_ID_SUCCESS:
       return { ...state, product: action.payload, loading: false };
     case FIND_PRODUCT_BY_ID_FAILURE:

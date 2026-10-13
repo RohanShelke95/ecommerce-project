@@ -50,7 +50,7 @@ const HomeProductCard = ({ product }) => {
 
   return (
     <div
-      onClick={() => navigate(`/product/${product?.id || product?._id}`)}
+      onClick={() => navigate(`/product/${product?.id || product?._id}`, { state: { product } })}
       className="cursor-pointer flex flex-col items-center bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden w-[10rem] sm:w-[15rem] mx-2 sm:mx-3 relative border border-gray-100"
     >
       <div className="absolute top-2 right-2 z-10">

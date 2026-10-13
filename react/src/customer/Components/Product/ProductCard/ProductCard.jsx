@@ -47,7 +47,7 @@ const ProductCard = ({ product }) => {
   };
 
   const handleNavigate = () => {
-    navigate(`/product/${product?.id || product?._id || 2}`);
+    navigate(`/product/${product?.id || product?._id || 2}`, { state: { product } });
   };
 
   return (
