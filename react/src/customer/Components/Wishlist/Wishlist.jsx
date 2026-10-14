@@ -26,8 +26,8 @@ const Wishlist = () => {
     showToast("Item removed from wishlist", "info");
   };
 
-  // If actively fetching and no items currently loaded, show skeleton
-  if (wishlist.loading && (!wishlist.wishlist?.wishlistItems || wishlist.wishlist.wishlistItems.length === 0)) {
+  // Show skeleton while fetching (including after adding a new item)
+  if (wishlist.loading) {
     return <WishlistSkeleton />;
   }
 

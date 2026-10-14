@@ -11,6 +11,8 @@ import {
   UPDATE_CART_ITEM_FAILURE,
   UPDATE_CART_ITEM_REQUEST,
   UPDATE_CART_ITEM_SUCCESS,
+  OPTIMISTIC_UPDATE_CART_ITEM,
+  OPTIMISTIC_ADD_CART_ITEM,
 } from "./ActionType";
 
 const initialState = {
@@ -20,65 +22,117 @@ const initialState = {
   cartItems: [],
 };
 
+// Recalculate cart totals locally from cartItems array — no API needed
+const recalculateTotals = (cartItems) => {
+  const totalPrice = cartItems.reduce(
+    (sum, item) => sum + (item?.product?.price || 0) * (item?.quantity || 1),
+    0
+  );
+  const totalDiscountedPrice = cartItems.reduce(
+    (sum, item) =>
+      sum + (item?.product?.discountedPrice || 0) * (item?.quantity || 1),
+    0
+  );
+  const discounte = totalPrice - totalDiscountedPrice;
+  const totalItem = cartItems.reduce((sum, item) => sum + (item?.quantity || 1), 0);
+
+  return { totalPrice, totalDiscountedPrice, discounte, totalItem };
+};
+
 const cartReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_ITEM_TO_CART_REQUEST:
       return { ...state, loading: true, error: null };
-    case ADD_ITEM_TO_CART_SUCCESS:
+
+    // Optimistic add: instantly add item + recalculate totals
+    case OPTIMISTIC_ADD_CART_ITEM: {
+      const newItem = action.payload;
+      const existingIndex = state.cartItems.findIndex(
+        (i) => i?.product?.id === newItem?.product?.id && i?.size === newItem?.size
+      );
+      let updatedItems;
+      if (existingIndex >= 0) {
+        // Item already in cart — increase quantity
+        updatedItems = state.cartItems.map((item, idx) =>
+          idx === existingIndex
+            ? { ...item, quantity: item.quantity + (newItem.quantity || 1) }
+            : item
+        );
+      } else {
+        updatedItems = [...state.cartItems, newItem];
+      }
+      const totals = recalculateTotals(updatedItems);
       return {
         ...state,
-        cartItems: [...state.cartItems, action.payload],
-        loading: false,
+        loading: true, // still waiting for real API confirmation
+        cartItems: updatedItems,
+        cart: { ...(state.cart || {}), ...totals },
       };
+    }
+
+    case ADD_ITEM_TO_CART_SUCCESS:
+      return { ...state, loading: false };
+
     case ADD_ITEM_TO_CART_FAILURE:
       return { ...state, loading: false, error: action.payload };
+
     case GET_CART_REQUEST:
-      return {
-        ...state,
-        loading: true,
-      };
+      return { ...state, loading: true };
+
     case GET_CART_SUCCESS:
       return {
         ...state,
         cartItems: action.payload.cartItems,
-        cart:action.payload,
+        cart: action.payload,
         loading: false,
       };
+
     case GET_CART_FAILURE:
-      return {
-        ...state,
-        error: action.payload,
-        loading: false,
-      };
+      return { ...state, error: action.payload, loading: false };
+
     case REMOVE_CART_ITEM_REQUEST:
-    case UPDATE_CART_ITEM_REQUEST:
+      return { ...state, error: null };
+
+    case REMOVE_CART_ITEM_SUCCESS: {
+      const updatedItems = state.cartItems.filter(
+        (item) => item.id !== action.payload
+      );
+      const totals = recalculateTotals(updatedItems);
       return {
         ...state,
-        loading: true,
-      };
-    case REMOVE_CART_ITEM_SUCCESS:
-      return {
-        ...state,
-        cartItems: state.cartItems.filter(
-          (item) => item.id !== action.payload
-        ),
+        cartItems: updatedItems,
+        cart: { ...(state.cart || {}), ...totals },
         loading: false,
       };
-    case UPDATE_CART_ITEM_SUCCESS:
-      return {
-        ...state,
-        cartItems: state.cartItems.map((item) =>
-          item.id === action.payload.id ? action.payload : item
-        ),
-        loading: false,
-      };
+    }
+
     case REMOVE_CART_ITEM_FAILURE:
-    case UPDATE_CART_ITEM_FAILURE:
+      return { ...state, error: action.payload, loading: false };
+
+    case UPDATE_CART_ITEM_REQUEST:
+      return { ...state, error: null };
+
+    // Optimistic update: instantly change quantity + recalculate price totals
+    case OPTIMISTIC_UPDATE_CART_ITEM: {
+      const updatedItems = state.cartItems.map((item) =>
+        item.id === action.payload.cartItemId
+          ? { ...item, quantity: action.payload.quantity }
+          : item
+      );
+      const totals = recalculateTotals(updatedItems);
       return {
         ...state,
-        error: action.payload,
-        loading: false,
+        cartItems: updatedItems,
+        cart: { ...(state.cart || {}), ...totals },
       };
+    }
+
+    case UPDATE_CART_ITEM_SUCCESS:
+      return { ...state, loading: false };
+
+    case UPDATE_CART_ITEM_FAILURE:
+      return { ...state, error: action.payload, loading: false };
+
     default:
       return state;
   }

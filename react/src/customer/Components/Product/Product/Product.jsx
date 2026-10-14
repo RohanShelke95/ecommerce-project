@@ -42,6 +42,8 @@ export default function Product() {
   const { customersProduct } = useSelector((store) => store);
   const location = useLocation();
   const [isLoaderOpen, setIsLoaderOpen] = useState(false);
+  // Track the category we last fetched products for — used to avoid showing stale products
+  const [fetchedCategory, setFetchedCategory] = useState(null);
 
   const handleLoderClose = () => {
     setIsLoaderOpen(false);
@@ -188,6 +190,11 @@ export default function Product() {
     navigate({ search: `?${query}` });
   };
 
+  // When category changes, immediately mark it as loading so old products are hidden
+  useEffect(() => {
+    setFetchedCategory(null);
+  }, [param.lavelThree, param.lavelOne]);
+
   useEffect(() => {
     const [minPrice, maxPrice] =
       price === null ? [0, 0] : price.split("-").map(Number);
@@ -216,6 +223,13 @@ export default function Product() {
     pageNumber,
     stock,
   ]);
+
+  // Once loading finishes, record which category was fetched
+  useEffect(() => {
+    if (!customersProduct.loading) {
+      setFetchedCategory(param.lavelThree);
+    }
+  }, [customersProduct.loading, param.lavelThree]);
 
   useEffect(() => {
     console.log("Category Param:", param.lavelThree);
@@ -549,11 +563,8 @@ export default function Product() {
                 {/* Product grid */}
                 <div className="lg:col-span-4 w-full">
                   <div className="flex flex-wrap justify-center bg-white border py-5 rounded-md min-h-[50vh]">
-                    {customersProduct?.products?.content?.length > 0 ? (
-                      customersProduct?.products?.content?.map((item, index) => {
-                        return <ProductCard key={item.id} product={item} />;
-                      })
-                    ) : customersProduct.loading ? (
+                    {/* Show skeleton immediately when category changes or while loading */}
+                    {(customersProduct.loading || fetchedCategory !== param.lavelThree) ? (
                       <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
                         {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
                           <div key={n} className="flex justify-center">
@@ -561,6 +572,10 @@ export default function Product() {
                           </div>
                         ))}
                       </div>
+                    ) : customersProduct?.products?.content?.length > 0 ? (
+                      customersProduct?.products?.content?.map((item) => {
+                        return <ProductCard key={item.id} product={item} />;
+                      })
                     ) : (
                       <div className="w-full flex flex-col items-center justify-center py-20 px-4 text-center">
                         <svg className="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

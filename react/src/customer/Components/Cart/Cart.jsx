@@ -19,8 +19,8 @@ const Cart = () => {
     }
   }, [jwt, dispatch]);
 
-  // If cart is actively fetching and we have no items in store yet, show skeleton
-  if (cart.loading && (!cart.cartItems || cart.cartItems.length === 0)) {
+  // Only show skeleton on the very first load (no cart data yet at all)
+  if (cart.loading && !cart.cart && (!cart.cartItems || cart.cartItems.length === 0)) {
     return <CartSkeleton />;
   }
 

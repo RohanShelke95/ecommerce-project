@@ -13,3 +13,8 @@ export const REMOVE_CART_ITEM_FAILURE = 'REMOVE_CART_ITEM_FAILURE';
 export const UPDATE_CART_ITEM_REQUEST = 'UPDATE_CART_ITEM_REQUEST';
 export const UPDATE_CART_ITEM_SUCCESS = 'UPDATE_CART_ITEM_SUCCESS';
 export const UPDATE_CART_ITEM_FAILURE = 'UPDATE_CART_ITEM_FAILURE';
+
+// Instantly updates quantity + recalculates totals in Redux before API responds
+export const OPTIMISTIC_UPDATE_CART_ITEM = 'OPTIMISTIC_UPDATE_CART_ITEM';
+// Instantly updates totals when an item is added to cart
+export const OPTIMISTIC_ADD_CART_ITEM = 'OPTIMISTIC_ADD_CART_ITEM';

@@ -27,14 +27,8 @@ export const getWishlist = (jwt) => async (dispatch) => {
 };
 
 export const addItemToWishlist = (reqData) => async (dispatch) => {
-  // Optimistically update the UI immediately
-  dispatch({
-    type: ADD_ITEM_TO_WISHLIST_SUCCESS,
-    payload: {
-      id: Date.now(),
-      product: reqData.product || { id: reqData.productId },
-    },
-  });
+  // Show loading state immediately so the UI feels responsive
+  dispatch({ type: ADD_ITEM_TO_WISHLIST_REQUEST });
 
   try {
     await axios.post(
@@ -46,11 +40,11 @@ export const addItemToWishlist = (reqData) => async (dispatch) => {
         },
       }
     );
+    // After successful add, re-fetch the full wishlist so we get the real
+    // item with complete product data (title, brand, image, price, etc.)
+    dispatch(getWishlist(reqData.jwt));
   } catch (error) {
-    // If request failed, report error to revert/notify
     dispatch({ type: ADD_ITEM_TO_WISHLIST_FAILURE, payload: error.message });
-    // Re-fetch to restore true state from server
-    if (reqData.jwt) dispatch(getWishlist(reqData.jwt));
   }
 };
 
