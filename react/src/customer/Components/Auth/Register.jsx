@@ -312,11 +312,11 @@ export default function RegisterUserForm() {
             placeholder="123456"
             value={otp}
             onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, "").slice(0, 6))}
-            inputProps={{ maxLength: 6, style: { letterSpacing: "8px", fontSize: "1.25rem", textAlign: "center", fontWeight: "bold" } }}
+            inputProps={{ maxLength: 6, style: { letterSpacing: "4px", fontSize: "1.1rem", textAlign: "center", fontWeight: "bold" } }}
             helperText="Code expires in 10 minutes"
           />
 
-          <div className="flex justify-between items-center text-xs text-gray-500 py-1">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "4px", fontSize: "0.75rem", color: "#6b7280", paddingTop: "4px", paddingBottom: "4px" }}>
             <span>
               {timer > 0 ? (
                 `Resend code in ${timer}s`

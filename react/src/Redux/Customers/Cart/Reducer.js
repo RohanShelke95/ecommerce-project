@@ -79,13 +79,29 @@ const cartReducer = (state = initialState, action) => {
     case GET_CART_REQUEST:
       return { ...state, loading: true };
 
-    case GET_CART_SUCCESS:
-      return {
-        ...state,
-        cartItems: action.payload.cartItems,
-        cart: action.payload,
-        loading: false,
-      };
+    case GET_CART_SUCCESS: {
+        // Merge temporary items (id starts with 'temp_') with real server items based on product id & size
+        const tempItems = state.cartItems.filter(item => item.id && item.id.startsWith('temp_'));
+        const mergedItems = action.payload.cartItems.map(serverItem => {
+          // Find matching temp item
+          const match = tempItems.find(t =>
+            t.product?.id === serverItem.product?.id && t.size === serverItem.size
+          );
+          return match ? { ...serverItem, id: serverItem.id } : serverItem;
+        });
+        // Include any temp items that did not match (unlikely but keep)
+        const remainingTemp = tempItems.filter(t =>
+          !mergedItems.some(mi => mi.product?.id === t.product?.id && mi.size === t.size)
+        );
+        const finalItems = [...mergedItems, ...remainingTemp];
+        const totals = recalculateTotals(finalItems);
+        return {
+          ...state,
+          cartItems: finalItems,
+          cart: { ...(action.payload || {}), ...totals },
+          loading: false,
+        };
+      }
 
     case GET_CART_FAILURE:
       return { ...state, error: action.payload, loading: false };

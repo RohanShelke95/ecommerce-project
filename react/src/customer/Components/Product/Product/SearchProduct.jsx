@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useCallback } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
@@ -6,6 +6,7 @@ import {
   FunnelIcon,
 } from "@heroicons/react/20/solid";
 import Pagination from "@mui/material/Pagination";
+import debounce from "lodash.debounce";
 import TextField from "@mui/material/TextField";
 import { Backdrop, CircularProgress } from "@mui/material";
 
@@ -93,38 +94,52 @@ export default function SearchProduct() {
     }
   }, [price, priceBounds.min, priceBounds.max]);
 
+  // Debounced dispatch to avoid spamming the server while typing/filtering
+  const debouncedSearch = useCallback(
+    debounce((params) => {
+      dispatch(searchProductsPage(params));
+    }, 300),
+    [dispatch]
+  );
+
   useEffect(() => {
     if (!qParam.trim()) {
       return;
     }
 
-    const [minPrice, maxPrice] =
-      price === null ? [0, 0] : price.split("-").map(Number);
+    // Normalize filter values to arrays
+    const colors = Array.isArray(colorValue) ? colorValue : colorValue ? [colorValue] : [];
+    const sizes = Array.isArray(sizeValue) ? sizeValue : sizeValue ? [sizeValue] : [];
 
-    dispatch(
-      searchProductsPage({
-        q: qParam,
-        colors: colorValue || [],
-        sizes: sizeValue || [],
-        minPrice: minPrice || 0,
-        maxPrice: maxPrice || 100000,
-        minDiscount: disccount || 0,
-        sort: sortValue || "price_low",
-        pageNumber: pageNumber - 1,
-        pageSize: 10,
-        stock: stock,
-      })
-    );
+    // Guard price parsing – ensure it contains a hyphen
+    const [minPrice, maxPrice] = price && price.includes("-")
+      ? price.split("-").map(Number)
+      : [priceBounds.min, priceBounds.max];
+
+    debouncedSearch({
+      q: qParam,
+      colors,
+      sizes,
+      minPrice: minPrice || 0,
+      maxPrice: maxPrice || 100000,
+      minDiscount: disccount || 0,
+      sort: sortValue || "price_low",
+      pageNumber: pageNumber - 1,
+      pageSize: 10,
+      stock: stock,
+    });
   }, [
     qParam,
     colorValue,
     sizeValue,
     price,
+    priceBounds.min,
+    priceBounds.max,
     disccount,
     sortValue,
     pageNumber,
     stock,
-    dispatch,
+    debouncedSearch,
   ]);
 
   useEffect(() => {

@@ -137,7 +137,7 @@ export default function ForgotPassword() {
       className="min-h-screen flex items-center justify-center"
       style={{ background: "linear-gradient(135deg, #f0f4ff 0%, #faf5ff 100%)" }}
     >
-      <div className="w-full max-w-md mx-4">
+      <div className="w-full max-w-md" style={{ margin: "0 auto", paddingLeft: "12px", paddingRight: "12px" }}>
         {/* Card */}
         <div
           style={{
@@ -151,7 +151,7 @@ export default function ForgotPassword() {
           <div
             style={{
               background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
-              padding: "28px 32px",
+              padding: "clamp(16px, 4vw, 28px) clamp(16px, 5vw, 32px)",
               textAlign: "center",
             }}
           >
@@ -167,7 +167,7 @@ export default function ForgotPassword() {
           </div>
 
           {/* Body */}
-          <div style={{ padding: "32px" }}>
+          <div style={{ padding: "clamp(16px, 5vw, 32px)" }}>
 
             {/* Step 1 — Email */}
             {step === 1 && (

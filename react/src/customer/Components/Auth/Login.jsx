@@ -54,9 +54,9 @@ export default function LoginUserForm({ handleNext }) {
   };
 
   return (
-     <div className="shadow-lg">
+    <div className="w-full">
       <form className="w-full" onSubmit={handleSubmit}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2.5}>
           {auth.error && (
             <Grid item xs={12}>
               <Alert severity="error">{auth.error}</Alert>
@@ -104,13 +104,13 @@ export default function LoginUserForm({ handleNext }) {
           </Grid>
 
           <Grid item xs={12}>
-            <div className="flex justify-end mb-1">
+            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "6px" }}>
               <Button
                 size="small"
                 onClick={() => navigate("/forgot-password")}
                 sx={{
                   textTransform: "none",
-                  fontSize: "0.8rem",
+                  fontSize: { xs: "0.75rem", sm: "0.8rem" },
                   color: "#4f46e5",
                   fontWeight: "bold",
                   p: 0,
@@ -121,11 +121,17 @@ export default function LoginUserForm({ handleNext }) {
               </Button>
             </div>
             <Button
-              className="bg-[#9155FD] w-full"
+              fullWidth
               type="submit"
               variant="contained"
               size="large"
-              sx={{ padding: ".8rem 0" }}
+              sx={{
+                padding: ".8rem 0",
+                backgroundColor: "#4f46e5",
+                fontWeight: "bold",
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+                "&:hover": { backgroundColor: "#4338ca" },
+              }}
               disabled={auth.isLoading}
               startIcon={auth.isLoading ? <CircularProgress size={18} color="inherit" /> : null}
             >
@@ -134,10 +140,14 @@ export default function LoginUserForm({ handleNext }) {
           </Grid>
         </Grid>
       </form>
-      <div className="flex justify-center flex-col items-center">
-        <div className="py-3 flex items-center">
-          <p className="m-0 p-0">don't have account ?</p>
-          <Button onClick={() => navigate("/register")} className="ml-5" size="small">
+      <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", marginTop: "12px" }}>
+        <div style={{ paddingTop: "8px", paddingBottom: "8px", display: "flex", alignItems: "center", flexWrap: "wrap", justifyContent: "center", gap: "4px" }}>
+          <p style={{ margin: 0, fontSize: "0.875rem", color: "#4b5563" }}>Don't have an account?</p>
+          <Button
+            onClick={() => navigate("/register")}
+            size="small"
+            sx={{ textTransform: "none", fontWeight: "bold", color: "#4f46e5", fontSize: { xs: "0.8rem", sm: "0.875rem" } }}
+          >
             Register
           </Button>
         </div>

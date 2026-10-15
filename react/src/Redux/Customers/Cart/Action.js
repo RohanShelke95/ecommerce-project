@@ -61,10 +61,11 @@ export const addItemToCart = (reqData) => async (dispatch) => {
   dispatch({
     type: OPTIMISTIC_ADD_CART_ITEM,
     payload: {
-      id: `temp_${Date.now()}`, // temporary ID, replaced when getCart runs
+      id: `temp_${Date.now()}`,
       product: reqData.cartItem?.product || reqData.product || null,
       size: reqData.cartItem?.size || reqData.data?.size || "",
       quantity: reqData.cartItem?.quantity || reqData.data?.quantity || 1,
+      imageUrl: (reqData.cartItem?.product?.imageUrl || reqData.product?.imageUrl) ?? "",
     },
   });
 
