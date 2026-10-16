@@ -95,8 +95,9 @@ export default function ProductDetails() {
       return;
     }
     setErrorMsg("");
-    const data = { productId: targetId, size: selectedSize.name, quantity: 1 };
-    dispatch(addItemToCart({ data, jwt }));
+    const effectiveProductId = product?.id || product?._id || targetId || productId;
+    const data = { productId: effectiveProductId, size: selectedSize.name, quantity: 1 };
+    dispatch(addItemToCart({ data, jwt, product }));
     showToast("Product added to cart!", "success");
     navigate("/cart");
   };

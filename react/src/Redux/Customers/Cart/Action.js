@@ -57,34 +57,46 @@ export const getCart = (jwt) => async (dispatch) => {
 };
 
 export const addItemToCart = (reqData) => async (dispatch) => {
+  const tempId = `temp_${Date.now()}`;
   // Optimistically add the item to cart immediately so the UI reflects it instantly
+  const productData = reqData.product || reqData.cartItem?.product || null;
   dispatch({
     type: OPTIMISTIC_ADD_CART_ITEM,
     payload: {
-      id: `temp_${Date.now()}`,
-      product: reqData.cartItem?.product || reqData.product || null,
-      size: reqData.cartItem?.size || reqData.data?.size || "",
-      quantity: reqData.cartItem?.quantity || reqData.data?.quantity || 1,
-      imageUrl: (reqData.cartItem?.product?.imageUrl || reqData.product?.imageUrl) ?? "",
+      id: tempId,
+      product: productData,
+      size: reqData.data?.size || reqData.cartItem?.size || "",
+      quantity: reqData.data?.quantity || reqData.cartItem?.quantity || 1,
+      price: productData?.price,
+      discountedPrice: productData?.discountedPrice,
     },
   });
 
   try {
-    dispatch({ type: ADD_ITEM_TO_CART_REQUEST });
+    dispatch({ type: ADD_ITEM_TO_CART_REQUEST, payload: { tempId } });
     const config = {
       headers: {
         Authorization: `Bearer ${reqData.jwt}`,
         "Content-Type": "application/json",
       },
     };
-    await axios.put(`${API_BASE_URL}/api/cart/add`, reqData.data, config);
-    dispatch({ type: ADD_ITEM_TO_CART_SUCCESS });
+    const response = await axios.put(`${API_BASE_URL}/api/cart/add`, reqData.data, config);
+    dispatch({
+      type: ADD_ITEM_TO_CART_SUCCESS,
+      payload: {
+        tempId,
+        cartItem: response.data,
+      },
+    });
     // Sync with real server data to replace temp IDs and confirm totals
     dispatch(getCart(reqData.jwt));
   } catch (error) {
     dispatch({
       type: ADD_ITEM_TO_CART_FAILURE,
-      payload: getErrorMessage(error),
+      payload: {
+        tempId,
+        error: getErrorMessage(error),
+      },
     });
     // Revert by fetching real cart state
     dispatch(getCart(reqData.jwt));

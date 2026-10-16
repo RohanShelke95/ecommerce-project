@@ -27,35 +27,51 @@ const CartItem = ({ item, showButton }) => {
         {/* Responsive Image */}
         <div className="w-[5rem] h-[5rem] sm:w-[9rem] sm:h-[9rem] flex-shrink-0">
           <img
-            className="w-full h-full object-cover object-top rounded"
-            src={getImageUrl(item?.product?.imageUrl ?? item?.imageUrl)}
-            alt={item?.product?.title}
+            className="w-full h-full object-cover object-top rounded bg-gray-100"
+            src={
+              getImageUrl(
+                item?.product?.imageUrl ||
+                item?.product?.image ||
+                item?.imageUrl ||
+                item?.image
+              ) || "https://placehold.co/150x150?text=No+Image"
+            }
+            alt={item?.product?.title || "Product"}
             referrerPolicy="no-referrer"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "https://placehold.co/150x150?text=Product";
+            }}
           />
         </div>
 
         {/* Text details */}
         <div className="ml-3 sm:ml-5 space-y-1 min-w-0 flex-grow">
           <p className="font-semibold text-sm sm:text-base text-gray-900 truncate">
-            {item?.product?.title}
+            {item?.product?.title || item?.title || "Item"}
           </p>
           <p className="opacity-70 text-xs sm:text-sm">
-            Size: {item?.size}, {item?.product?.color || "N/A"}
+            Size: {item?.size || "One Size"}
+            {item?.product?.color && item?.product?.color !== "N/A"
+              ? `, ${item?.product?.color}`
+              : ""}
           </p>
           <p className="opacity-70 text-xs sm:text-sm mt-1">
-            Seller: {item?.product?.brand}
+            Seller: {item?.product?.brand || item?.brand || "Fashion Store"}
           </p>
           
           <div className="flex space-x-2 items-center pt-2 sm:pt-3">
             <p className="opacity-50 line-through text-xs sm:text-sm">
-              ₹{item?.product?.price}
+              ₹{item?.product?.price ?? item?.price ?? 0}
             </p>
             <p className="font-semibold text-sm sm:text-lg text-gray-900">
-              ₹{item?.product?.discountedPrice}
+              ₹{item?.product?.discountedPrice ?? item?.discountedPrice ?? 0}
             </p>
-            <p className="text-green-600 font-semibold text-xs sm:text-sm">
-              {item?.product?.discountPersent}% off
-            </p>
+            {(item?.product?.discountPersent || item?.discountPersent) ? (
+              <p className="text-green-600 font-semibold text-xs sm:text-sm">
+                {item?.product?.discountPersent || item?.discountPersent}% off
+              </p>
+            ) : null}
           </div>
         </div>
       </div>

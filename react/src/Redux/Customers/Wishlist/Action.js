@@ -10,6 +10,7 @@ import {
   REMOVE_WISHLIST_ITEM_FAILURE,
   REMOVE_WISHLIST_ITEM_REQUEST,
   REMOVE_WISHLIST_ITEM_SUCCESS,
+  OPTIMISTIC_ADD_WISHLIST_ITEM,
 } from "./ActionType";
 
 export const getWishlist = (jwt) => async (dispatch) => {
@@ -27,10 +28,17 @@ export const getWishlist = (jwt) => async (dispatch) => {
 };
 
 export const addItemToWishlist = (reqData) => async (dispatch) => {
-  // Show loading state immediately so the UI feels responsive
-  dispatch({ type: ADD_ITEM_TO_WISHLIST_REQUEST });
+  // Optimistically add the item to wishlist immediately so UI updates instantly
+  dispatch({
+    type: OPTIMISTIC_ADD_WISHLIST_ITEM,
+    payload: {
+      id: `temp_${Date.now()}`,
+      product: reqData.product || null,
+    },
+  });
 
   try {
+    dispatch({ type: ADD_ITEM_TO_WISHLIST_REQUEST });
     await axios.post(
       `${API_BASE_URL}/api/wishlist/add/${reqData.productId}`,
       {},
@@ -40,11 +48,12 @@ export const addItemToWishlist = (reqData) => async (dispatch) => {
         },
       }
     );
-    // After successful add, re-fetch the full wishlist so we get the real
-    // item with complete product data (title, brand, image, price, etc.)
+    // Sync with server to replace temp IDs with real data
     dispatch(getWishlist(reqData.jwt));
   } catch (error) {
     dispatch({ type: ADD_ITEM_TO_WISHLIST_FAILURE, payload: error.message });
+    // Revert by fetching real wishlist state
+    dispatch(getWishlist(reqData.jwt));
   }
 };
 
