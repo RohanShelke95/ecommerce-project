@@ -40,7 +40,7 @@ const CartItem = ({ item, showButton }) => {
             {item?.product?.title}
           </p>
           <p className="opacity-70 text-xs sm:text-sm">
-            Size: {item?.size}, White
+            Size: {item?.size}, {item?.product?.color || "N/A"}
           </p>
           <p className="opacity-70 text-xs sm:text-sm mt-1">
             Seller: {item?.product?.brand}

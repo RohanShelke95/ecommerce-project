@@ -98,6 +98,11 @@ export const removeCartItem = (reqData) => async (dispatch) => {
     payload: reqData.cartItemId,
   });
 
+  // If the ID is a temp placeholder, skip the API call — the item doesn't exist on the server yet
+  if (String(reqData.cartItemId).startsWith('temp_')) {
+    return;
+  }
+
   try {
     const config = {
       headers: {
@@ -130,6 +135,11 @@ export const updateCartItem = (reqData) => async (dispatch) => {
         quantity: newQuantity,
       },
     });
+  }
+
+  // If the ID is a temp placeholder, skip the API call — the item doesn't exist on the server yet
+  if (String(reqData.cartItemId).startsWith('temp_')) {
+    return;
   }
 
   try {

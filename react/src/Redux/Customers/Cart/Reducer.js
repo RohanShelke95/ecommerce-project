@@ -80,24 +80,13 @@ const cartReducer = (state = initialState, action) => {
       return { ...state, loading: true };
 
     case GET_CART_SUCCESS: {
-        // Merge temporary items (id starts with 'temp_') with real server items based on product id & size
-        const tempItems = state.cartItems.filter(item => item.id && item.id.startsWith('temp_'));
-        const mergedItems = action.payload.cartItems.map(serverItem => {
-          // Find matching temp item
-          const match = tempItems.find(t =>
-            t.product?.id === serverItem.product?.id && t.size === serverItem.size
-          );
-          return match ? { ...serverItem, id: serverItem.id } : serverItem;
-        });
-        // Include any temp items that did not match (unlikely but keep)
-        const remainingTemp = tempItems.filter(t =>
-          !mergedItems.some(mi => mi.product?.id === t.product?.id && mi.size === t.size)
-        );
-        const finalItems = [...mergedItems, ...remainingTemp];
-        const totals = recalculateTotals(finalItems);
+        // Server is the source of truth — use its items directly.
+        // Discard all temp items; they have been synced or the add failed.
+        const serverItems = action.payload.cartItems || [];
+        const totals = recalculateTotals(serverItems);
         return {
           ...state,
-          cartItems: finalItems,
+          cartItems: serverItems,
           cart: { ...(action.payload || {}), ...totals },
           loading: false,
         };
@@ -111,7 +100,7 @@ const cartReducer = (state = initialState, action) => {
 
     case REMOVE_CART_ITEM_SUCCESS: {
       const updatedItems = state.cartItems.filter(
-        (item) => item.id !== action.payload
+        (item) => String(item.id) !== String(action.payload)
       );
       const totals = recalculateTotals(updatedItems);
       return {
@@ -131,7 +120,7 @@ const cartReducer = (state = initialState, action) => {
     // Optimistic update: instantly change quantity + recalculate price totals
     case OPTIMISTIC_UPDATE_CART_ITEM: {
       const updatedItems = state.cartItems.map((item) =>
-        item.id === action.payload.cartItemId
+        String(item.id) === String(action.payload.cartItemId)
           ? { ...item, quantity: action.payload.quantity }
           : item
       );
