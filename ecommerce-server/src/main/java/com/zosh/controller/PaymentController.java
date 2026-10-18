@@ -28,6 +28,7 @@ import com.zosh.service.OrderService;
 import com.zosh.service.UserService;
 import com.zosh.service.EmailService;
 import com.zosh.user.domain.OrderStatus;
+import com.zosh.user.domain.PaymentMethod;
 import com.zosh.user.domain.PaymentStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -139,7 +140,7 @@ public class PaymentController {
 	  // 1. Direct handling for Cash on Delivery (COD)
 	  if (paymentId != null && paymentId.startsWith("COD_")) {
 		  order.getPaymentDetails().setPaymentId(paymentId);
-		  order.getPaymentDetails().setPaymentMethod("COD");
+		  order.getPaymentDetails().setPaymentMethod(PaymentMethod.COD);
 		  order.getPaymentDetails().setStatus(PaymentStatus.PENDING);
 		  order.setOrderStatus(OrderStatus.CONFIRMED);
 		  orderRepository.save(order);
@@ -185,7 +186,7 @@ public class PaymentController {
 		  
 		  if (payment.get("status").equals("captured") || payment.get("status").equals("authorized")) {
 			  order.getPaymentDetails().setPaymentId(paymentId);
-			  order.getPaymentDetails().setPaymentMethod("RAZORPAY");
+			  order.getPaymentDetails().setPaymentMethod(PaymentMethod.RAZORPAY);
 			  order.getPaymentDetails().setStatus(PaymentStatus.COMPLETED);
 			  order.setOrderStatus(OrderStatus.CONFIRMED);
 			  orderRepository.save(order);

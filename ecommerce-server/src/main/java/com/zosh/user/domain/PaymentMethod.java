@@ -8,4 +8,6 @@ public enum PaymentMethod {
     UPI,
     PAYPAL,
     GOOGLE_PAY,
+    COD,
+    RAZORPAY,
 }
