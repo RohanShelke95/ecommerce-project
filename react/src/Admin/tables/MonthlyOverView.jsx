@@ -16,30 +16,36 @@ import CellphoneLink from 'mdi-material-ui/CellphoneLink'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import { useSelector } from 'react-redux'
 
-const renderStats = (analytics) => {
-  if (!analytics) return null;
+const renderStats = (analytics, customersCount, ordersCount) => {
+  const totalCustomers = Math.max(
+    Number(analytics?.totalCustomers) || 0,
+    Number(customersCount) || 0
+  );
+  const totalSales = Number(analytics?.totalSales) || Number(ordersCount) || 0;
+  const totalProducts = Number(analytics?.totalProducts) || 0;
+  const totalRevenue = Number(analytics?.totalRevenue) || 0;
 
   const salesData = [
     {
-      stats: analytics.totalSales || 0,
+      stats: totalSales,
       title: 'Sales',
       color: 'primary',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: analytics.totalCustomers || 0,
+      stats: totalCustomers,
       title: 'Customers',
       color: 'success',
       icon: <AccountOutline sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: analytics.totalProducts || 0,
+      stats: totalProducts,
       color: 'warning',
       title: 'Products Sold',
       icon: <CellphoneLink sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: `₹${analytics.totalRevenue || 0}`,
+      stats: `₹${totalRevenue}`,
       color: 'info',
       title: 'Revenue',
       icon: <CurrencyUsd sx={{ fontSize: '1.75rem' }} />
@@ -72,7 +78,7 @@ const renderStats = (analytics) => {
 }
 
 const MonthlyOverview = () => {
-  const { adminAnalytics } = useSelector(store => store);
+  const { adminAnalytics, auth, adminsOrder } = useSelector(store => store);
 
   return (
     <Card>
@@ -101,7 +107,11 @@ const MonthlyOverview = () => {
       />
       <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important` }}>
         <Grid container spacing={[5, 0]}>
-          {renderStats(adminAnalytics.analytics)}
+          {renderStats(
+            adminAnalytics?.analytics,
+            auth?.customers?.length,
+            adminsOrder?.orders?.length
+          )}
         </Grid>
       </CardContent>
     </Card>

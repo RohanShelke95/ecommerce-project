@@ -110,4 +110,17 @@ public class CartServiceImplementation implements CartService{
 		}
 	}
 
+	@Override
+	public void clearCart(Long userId) {
+		Cart cart = cartRepository.findByUserId(userId);
+		if (cart != null && cart.getCartItems() != null) {
+			cart.getCartItems().clear();
+			cart.setTotalPrice(0);
+			cart.setTotalDiscountedPrice(0);
+			cart.setDiscounte(0);
+			cart.setTotalItem(0);
+			cartRepository.save(cart);
+		}
+	}
+
 }

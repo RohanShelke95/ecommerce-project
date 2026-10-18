@@ -105,7 +105,7 @@ public class OrderServiceImplementation implements OrderService {
 		Order order=findOrderById(orderId);
 		order.setOrderStatus(OrderStatus.PLACED);
 		order.getPaymentDetails().setStatus(PaymentStatus.COMPLETED);
-		return order;
+		return orderRepository.save(order);
 	}
 
 	@Override

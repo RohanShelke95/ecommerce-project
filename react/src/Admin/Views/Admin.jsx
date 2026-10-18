@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { getOrders } from "../../Redux/Admin/Orders/Action";
 import { getProducts } from "../../Redux/Admin/Product/Action";
 import { getAdminAnalytics } from "../../Redux/Admin/Analytics/Action";
+import { getAllCustomers } from "../../Redux/Auth/Action";
 
 const darkTheme1 = createTheme({
   palette: {
@@ -48,7 +49,10 @@ const Dashboard = () => {
     dispatch(getOrders())
     dispatch(getProducts())
     const jwt = localStorage.getItem("jwt");
-    if(jwt) dispatch(getAdminAnalytics(jwt));
+    if(jwt) {
+      dispatch(getAdminAnalytics(jwt));
+      dispatch(getAllCustomers(jwt));
+    }
   },[dispatch])
 
   return (

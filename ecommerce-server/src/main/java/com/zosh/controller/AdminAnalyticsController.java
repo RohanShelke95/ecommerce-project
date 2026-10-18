@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.zosh.modal.Order;
 import com.zosh.repository.OrderRepository;
+import com.zosh.repository.UserRepository;
 import com.zosh.user.domain.OrderStatus;
 
 @RestController
@@ -24,6 +25,9 @@ public class AdminAnalyticsController {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/")
     public ResponseEntity<Map<String, Object>> getAnalytics() {
@@ -41,11 +45,8 @@ public class AdminAnalyticsController {
                 
         int totalSales = validOrders.size();
         
-        // Let's assume Customers are unique users from valid orders
-        long totalCustomers = validOrders.stream()
-                .map(o -> o.getUser().getId())
-                .distinct()
-                .count();
+        // Total registered customers/users in the system
+        long totalCustomers = userRepository.count();
 
         int totalProductsSold = validOrders.stream()
                 .mapToInt(Order::getTotalItem)

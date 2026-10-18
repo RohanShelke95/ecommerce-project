@@ -6,11 +6,11 @@ import { useNavigate } from "react-router-dom";
 import { getOrderHistory } from "../../../Redux/Customers/Order/Action";
 import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
 
-const orderStatus = [
-  { label: "On The Way", value: "onTheWay" },
-  { label: "Delivered", value: "delevered" },
-  { label: "Cancelled", value: "cancelled" },
-  { label: "Returned", value: "returned" },
+const orderStatusOptions = [
+  { label: "Confirmed / Placed", value: "CONFIRMED" },
+  { label: "Shipped", value: "SHIPPED" },
+  { label: "Delivered", value: "DELIVERED" },
+  { label: "Cancelled", value: "CANCELLED" },
 ];
 
 const Order = () => {
@@ -18,10 +18,17 @@ const Order = () => {
   const navigate = useNavigate();
   const jwt = localStorage.getItem("jwt");
   const { order } = useSelector((store) => store);
+  const [selectedStatuses, setSelectedStatuses] = React.useState([]);
 
   useEffect(() => {
     dispatch(getOrderHistory({ jwt }));
   }, [jwt, dispatch]);
+
+  const handleStatusFilterChange = (val) => {
+    setSelectedStatuses((prev) =>
+      prev.includes(val) ? prev.filter((s) => s !== val) : [...prev, val]
+    );
+  };
 
   // Safely extract orders list even if backend payload structure varies
   const ordersList = Array.isArray(order.orders)
@@ -41,6 +48,13 @@ const Order = () => {
       order: singleOrder,
       key: item?.id ? `item-${item.id}` : `ord-${singleOrder?.id || 'id'}-${idx}`,
     }));
+  }).filter(({ order: singleOrder }) => {
+    if (selectedStatuses.length === 0) return true;
+    const s = singleOrder?.orderStatus || "CONFIRMED";
+    if (selectedStatuses.includes("CONFIRMED") && (s === "CONFIRMED" || s === "PLACED" || s === "PENDING")) {
+      return true;
+    }
+    return selectedStatuses.includes(s);
   });
 
   return (
@@ -53,14 +67,16 @@ const Order = () => {
             <div className="space-y-4 mt-5 md:mt-10">
               <h1 className="font-semibold text-sm sm:text-base">ORDER STATUS</h1>
               <div className="flex flex-row md:flex-col flex-wrap md:flex-nowrap gap-3 md:gap-0 md:space-y-4">
-                {orderStatus.map((option) => (
+                {orderStatusOptions.map((option) => (
                   <div key={option.value} className="flex items-center">
                     <input
-                      defaultValue={option.value}
+                      id={`status-${option.value}`}
+                      checked={selectedStatuses.includes(option.value)}
+                      onChange={() => handleStatusFilterChange(option.value)}
                       type="checkbox"
-                      className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                     />
-                    <label className="ml-2 sm:ml-3 text-xs sm:text-sm text-gray-600">
+                    <label htmlFor={`status-${option.value}`} className="ml-2 sm:ml-3 text-xs sm:text-sm text-gray-600 cursor-pointer">
                       {option.label}
                     </label>
                   </div>

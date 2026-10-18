@@ -35,6 +35,17 @@ const OrderDetails = () => {
 
       {/* Order Tracker and Actions */}
       <Box className="p-4 sm:p-5 shadow-lg border rounded-md bg-white">
+        <div className="mb-4 flex flex-wrap items-center justify-between border-b pb-3 gap-2">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">Order #{order.order?.id || orderId}</h2>
+            <p className="text-xs text-gray-500">
+              Placed on {order.order?.orderDate || "Recent"} | Payment: {order.order?.paymentDetails?.paymentMethod || "COD"} ({order.order?.paymentDetails?.status || "PENDING"})
+            </p>
+          </div>
+          <span className="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold uppercase tracking-wider">
+            {order.order?.orderStatus || "CONFIRMED"}
+          </span>
+        </div>
         <Grid
           container
           spacing={2}
@@ -43,13 +54,17 @@ const OrderDetails = () => {
           <Grid item xs={12} md={9}>
             <OrderTraker
               activeStep={
-                order.order?.orderStatus === "PLACED"
-                  ? 1
+                order.order?.orderStatus === "PENDING"
+                  ? 0
+                  : order.order?.orderStatus === "PLACED"
+                  ? 0
                   : order.order?.orderStatus === "CONFIRMED"
-                  ? 2
+                  ? 1
                   : order.order?.orderStatus === "SHIPPED"
-                  ? 3
-                  : 5
+                  ? 2
+                  : order.order?.orderStatus === "DELIVERED"
+                  ? 5
+                  : 1
               }
             />
           </Grid>
@@ -60,7 +75,7 @@ const OrderDetails = () => {
               </Button>
             )}
 
-            {order.order?.orderStatus !== "DELIVERED" && (
+            {order.order?.orderStatus !== "DELIVERED" && order.order?.orderStatus !== "CANCELLED" && (
               <Button sx={{ color: deepPurple[500] }} variant="text">
                 cancel order
               </Button>

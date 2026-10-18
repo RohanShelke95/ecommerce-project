@@ -60,24 +60,36 @@ const adminOrderReducer = (state = initialState, action) => {
         ...state,
         confirmed: action.payload,
         isLoading: false,
+        orders: state.orders.map((item) =>
+          item.id === action.payload.id ? action.payload : item
+        ),
       };
     case PLACED_ORDER_SUCCESS:
       return {
         ...state,
         placed: action.payload,
         isLoading: false,
+        orders: state.orders.map((item) =>
+          item.id === action.payload.id ? action.payload : item
+        ),
       };
     case DELIVERED_ORDER_SUCCESS:
       return {
         ...state,
         delivered: action.payload,
         isLoading: false,
+        orders: state.orders.map((item) =>
+          item.id === action.payload.id ? action.payload : item
+        ),
       };
     case CANCELED_ORDER_SUCCESS:
       return {
         ...state,
         canceled: action.payload,
         isLoading: false,
+        orders: state.orders.map((item) =>
+          item.id === action.payload.id ? action.payload : item
+        ),
       };
 
     case CONFIRMED_ORDER_FAILURE:
@@ -107,7 +119,10 @@ const adminOrderReducer = (state = initialState, action) => {
       return {
         ...state,
         isLoading: false,
-        shipped:action.payload
+        shipped: action.payload,
+        orders: state.orders.map((item) =>
+          item.id === action.payload.id ? action.payload : item
+        ),
       };
     case SHIP_ORDER_FAILURE:
       return {
