@@ -48,11 +48,15 @@ const initialState = {
 const customerProductReducer = (state = initialState, action) => {
   switch (action.type) {
     case FIND_PRODUCTS_BY_CATEGORY_REQUEST:
-      return { ...state, loading: true, error: null };
+      return { ...state, loading: action.skipLoading ? false : true, error: null };
     case FIND_PRODUCTS_BY_CATEGORY_SUCCESS: {
+      const payloadWithCat = action.payload && typeof action.payload === 'object'
+        ? { ...action.payload, category: action.category }
+        : action.payload;
+
       const updatedCategoryProducts = {
         ...state.categoryProducts,
-        [action.category]: action.payload?.content || []
+        [action.category]: action.payload?.content || (Array.isArray(action.payload) ? action.payload : [])
       };
       try {
         localStorage.setItem("cached_home_categories", JSON.stringify(updatedCategoryProducts));
@@ -61,7 +65,7 @@ const customerProductReducer = (state = initialState, action) => {
       }
       return { 
         ...state, 
-        products: action.payload, 
+        products: payloadWithCat, 
         loading: false,
         categoryProducts: updatedCategoryProducts
       };

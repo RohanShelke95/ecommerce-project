@@ -1,8 +1,10 @@
 package com.zosh.controller;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.domain.Page;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +35,9 @@ public class UserProductController {
 			@RequestParam String category,
 			@RequestParam(required = false) String lavelOne) {
 		ProductFiltersResponse filters = productService.getProductFilters(category, lavelOne);
-		return new ResponseEntity<>(filters, HttpStatus.OK);
+		return ResponseEntity.ok()
+				.cacheControl(CacheControl.maxAge(300, TimeUnit.SECONDS).cachePublic())
+				.body(filters);
 	}
 
 	@GetMapping("/products")
@@ -55,7 +59,9 @@ public class UserProductController {
 
 		Page<Product> res = productService.getAllProduct(
 				category, safeColor, safeSize, minPrice, maxPrice, minDiscount, sort, stock, pageNumber, pageSize, lavelOne);
-		return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
+		return ResponseEntity.ok()
+				.cacheControl(CacheControl.maxAge(60, TimeUnit.SECONDS).cachePublic())
+				.body(res);
 	}
 	
 

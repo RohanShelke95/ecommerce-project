@@ -4,7 +4,7 @@ import { homeCarouselData } from "../customer/Components/Carousel/HomeCaroselDat
 import HomeProductSection from "../customer/Components/Home/HomeProductSection";
 import HomeProductSectionSkeleton from "../customer/Components/Skeletons/HomeProductSectionSkeleton";
 import { useDispatch, useSelector } from "react-redux";
-import { findProducts } from "../Redux/Customers/Product/Action";
+import { findProducts, prefetchCategoryProducts } from "../Redux/Customers/Product/Action";
 
 const HOME_SECTIONS = [
   { key: "mens_kurta", title: "Men's Kurta", lavelOne: "men" },
@@ -52,6 +52,24 @@ const Homepage = () => {
       }, 3000);
       return () => clearTimeout(timer);
     }
+  }, [dispatch]);
+
+  // Pre-warm other top navigation categories during idle time for 0ms clicks
+  useEffect(() => {
+    const idleTimer = setTimeout(() => {
+      const popularCategories = [
+        { key: "top", lavelOne: "women" },
+        { key: "women_jeans", lavelOne: "women" },
+        { key: "shirt", lavelOne: "men" },
+        { key: "men_jeans", lavelOne: "men" },
+        { key: "sweater", lavelOne: "women" },
+      ];
+      popularCategories.forEach(({ key, lavelOne }) => {
+        dispatch(prefetchCategoryProducts(key, lavelOne));
+      });
+    }, 1500);
+
+    return () => clearTimeout(idleTimer);
   }, [dispatch]);
 
   // Turn off warm up indicator once products arrive

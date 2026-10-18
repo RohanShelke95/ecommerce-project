@@ -24,6 +24,12 @@ import {
   SEARCH_PRODUCTS_PAGE_FAILURE,
 } from "./ActionType";
 import api, { API_BASE_URL } from "../../../config/api";
+import {
+  normalizeCategory,
+  buildProductCacheKey,
+  getCachedProducts,
+  setCachedProducts,
+} from "../../../utils/categoryCache";
 
 export const findProducts = (reqData) => async (dispatch) => {
   const {
@@ -37,31 +43,93 @@ export const findProducts = (reqData) => async (dispatch) => {
     sort,
     pageNumber,
     pageSize,
-    lavelOne, // New parameter!
+    lavelOne,
   } = reqData;
 
-  try {
-    dispatch({ type: FIND_PRODUCTS_BY_CATEGORY_REQUEST });
+  const normCategory = normalizeCategory(category);
+  const cacheKey = buildProductCacheKey(
+    normCategory,
+    lavelOne,
+    colors,
+    sizes,
+    minPrice,
+    maxPrice,
+    minDiscount,
+    sort,
+    stock,
+    pageNumber,
+    pageSize
+  );
 
+  // 1. Instant Cache Hit: Return data immediately with 0ms latency
+  const cachedData = getCachedProducts(cacheKey);
+  if (cachedData) {
+    dispatch({
+      type: FIND_PRODUCTS_BY_CATEGORY_SUCCESS,
+      payload: cachedData,
+      category: normCategory,
+      fromCache: true,
+      skipLoading: true,
+    });
+  } else {
+    // Only set loading if no cached data available
+    dispatch({ type: FIND_PRODUCTS_BY_CATEGORY_REQUEST });
+  }
+
+  try {
     const { data } = await api.get(
-      `/api/products?color=${colors}&size=${sizes}&minPrice=${minPrice}&maxPrice=${maxPrice}&minDiscount=${minDiscount}&category=${category}&stock=${stock}&sort=${sort}&pageNumber=${pageNumber}&pageSize=${pageSize}&lavelOne=${lavelOne || ""}`
+      `/api/products?color=${colors || ""}&size=${sizes || ""}&minPrice=${minPrice || 0}&maxPrice=${maxPrice || 100000}&minDiscount=${minDiscount || 0}&category=${normCategory}&stock=${stock || ""}&sort=${sort || "price_low"}&pageNumber=${pageNumber || 0}&pageSize=${pageSize || 10}&lavelOne=${lavelOne || ""}`
     );
 
-    console.log("get product by category - ", data);
+    // Save fresh response in cache
+    setCachedProducts(cacheKey, data);
+
     dispatch({
       type: FIND_PRODUCTS_BY_CATEGORY_SUCCESS,
       payload: data,
-      category: category // Pass category name
+      category: normCategory,
     });
-
   } catch (error) {
+    // If we already served from cache, don't show full failure
+    if (!cachedData) {
+      dispatch({
+        type: FIND_PRODUCTS_BY_CATEGORY_FAILURE,
+        payload:
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+      });
+    }
+  }
+};
+
+/**
+ * Silent prefetch category products in background (e.g., on hover or idle)
+ * Never triggers loading indicators
+ */
+export const prefetchCategoryProducts = (category, lavelOne = "") => async (dispatch) => {
+  if (!category) return;
+  const normCategory = normalizeCategory(category);
+  const cacheKey = buildProductCacheKey(normCategory, lavelOne);
+
+  if (getCachedProducts(cacheKey)) {
+    return; // Already cached
+  }
+
+  try {
+    const { data } = await api.get(
+      `/api/products?color=&size=&minPrice=0&maxPrice=100000&minDiscount=0&category=${normCategory}&stock=&sort=price_low&pageNumber=0&pageSize=10&lavelOne=${lavelOne || ""}`
+    );
+    setCachedProducts(cacheKey, data);
     dispatch({
-      type: FIND_PRODUCTS_BY_CATEGORY_FAILURE,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+      type: FIND_PRODUCTS_BY_CATEGORY_SUCCESS,
+      payload: data,
+      category: normCategory,
+      fromCache: true,
+      skipLoading: true,
     });
+  } catch (err) {
+    // Silent catch for background prefetch
   }
 };
 

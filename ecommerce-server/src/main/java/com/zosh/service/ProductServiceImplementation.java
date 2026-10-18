@@ -444,17 +444,31 @@ public class ProductServiceImplementation implements ProductService {
 		return buildFiltersFromProducts(products, category, lavelOne);
 	}
 
+	private String resolveCategoryAlias(String category) {
+		if (category == null || category.isBlank()) return category;
+		String c = category.trim().toLowerCase();
+		if (c.equals("women_saree") || c.equals("women_sarees") || c.equals("sarees")) return "saree";
+		if (c.equals("tops")) return "top";
+		if (c.equals("dresses") || c.equals("dress") || c.equals("women_dresses")) return "women_dress";
+		if (c.equals("mens_kurtas") || c.equals("men_kurta") || c.equals("men_kurtas")) return "mens_kurta";
+		if (c.equals("goun") || c.equals("gowns") || c.equals("gown") || c.equals("womens_gouns")) return "gouns";
+		if (c.equals("shirts") || c.equals("men_shirts")) return "shirt";
+		if (c.equals("sunglasses")) return "sunglasse";
+		return c;
+	}
+
 	private List<Product> findProductsForCategory(String category, String lavelOne, Integer minPrice,
 			Integer maxPrice, Integer minDiscount, String sort) {
-		List<Product> products = productRepository.filterProducts(category, minPrice, maxPrice, minDiscount, sort);
+		String resolvedCategory = resolveCategoryAlias(category);
+		List<Product> products = productRepository.filterProducts(resolvedCategory, minPrice, maxPrice, minDiscount, sort);
 
-		// Fallback for Gowns category name variations (gouns / goun / gowns / gown / womens_gouns)
+		// Fallback for aliases if initial query returned empty
 		if (products.isEmpty() && category != null && !category.isBlank()) {
 			String catLower = category.trim().toLowerCase();
 			if (catLower.equals("goun") || catLower.equals("gouns") || catLower.equals("gowns") || catLower.equals("gown") || catLower.equals("womens_gouns")) {
 				String[] altCategories = {"gouns", "goun", "gowns", "gown", "womens_gouns"};
 				for (String alt : altCategories) {
-					if (!alt.equalsIgnoreCase(category)) {
+					if (!alt.equalsIgnoreCase(resolvedCategory)) {
 						List<Product> altProducts = productRepository.filterProducts(alt, minPrice, maxPrice, minDiscount, sort);
 						if (!altProducts.isEmpty()) {
 							products = altProducts;
@@ -462,6 +476,12 @@ public class ProductServiceImplementation implements ProductService {
 						}
 					}
 				}
+			} else if (catLower.contains("saree")) {
+				products = productRepository.filterProducts("saree", minPrice, maxPrice, minDiscount, sort);
+			} else if (catLower.contains("dress")) {
+				products = productRepository.filterProducts("women_dress", minPrice, maxPrice, minDiscount, sort);
+			} else if (catLower.contains("top")) {
+				products = productRepository.filterProducts("top", minPrice, maxPrice, minDiscount, sort);
 			}
 		}
 

@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { deepPurple } from "@mui/material/colors";
 import { getUser, logout } from "../../../Redux/Auth/Action";
 import { getCart } from "../../../Redux/Customers/Cart/Action";
-import { searchProduct } from "../../../Redux/Customers/Product/Action";
+import { searchProduct, prefetchCategoryProducts } from "../../../Redux/Customers/Product/Action";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { getImageUrl } from "../../../utils/getImageUrl";
 
@@ -70,6 +70,12 @@ export default function Navigation() {
   const handleCategoryClick = (category, section, item, close) => {
     navigate(`/${category.id}/${section.id}/${item.id}`);
     close();
+  };
+
+  const handlePrefetchCategory = (category, item) => {
+    if (category?.id && item?.id) {
+      dispatch(prefetchCategoryProducts(item.id, category.id));
+    }
   };
 
   useEffect(() => {
@@ -236,6 +242,8 @@ export default function Navigation() {
                                 <li key={item.name} className="flow-root">
                                   <p
                                     onClick={() => handleCategoryClick(category, section, item, () => setOpen(false))}
+                                    onMouseEnter={() => handlePrefetchCategory(category, item)}
+                                    onTouchStart={() => handlePrefetchCategory(category, item)}
                                     className="-m-2 block p-2 text-gray-500 cursor-pointer hover:text-gray-800"
                                   >
                                     {item.name}
@@ -389,6 +397,8 @@ export default function Navigation() {
                                               <li key={item.name} className="flex">
                                                 <p
                                                   onClick={() => handleCategoryClick(category, section, item, close)}
+                                                  onMouseEnter={() => handlePrefetchCategory(category, item)}
+                                                  onTouchStart={() => handlePrefetchCategory(category, item)}
                                                   className="cursor-pointer hover:text-gray-800"
                                                 >
                                                   {item.name}

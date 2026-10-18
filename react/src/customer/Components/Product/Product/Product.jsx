@@ -26,8 +26,14 @@ import { useEffect } from "react";
 import {
   findProducts,
 } from "../../../../Redux/Customers/Product/Action";
-import { Backdrop, CircularProgress } from "@mui/material";
 import api from "../../../../config/api";
+import {
+  normalizeCategory,
+  buildProductCacheKey,
+  getCachedProducts,
+  getCachedFilters,
+  setCachedFilters,
+} from "../../../../utils/categoryCache";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -41,13 +47,6 @@ export default function Product() {
   const param = useParams();
   const { customersProduct } = useSelector((store) => store);
   const location = useLocation();
-  const [isLoaderOpen, setIsLoaderOpen] = useState(false);
-  // Track the category we last fetched products for — used to avoid showing stale products
-  const [fetchedCategory, setFetchedCategory] = useState(null);
-
-  const handleLoderClose = () => {
-    setIsLoaderOpen(false);
-  };
 
   const [priceRange, setPriceRange] = useState([0, 100000]);
   const [priceBounds, setPriceBounds] = useState({ min: 0, max: 100000 });
@@ -81,16 +80,30 @@ export default function Product() {
       if (!param.lavelThree) {
         return;
       }
+      const normCat = normalizeCategory(param.lavelThree);
+      const cached = getCachedFilters(normCat);
+      if (cached) {
+        setDynamicFilters(buildDynamicFilters(cached));
+        setPriceBounds({
+          min: cached.minPrice || 0,
+          max: cached.maxPrice || 100000,
+        });
+        if (!price) {
+          setPriceRange([cached.minPrice || 0, cached.maxPrice || 100000]);
+        }
+        return;
+      }
 
       setFiltersLoading(true);
       try {
         const { data } = await api.get("/api/products/filters", {
           params: {
-            category: param.lavelThree,
+            category: normCat,
             lavelOne: param.lavelOne || "",
           },
         });
 
+        setCachedFilters(normCat, data);
         setDynamicFilters(buildDynamicFilters(data));
         setPriceBounds({
           min: data.minPrice || 0,
@@ -190,17 +203,46 @@ export default function Product() {
     navigate({ search: `?${query}` });
   };
 
-  // When category changes, immediately mark it as loading so old products are hidden
-  useEffect(() => {
-    setFetchedCategory(null);
-  }, [param.lavelThree, param.lavelOne]);
+  const normCategory = normalizeCategory(param.lavelThree);
+  const cacheKey = buildProductCacheKey(
+    normCategory,
+    param.lavelOne,
+    colorValue,
+    sizeValue,
+    price ? price.split("-")[0] : 0,
+    price ? price.split("-")[1] : 100000,
+    disccount,
+    sortValue,
+    stock,
+    pageNumber - 1,
+    10
+  );
+
+  const isCurrentCategoryInRedux =
+    customersProduct?.products?.category === normCategory ||
+    customersProduct?.products?.category === param.lavelThree;
+
+  // Instant multi-tier data resolution:
+  // 1. Redux matching current category
+  // 2. Exact cache key (memory / session)
+  // 3. Preloaded categoryProducts from homepage
+  const cachedFromKey = getCachedProducts(cacheKey);
+  const displayedProducts = isCurrentCategoryInRedux && Array.isArray(customersProduct?.products?.content)
+    ? customersProduct.products.content
+    : (cachedFromKey?.content ||
+       (Array.isArray(cachedFromKey) ? cachedFromKey : null) ||
+       customersProduct?.categoryProducts?.[normCategory] ||
+       customersProduct?.categoryProducts?.[param.lavelThree] ||
+       null);
+
+  const hasProducts = Array.isArray(displayedProducts) && displayedProducts.length > 0;
 
   useEffect(() => {
     const [minPrice, maxPrice] =
       price === null ? [0, 0] : price.split("-").map(Number);
     const data = {
-      category: param.lavelThree,
-      lavelOne: param.lavelOne, // Pass top-level category (men/women/kids)
+      category: normCategory,
+      lavelOne: param.lavelOne,
       colors: colorValue || [],
       sizes: sizeValue || [],
       minPrice: minPrice || 0,
@@ -213,7 +255,7 @@ export default function Product() {
     };
     dispatch(findProducts(data));
   }, [
-    param.lavelThree,
+    normCategory,
     param.lavelOne,
     colorValue,
     sizeValue,
@@ -222,14 +264,8 @@ export default function Product() {
     sortValue,
     pageNumber,
     stock,
+    dispatch,
   ]);
-
-  // Once loading finishes, record which category was fetched
-  useEffect(() => {
-    if (!customersProduct.loading) {
-      setFetchedCategory(param.lavelThree);
-    }
-  }, [customersProduct.loading, param.lavelThree]);
 
   useEffect(() => {
     console.log("Category Param:", param.lavelThree);
@@ -267,13 +303,7 @@ export default function Product() {
     navigate({ search: `?${query}` });
   };
 
-  useEffect(() => {
-    if (customersProduct.loading) {
-      setIsLoaderOpen(true);
-    } else {
-      setIsLoaderOpen(false);
-    }
-  }, [customersProduct.loading]);
+
 
   return (
     <div className="bg-white -z-20 ">
@@ -563,8 +593,8 @@ export default function Product() {
                 {/* Product grid */}
                 <div className="lg:col-span-4 w-full">
                   <div className="flex flex-wrap justify-center bg-white border py-5 rounded-md min-h-[50vh]">
-                    {/* Show skeleton immediately when category changes or while loading */}
-                    {(customersProduct.loading || fetchedCategory !== param.lavelThree) ? (
+                    {/* Product Grid: Instant render if products cached, otherwise graceful skeleton */}
+                    {!hasProducts && customersProduct.loading ? (
                       <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
                         {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
                           <div key={n} className="flex justify-center">
@@ -572,8 +602,8 @@ export default function Product() {
                           </div>
                         ))}
                       </div>
-                    ) : customersProduct?.products?.content?.length > 0 ? (
-                      customersProduct?.products?.content?.map((item) => {
+                    ) : hasProducts ? (
+                      displayedProducts.map((item) => {
                         return <ProductCard key={item.id} product={item} />;
                       })
                     ) : (
@@ -596,7 +626,7 @@ export default function Product() {
         <section className="w-full px-4 sm:px-[3.6rem]">
           <div className="mx-auto px-2 sm:px-4 py-5 flex justify-center shadow-lg border rounded-md">
             <Pagination
-              count={customersProduct.products?.totalPages}
+              count={customersProduct.products?.totalPages || 1}
               color="primary"
               className=""
               onChange={handlePaginationChange}
@@ -609,17 +639,6 @@ export default function Product() {
               }}
             />
           </div>
-        </section>
-
-        {/* {backdrop} */}
-        <section>
-          <Backdrop
-            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-            open={isLoaderOpen}
-            onClick={handleLoderClose}
-          >
-            <CircularProgress color="inherit" />
-          </Backdrop>
         </section>
       </div>
     </div>
