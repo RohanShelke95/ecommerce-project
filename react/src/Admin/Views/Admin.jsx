@@ -15,8 +15,7 @@ import "./Admin.css";
 import RecentlyAddeddProducts from "../tables/RecentlyAddeddProducts";
 import SalesOverTime from "../tables/SalesOverTime";
 import RecentOrders from "../tables/RecentOrders";
-import {AssuredWorkloadIcon }from '@mui/icons-material';
-import { BriefcaseVariantOutline, CurrencyUsd, HelpCircleOutline, Poll } from "mdi-material-ui";
+
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";

@@ -32,7 +32,7 @@ import {
   getOrders,
   shipOrder,
 } from "../../../Redux/Admin/Orders/Action";
-import { configure } from "@testing-library/react";
+
 import { getImageUrl } from "../../../utils/getImageUrl";
 
 const OrdersTable = () => {
